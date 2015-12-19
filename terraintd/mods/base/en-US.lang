@@ -1,0 +1,33 @@
+title=Terrain TD
+towers=Towers
+enemies=Enemies
+obstacles=Obstacles
+projectiles=Projectiles
+effects=Effects
+
+effect-fire=Fire
+effect-paralysis=Paralysis
+effect-slowness=Slowness
+effect-weakness=Weakness
+effect-bluntness=Bluntness
+effect-frost=Frost
+effect-poison=Poison
+effect-bleed=Bleed
+
+area=Area
+tiles=tiles
+dps=Damage Per Second
+delivery=Type
+
+delivery-singletarget=Single
+delivery-area=Area
+delivery-line=Beam
+delivery-sector=Sector
+
+damage=Damage
+rate=Firerate
+rpm=RPM
+detect-range=Detection Range
+range=Range
+
+example=Example

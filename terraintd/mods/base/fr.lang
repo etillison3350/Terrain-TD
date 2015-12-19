@@ -1,0 +1,33 @@
+title=Défense des Tours Avec Terrain
+towers=Tours
+enemies=Ennemis
+obstacles=Obstacles
+projectiles=Projectiles
+effects=Effets
+
+effect-fire=Feu
+effect-paralysis=Paralysie
+effect-slowness=Lenteur
+effect-weakness=Faiblesse
+effect-bluntness-État Émoussé
+effect-frost=Gel
+effect-poison=Poison
+effect-bleed=Saigner
+
+area=Superficie
+tiles=carrés
+dps=Dommage par Seconde
+delivery=Catégorie
+
+delivery-singletarget=Cible Seul
+delivery-area=Région
+delivery-line=Faisceau
+delivery-sector=Secteur
+
+damage=Dommage
+rate=Cadence de Tir
+rpm=CPM
+detect-range=Distance de Vision
+range=Portée
+
+example=Exemple
