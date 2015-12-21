@@ -1,0 +1,701 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>TerrainTD Modding API Reference</title>
+    <style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+        }
+
+        a:enabled {
+            color: darkgreen;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: green;
+            text-decoration: underline;
+        }
+
+        a.nolink {
+            color: black;
+            text-decoration: none;
+        }
+
+        ul.sidebar {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            bottom: 10px;
+            width: 200px;
+            padding: 10px;
+            display: block;
+            background-color: lightgray;
+            overflow-y: scroll;
+        }
+
+        li.sidebar0, li.sidebar1, li.sidebar2 {
+            display: block;
+            padding: 1px;
+        }
+
+        li.sidebar1 {
+            padding-left: 10px;
+        }
+
+        li.sidebar2 {
+            padding-left: 20px;
+        }
+
+        pre {
+            display: block;
+            width: 95%;
+            overflow-x: scroll;
+            background-color: lightgray;
+            padding: 10px;
+        }
+
+        .code {
+            font-family: Courier New, Courier, monospace;
+            white-space: pre;
+        }
+
+        .color:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; background-color: darkgreen; padding: 10px; height: 60px;">
+        <span style="font-size: 36pt; font-weight: bold; color: white; text-shadow: 3px 3px 2px black; padding-right: 20px;">TerrainTD</span>
+        <span style="font-size: 20pt; color:white">Modding API Reference</span>
+    </div>
+    <ul class="sidebar">
+        <li class="sidebar0">
+            <a href="#overview">Overview</a>
+        </li>
+        <li class="sidebar0">
+            <a href="#object-types">Object Types</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#boolean">Boolean</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#integer">Integer</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#decimal">Decimal</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#string">String</a>
+        </li>
+        <!--<li class="sidebar1">
+            <a href="#image">Image/Icon</a>
+        </li>-->
+        <li class="sidebar1">
+            <a href="#terrain">Terrain</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#array">Array</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#dictionary">Dictionary</a>
+        </li>
+        <!--<li class="sidebar1">
+            <a href="#delivery-type">Delivery Type</a>
+        </li>-->
+        <li class="sidebar1">
+            <a href="#tower">Tower</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#type-tower">type</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#id-tower">id</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#cost-tower">cost</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#collision-tower">collision</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#terrain-tower">terrain</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#on-hill">on-hill</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#rotate">rotate</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#image-tower">image</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#icon-tower">icon</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#projectiles-tower">projectiles</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#enemy">Enemy</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#type-enemy">type</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#speed-enemy">speed</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#vertical-speed">vertical-speed</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#health">health</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#damage-enemy">damage</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#reward">reward</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#image-enemy">image</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#death">death</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#projectiles-enemy">projectiles</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#projectile">Projectile</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#delivery">delivery</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#explosion-radius">explosion-radius</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#speed-proj">speed</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#damage-proj">damage</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#rate">rate</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#follow">follow</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#max-dist">max-dist</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#angle">angle</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#rotation">rotation</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#abs-rotation">abs-rotation</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#dying-fade-time">dying-fade-time</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#dying-fade">dying-fade</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#damage-fade">damage-fade</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#image-proj">image</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#explosion">explosion</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#effects-proj">effects</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#effect">Effect</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#effect-type">effect-type</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#duration">duration</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#level">level</a>
+        </li>
+        <li class="sidebar1">
+            <a href="#obstacle">Obstacle</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#type-obs">type</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#id-obs">id</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#collision-obs">collision</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#cost-obs">cost</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#remove-cost">remove-cost</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#spawn-rate">spawn-rate</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#image-obs">image</a>
+        </li>
+        <li class="sidebar2">
+            <a class="code" href="#icon-obs">icon</a>
+        </li>
+        <li class="sidebar0">
+            <a href="#modding-terrain">Modding Terrain</a>
+        </li>
+    </ul>
+    <div style="position: fixed; display: block; overflow-y: scroll; top: 100px; left: 250px; bottom: 10px; right:10px;">
+        <h2><a class="nolink" name="overview" href="#overview">Overview</a></h2>
+        <!--
+            <p>In this API, you can make new towers, enemies, and obstacles, without needing the source code. This is a guide to how it works.</p>
+            <p>etc...</p>
+        -->
+        <p>This API is designed to make it easy to add new objects (towers, enemies, and obstacles) to the game. Its syntax is very similar to that of Lua, just in case the decision is made to use that instead. How it works:</p>
+        <p>All mods are composed of <span class="code">.proto</span> files (for "prototype"), placed in the mods folder. If this folder does not exist, just open the game, and it should be generated. If it isn't, phisics might be broken. Try downloading the game again.</p>
+        <p><span class="code">.proto</span> files do not have to be directly inside the mods folder. All folders inside the mods folder are searched for <span class="code">.proto</span> files.</p>
+        <p>Files over <b>2GB</b> are ignored. If any mod has a file that's more than 2GB, it's probably a virus.</p>
+        <!--<p>There should be a folder named <span class="code">base</span> in the mods folder, which contains the prototypes of the base game. Don't try modifying these, they are rewritten every execution of the program.</p>-->
+        <p><span class="code">.proto</span> files list all of the objects (towers, enemies, and obstacles) that should be added to the game. Each object is enclosed in curly braces <span class="code">{}</span>, and its properties are listed in key-value form, using the equals sign <span class="code">=</span> as the separator between key and value and commas to separate key-value pairs. For example:</p>
+        <pre>{
+    key=value,
+    somepropertyname=somepropertyvalue,
+    etcetera=etc
+}</pre>
+        <p>Keys and values are case insensitive, all whitespace is ignored, and any hyphens <span class="code">-</span> or underscores <span class="code">_</span> in <i style="font-weight:bold;">keys only</i> are also ignored (e.g. <span class="code">whitespace</span> is the same as <span class="code">white-space</span> or <span class="code">w-h-i-t-e_s-p-a-c-e</span>).</p>
+        <hr />
+        <h2><a class="nolink" name="object-types" href="#object-types">Object Types</a></h2>
+        <hr />
+        <h3><a class="nolink" name="boolean" href="#boolean">Boolean</a></h3>
+        <p>A true or false value.</p>
+        <hr />
+        <h3><a class="nolink" name="integer" href="#integer">Integer</a></h3>
+        <p>A whole number, from -2<sup>31</sup> to 2<sup>31</sup> - 1 (inclusive).</p>
+        <hr />
+        <h3><a class="nolink" name="decimal" href="#decimal">Decimal</a></h3>
+        <p>A decimal number. Note that these numbers are inaccurate if there are many digits to store, due to <a href="https://en.wikipedia.org/wiki/Floating_point#Accuracy_problems">floating point mathematics.</a></p>
+        <hr />
+        <h3><a class="nolink" name="string" href="#string">String</a></h3>
+        <p>A combination of zero or more characters. Can be expressed inside quotes <span class="code">""</span> or without quotes.</p>
+        <!--<hr />
+        <h3><a class="nolink" name="image" href="#image">Image/Icon</a></h3>-->
+        <hr />
+        <h3><a class="nolink" name="terrain" href="#terrain">Terrain</a></h3>
+        <p>A text representation of any of the terrains in the game. Can be:</p>
+        <ul>
+            <li class="code">grass</li>
+            <li class="code">stone</li>
+            <li class="code">sand</li>
+            <li class="code">marshlands</li>
+            <li class="code">snow</li>
+            <li class="code">frozen_water</li>
+            <li class="code">shallow_water</li>
+            <li class="code">deep_water</li>
+        </ul>
+        <p>Alternatively, the shortcut terrain names <span class="code">land</span>, <span class="code">water</span>, and <span class="code">all</span> represent all terrains without the text "water", with the text "water", and all terrains respectively.</p>
+        <hr />
+        <h3><a class="nolink" name="array" href="#array">Array</a></h3>
+        <p>A list of values. The order of these values is stored and is important.</p>
+        <p>Arrays are usually not just a plain type, but rather an array <i>of something</i> (e.g. an integer array).</p>
+        <p><a href="#dictionary">Dictionaries</a> and arrays are generally interchangeable. The description of a property will include something along the lines of "<i>can be expressed in key-value pairs</i>" if this is the case.</p>
+        <hr />
+        <h3><a class="nolink" name="dictionary" href="#dictionary">Dictionary</a></h3>
+        <p>A mapping of keys to values. The order of these key-value pairs is neither stored nor important. Towers, effects, etc. are all dictionaries because they have properties that are equal to values.</p>
+        <hr />
+        <h3><a class="nolink" name="tower" href="#tower">Tower</a></h3>
+        <b>Example tower:</b>
+        <pre>{
+    type=tower,
+    id=example-tower,
+    cost=100,
+    collision=[1,1],
+    terrain=[land],
+    on-hill=true,
+    rotate=true,
+    image={<i>see <a href="#image">images</a></i>},
+    icon={<i>see <a href="#image">icons</a></i>},
+    projectiles=[
+        {<i>see <a href="#projectile">projectiles</a></i>}
+    ]
+}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="type-tower" href="#type-tower">type</a></h4>
+        <p>String</p>
+        <p>The type of the object. For towers, <span class="code">type</span> must equal <span class="code">tower</span>.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="id-tower" href="#id-tower">id</a></h4>
+        <p>String</p>
+        <p>The tower's ID, which should correspond to an entry in a <span class="code">.lang</span> file.</p>
+        <p><b>Note</b>: IDs must be unique, even across mods. Repeated ids will result in incorrect names. To try to prevent this, include the mod name somewhere in the id.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="cost-tower" href="#cost-tower">cost</a></h4>
+        <p>Integer</p>
+        <p>The amount of money spent to purchase the tower.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="collision-tower" href="#collision-tower">collision</a></h4>
+        <p>Integer Array</p>
+        The collision box of the tower. Can be expressed as
+        <pre>[<i>width</i>, <i>height</i>]</pre>
+        or
+        <pre>{width = <i>width</i>, height = <i>height</i>}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="terrain-tower" href="#terrain-tower">terrain</a></h4>
+        <p>Terrain Array</p>
+        The terrain types that this tower can be placed on.
+        <hr />
+        <h4 class="code"><a class="nolink" name="on-hill" href="#on-hill">on-hill</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not this tower's collision box can cover multiple elevations.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="rotate" href="#rotate">rotate</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not the tower rotates.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="image-tower" href="#image-tower">image</a></h4>
+        <p>Image</p>
+        <p>The image for this tower (in the game).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="icon-tower" href="#icon-tower">icon</a></h4>
+        <p>Image</p>
+        <p>The icon on the button to buy the tower.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="projectiles-tower" href="#projectiles-tower">projectiles</a></h4>
+        <p>Projectile Array</p>
+        An array of the projectiles that this tower shoots.
+        <hr />
+        <h3><a class="nolink" name="enemy" href="#enemy">Enemy</a></h3>
+        <b>Example enemy:</b>
+        <pre>{
+    type=enemy,
+    speed=[1,1,1,1,1,1,1,0],
+    vertical-speed=[1,1],
+    health=100,
+    damage=10,
+    reward=25,
+    image={<i>see <a href="#image">images</a></i>},
+    death={<i>see <a href="#image">images</a></i>},
+    projectiles=[<i>see <a href="#projectile">projectiles</a></i>]
+}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="type-enemy" href="#type-enemy">type</a></h4>
+        <p>String</p>
+        <p>The type of the object. For enemies, <span class="code">type</span> must equal <span class="code">enemy</span>.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="speed-enemy" href="#speed-enemy">speed</a></h4>
+        <p>Decimal Array</p>
+        <p>The enemy's speed, in tiles per second for each terrain type. Arrays with one value have the same speed for all terrains. Arrays with two values correspond to the general terrains <span class="code">land</span> and <span class="code">water</span> respectively.</p>
+        <p>Can also be expressed in key-value pairs:</p>
+        <pre>{
+    grass = 1,
+    stone = 2,
+    sand = 3,
+    marshlands = 4,
+    snow = 5,
+    frozen_water = 0.1,
+    shallow_water = 0.05,
+    deep_water = 0.001,
+}</pre>
+        <p>These values will be taken into account while pathfinding.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="vertical-speed" href="#vertical-speed">vertical-speed</a></h4>
+        <p>Decimal Array</p>
+        <p>The speed multiplier for moving up and down a slope, respectively. Can also be expressed as key-value pairs:</p>
+        <pre>{
+    up = 0.5,
+    down = 1.4
+}</pre>
+        <p>These values will be taken into account when pathfinding.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="health" href="#health">health</a></h4>
+        <p>Decimal</p>
+        <p>The enemy's maximum health.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="damage-enemy" href="#damage-enemy">damage</a></h4>
+        <p>Decimal</p>
+        <p>The amount of damage that is done to the player if this enemy reaches the goal.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="reward" href="#reward">reward</a></h4>
+        <p>Integer</p>
+        <p>The amount of money that is given to the player when this enemy is destroyed.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="image-enemy" href="#image-enemy">image</a></h4>
+        <p>Image</p>
+        <p>The image for this enemy (in the game).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="death" href="#death">death</a></h4>
+        <p>Image</p>
+        <p>The image for this enemy after it dies.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="projectiles-enemy" href="#projectiles-enemy">projectiles</a></h4>
+        <p>Projectile Array</p>
+        <p>An array of the projectiles that this enemy shoots. Note that these projectiles still target enemies (not towers) and are intended for use for healing.</p>
+        <hr />
+        <h3><a class="nolink" name="projectile" href="#projectile">Projectile</a></h3>
+        <b>Example projectile:</b>
+        <pre>{
+    delivery=single_target,
+    explosion-radius=0,
+    speed=1,
+    damage=[10,5],
+    rate=1,
+    follow=true,
+    max-dist=inf,
+    rotation=0,
+    abs-rotation=false,
+    dying-fade-time=0.1,
+    dying-fade=true,
+    damage-fade=false,
+    image={<i>see <a href="#image">images</a></i>},
+    explosion={<i>see <a href="#image">images</a></i>},
+    effects=[<i>see <a href="#effect">effects</a></i>]
+}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="delivery" href="#delivery">delivery</a></h4>
+        <p>Delivery Type</p>
+        <p>How the projectile deals damage. Delivery types can be <span class="code">single_target</span>, <span class="code">area</span>, <span class="code">line</span>, or <span class="code">sector</span>.</p>
+        <p>Single target: hits one target, and one target only. If <a href="#follow" class="code">follow</a>: Any enemies that the projectile goes over are unaffected. If not <a href="#follow" class="code">follow</a>, hits the first enemy that it touches.</p>
+        <p>Area: hits all targets in its radius.</p>
+        <p>Line: hits all targets on the line between the shooter and its target.</p>
+        <p>Sector: hits all targets between the target and the arc given by <a href="#angle" class="code">angle</a> (i.e. a slice of, say, pie).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="explosion-radius" href="#explosion-radius">explosion-radius</a></h4>
+        <p>Decimal</p>
+        <p>(For <span class="code">delivery = single_target</span> only) the distance from the target in which to apply damage to other enemies on contact. 0 means doesn't explode.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="speed-proj" href="#speed-proj">speed</a></h4>
+        <p>Decimal</p>
+        <p>The speed at which the projectile travels (in tiles/s).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="damage-proj" href="#damage-proj">damage</a></h4>
+        <p>Decimal Array</p>
+        <p>The damage that this projectile does at minimum (0) and maximum distance (<a class="code" href="#max-dist">max-dist</a>). Damage changes linearly between the two values.</p>
+        <p>Can also be expressed as key-value pairs:</p>
+        <pre>{near = 10, far = 5}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="rate" href="#rate">rate</a></h4>
+        <p>Decimal</p>
+        <p>The rate at which this projectile is fired, in rounds per second.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="follow" href="#follow">follow</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not the projectile follows the target (i.e. is guaranteed to hit).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="max-dist" href="#max-dist">max-dist</a></h4>
+        <p>Decimal</p>
+        <p>The maximum distance that the projectile can travel away from the shooter. Can be <span class="code">inf</span> for infinity.</p>
+        <p><b>Note:</b> using <span class="code">inf</span> for <a class="code" href="#delivery">delivery</a> types other than <span class="code">single_target</span> will result in many projectiles infinitely expanding over the map and significantly reducing frame rates (from rendering so many images). Avoid using <span class="code">inf</span> for other <span class="code">delivery</span> types.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="max-dist" href="#max-dist">max-dist</a></h4>
+        <p>Decimal</p>
+        <p>The maximum distance that an enemy must be from the shooter for this projectile to be fired.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="angle" href="#angle">angle</a></h4>
+        <p>Decimal</p>
+        <p>For <span class="code"><a href="#delivery">delivery</a> = sector</span>, the measure of central angle of the arc that damage is applied in, <i>in radians</i>. Values ending in "<span class="code">pi</span>" will be multiplied by &pi;</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="rotation" href="#rotation">rotation</a></h4>
+        <p>Decimal</p>
+        <p>The direction at which the projectile is fired, <i>in radians</i>. Values ending in "<span class="code">pi</span>" will be multiplied by &pi;</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="abs-rotation" href="#abs-rotation">abs-rotation</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not <a class="code" href="#rotation">rotation</a> is absolute (not relative to the tower's rotation).</p>
+        <p>If <a class="code" href="#rotation">rotation</a> is zero, and <span class="code">abs-rotation</span> is true, the projectile will always be shot to the right.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="dying-fade-time" href="#dying-fade-time">dying-fade-time</a></h4>
+        <p>Decimal</p>
+        <p>The amount of time, in seconds, that the projectile takes to disappear after it has hit its target/reached its max range.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="dying-fade" href="#dying-fade">dying-fade</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not the projectile('s explosion) fades out after it has hit its target/reached its max range. If <span class="code">dying-fade</span> is <span class="code">false</span>, the projectile will just disappear.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="damage-fade" href="#damage-fade">damage-fade</a></h4>
+        <p>Boolean</p>
+        <p>Whether or not the projectile fades based on the damage that it would do at that point, e.g. if <a class="code" href="#damage-proj">damage</a> is <span class="code">[22.5, 0]</span>, the projectile will be fully opaque when it is shot, half opaque halfway to its <a class="code" href="#max-dist">max-dist</a>, and completely transparent at <span class="code">max-dist</span> (showing that it does 0 damage).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="image-proj" href="#image-proj">image</a></h4>
+        <p>Image or Icon</p>
+        <p>The projectile's image. Should be an image unless <a class="code" href="#delivery">delivery</a> is <span class="code">area</span>. If <span class="code">delivery</span> is <span class="code">line</span>, the width and x offset have no effect.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="explosion" href="#explosion">explosion</a></h4>
+        <p>Image</p>
+        <p>(For <a class="code" href="#delivery">delivery</a> = <span class="code">single_target</span> only) the image of the projectile after it hits its target.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="effects-proj" href="#effects-proj">effects</a></h4>
+        <p>Effect Array</p>
+        <p>A list of the effects that will be applied to damaged enemies.</p>
+        <hr />
+        <h3><a class="nolink" name="effect" href="#effect">Effect</a></h3>
+        <b>Example effect:</b>
+        <pre>{
+    effect-type=fire,
+    duration=2.5,
+    level=2
+}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="effect-type" href="#effect-type">effect-type</a></h4>
+        <p>Effect Type</p>
+        <p>The type of the effect. Can be:</p>
+        <ul>
+            <li class="code"><span style="color: orange;"><span class="color">fire</span></span></li>
+            <li class="code"><span style="color: lightgray;"><span class="color">paralysis</span></span></li>
+            <li class="code"><span style="color: #402080;"><span class="color">slowness</span></span></li>
+            <li class="code"><span style="color: #8000FF;"><span class="color">weakness</span></span></li>
+            <li class="code"><span style="color: black;"><span class="color">bluntness</span></span></li>
+            <li class="code"><span style="color: cyan;"><span class="color">frost</span></span></li>
+            <li class="code"><span style="color: lime;"><span class="color">poison</span></span></li>
+            <!-- <li class="code"><span style="color: yellow;"><span class="color">repel</span></span></li> -->
+            <li class="code"><span style="color: red;"><span class="color">bleed</span></span></li>
+        </ul>
+        <hr />
+        <h4 class="code"><a class="nolink" name="duration" href="#duration">duration</a></h4>
+        <p>Decimal</p>
+        <p>The amount of time this effect lasts for, in seconds.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="level" href="#level">level</a></h4>
+        <p>Decimal</p>
+        <p>The level of this effect. 0 generally means "has no effect", and 10 is generally a maximum, although values above 10 are allowed.</p>
+        <hr />
+        <h3><a class="nolink" name="obstacle" href="#obstacle">Obstacle</a></h3>
+        <b>Example obstacle:</b>
+        <pre>{
+    type=obstacle,
+    id=rock,
+    collision=[1,1],
+    cost=50,
+    remove-cost=-10,
+    spawn-rate={land=0.1,water=0.01},
+    image={<i>see <a href="#image">images</a></i>},
+    icon={<i>see <a href="#image">icons</a></i>}
+}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="type-obs" href="#type-obs">type</a></h4>
+        <p>String</p>
+        <p>The type of the object. For obstacles, <span class="code">type</span> must equal <span class="code">obstacle</span>.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="id-obs" href="#id-obs">id</a></h4>
+        <p>String</p>
+        <p>The obstacle's ID, which should correspond to an entry in a <span class="code">.lang</span> file. Only has an effect if the obstacle can be purchased.</p>
+        <p><b>Note</b>: IDs must be unique, even across mods. Repeated ids will result in incorrect names. To try to prevent this, include the mod name somewhere in the id.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="collision-obs" href="#collision-obs">collision</a></h4>
+        <p>Integer Array</p>
+        The collision box of the obstacle. Can be expressed as
+        <pre>[<i>width</i>, <i>height</i>]</pre>
+        or
+        <pre>{width = <i>width</i>, height = <i>height</i>}</pre>
+        <hr />
+        <h4 class="code"><a class="nolink" name="cost-obs" href="#cost-obs">cost</a></h4>
+        <p>Integer</p>
+        <p>The amount of money spent to purchase the obstacle. If <span class="code">cost &le; 0</span>, this obstacle cannot be purchased.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="remove-cost" href="#remove-cost">remove-cost</a></h4>
+        <p>Integer</p>
+        <p>The amount of money spent (or given back, if negative) to remove the obstacle.</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="spawn-rate" href="#spawn-rate">spawn-rate</a></h4>
+        <p>Decimal</p>
+        <p>The probability that a given square has this obstacle (from 0 to 1).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="image-obs" href="#image-obs">image</a></h4>
+        <p>Image</p>
+        <p>The image for this obstacle (in the game).</p>
+        <hr />
+        <h4 class="code"><a class="nolink" name="icon-obs" href="#icon-obs">icon</a></h4>
+        <p>Image</p>
+        <p>The icon on the button to buy the obstacle (if it can be bought).</p>
+        <hr />
+        <h2><a class="nolink" name="lang-files" href="#lang-files">Langauge Files</a></h2>
+        <hr />
+        <h2><a class="nolink" name="modding-terrain" href="#modding-terrain">Modding Terrain</a></h2>
+        <p>This API also allows for the creation of new maps. Maps are stored in <span class="code">.world</span> files, and the filename (without the extension) is the map name. Ecah file has <i>one</i> world, only. In these files, whitespace is read.</p>
+        <p>A reminder that files that are over 2GB are ingored and ridiculous.</p>
+        <p>Terrain types and elevations are stored in the file as grids of integers (<b>no decimal values</b>). The world will be the same dimensions as the grid (in the emaple below, the world will be 8 spaces wide and 16 tall). Each number is separated by at least one space (the number of spaces is not important). For example:</p>
+        <pre>2 4 6 3 0 6 4 7
+7 1 6 7 4 4 6 2
+5 7 2 4 7 2 7 4
+7 1 5 0 7 5 4 2
+1 2 7 2 7 7 1 2
+2 7 7 6 2 2 1 6
+3 7 0 2 0 2 5 2
+1 3 5 7 2 1 2 3
+5 4 2 3 2 1 2 2
+6 0 1 3 3 7 5 0
+5 1 4 3 2 6 7 2
+6 0 0 2 2 1 7 0
+2 5 2 1 3 5 7 4
+6 5 0 4 1 5 5 3
+3 7 6 3 5 3 0 3
+1 5 6 3 7 6 6 0</pre>
+        <p>Each number in the terrain corresponds to a different type of terrain:</p>
+        <ol start="0">
+            <li class="code">grass</li>
+            <li class="code">stone</li>
+            <li class="code">sand</li>
+            <li class="code">marshlands</li>
+            <li class="code">snow</li>
+            <li class="code">frozen_water</li>
+            <li class="code">shallow_water</li>
+            <li class="code">deep_water</li>
+        </ol>
+        <p>Additionally, the last instance of the letter <span class="code">X</span> following a number indicates that that spot is the goal. An <span class="code">S</span> indicates a square in which enemies can spawn.</p>
+        <p>If the lines are of different lengths, the first line is used as the width of the world. Extra values are ignored, and missing values are assumed to be deep_water (0).</p>
+        <br />
+        <p>Following two line breaks (a blank line) is the grid of elevations. Missing values (e.g. if the rows are too short or unequal) are assumed to have a height of zero. Each number corresponds to the elevation, whilch is completely relative, so negatives are allowed. Differences of more than 3 in adjacent squares are not recommended.</p>
+        <p>Complete file example:</p>
+        <pre>1S 2S 1S 1S 2S 2S 1S 1S 1S 6  2  2  2  1  2  1
+1S 1S 6S 6S 1S 6S 6S 1S 1  1  6  6  1  1  1  1
+1S 6S 6  1  1  1S 1S 1S 2  2  2  1  1  2  2  2
+1S 2S 1  1  1  1  1  2  1  6  2  1  1  6  1  2
+1S 2S 1  2  1  7  2  1  1  1  6  6  6  6  6  1
+1S 6S 6  6  6  6  2  1  1  2  1  1  1  1  1  1
+6S 1S 1  1  2  6  6  6  6  2  1  1  1  1  1  1
+2S 1S 1  1  2  1  6  6  6  1  1  2  6  2  1  2
+1  2  6  6  1  2  6  6  6  6  1  1  1  6  6  6
+1  1  6  1  1  1  1  1  6  1  6  6  6  1  1  2
+1  6  1  1  1  1  6  1  1  1  2  1  6  6  1  1
+2  1  1  2  2  1  1  1  1  2  1  1  1  1  1  1
+2  1  6  2  2  1  1  1  2  1  1  1  1  1  1  1
+1  6  2  2  1  1  1  2  1  2  2  2  2  2  1  1
+6  2  1  1  2  1  1  2  1  2  1  1  2  2  2  2
+1  1  1  2  1  2  1  1  2  2  2  2  1  1X 1  2
+
+1 3 1 1 2 2 1 1 1 0 3 2 2 1 2 1
+1 1 0 0 1 0 0 1 1 1 0 0 1 1 1 1
+1 0 0 1 1 1 1 1 3 2 2 1 1 2 3 2
+1 3 1 1 1 1 1 2 1 0 2 1 1 0 1 2
+1 2 1 2 1 0 2 1 1 1 0 0 0 0 0 1
+1 0 0 0 0 0 2 1 1 2 1 1 1 1 1 1
+0 1 1 1 2 0 0 0 0 2 1 1 1 1 1 1
+3 1 1 1 2 1 0 0 0 1 1 2 0 2 1 2
+1 2 0 0 1 2 0 0 0 0 1 1 1 0 0 0
+1 1 0 1 1 1 1 1 0 1 0 0 0 1 1 2
+1 0 1 1 1 1 0 1 1 1 2 1 0 0 1 1
+3 1 1 2 2 1 1 1 1 2 1 1 1 1 1 1
+3 1 0 2 2 1 1 1 2 1 1 1 1 1 1 1
+1 0 2 3 1 1 1 2 1 3 2 2 2 2 1 1
+0 2 1 1 2 1 1 2 1 3 1 1 2 2 2 2
+1 1 1 3 1 2 1 1 2 3 2 2 1 1 1 2</pre>
+    </div>
+</body>
+</html>

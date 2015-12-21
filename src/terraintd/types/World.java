@@ -196,7 +196,6 @@ public class World {
 		Node node = n;
 		if (node != null) {
 			while (node.getNextNode() != null) {
-				System.out.println(node);
 				Node nx = node.getNextNode();
 
 				g.drawLine((int) (size * node.getAbsX()), (int) (size * node.getAbsY()), (int) (size * nx.getAbsX()), (int) (size * nx.getAbsY()));
@@ -226,7 +225,6 @@ public class World {
 	Node n;
 
 	public void setNode(Node n) {
-		System.out.println(n);
 		this.n = n;
 	}
 

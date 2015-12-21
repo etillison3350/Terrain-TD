@@ -11,8 +11,10 @@ import terraintd.object.Entity;
 import terraintd.object.Gun;
 import terraintd.object.Projectile;
 import terraintd.object.Weapon;
+import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
 import terraintd.types.DeliveryType;
+import terraintd.types.EnemyType;
 import terraintd.types.Level;
 import terraintd.types.World;
 import terraintd.window.GamePanel;
@@ -75,14 +77,14 @@ public class GameLogic implements ActionListener {
 		this.timer.stop();
 		this.money = 1000;
 
-		this.currentWorld = World.values()[0];
+		this.currentWorld = World.values()[1];
 		this.currentLevel = new Level();
 
 		// TODO init enemies
 		this.permanentEntities = new Entity[] {};
 		
-		this.pathFinder.calculatePaths();
-		this.currentWorld.setNode(this.pathFinder.getNodes()[4][4][0]);
+		Node[][][] nodes = this.pathFinder.calculatePaths(EnemyType.values()[0]);
+		this.currentWorld.setNode(nodes[4][4][0]);
 	}
 
 	/**

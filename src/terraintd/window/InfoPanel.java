@@ -3,6 +3,8 @@ package terraintd.window;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -35,7 +37,6 @@ public class InfoPanel extends JPanel {
 //		info.setForeground(Color.WHITE);
 		info.setBackground(Color.BLACK);
 		this.add(new JScrollPane(info));
-//		info.setDisabledTextColor(Color.BLACK);
 	}
 
 	String getStringForTowerType(TowerType type) {

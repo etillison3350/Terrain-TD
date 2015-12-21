@@ -3,6 +3,7 @@ package terraintd.window;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -12,96 +13,86 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import terraintd.types.TowerType;
 
 public class BuyPanel extends JPanel {
 
 	private static final long serialVersionUID = 3040182092852784456L;
 
-	private JButton buttons;
-
-	int i = 0;
+	private BuyButton[] buttons;
 
 	public BuyPanel() {
 		this.setPreferredSize(new Dimension(256, 32767));
-		this.setLayout(new SquareLayout());
+		this.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 1));
 
-//		BufferedImage image = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
-//		Graphics2D g = image.createGraphics();
-//		g.setColor(Color.GREEN);
-//		g.fill3DRect(5, 5, 25, 25, true);
-//		g.dispose();
-
-		BufferedImage im = null;
-		try {
-			im = ImageIO.read(new File("C:\\Users\\etillison\\workspace\\towerdefense\\resources\\spirit.png"));
-		} catch (IOException e) {}
-		BufferedImage image = im;
-
-//		new Timer(500, new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				add(new BuyButton("500", image));
-//				BuyPanel.this.validate();
-//			}
-//		}).start();
-
-		this.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				add(new BuyButton(i++, image)).setEnabled(i % 2 == 0);
-				BuyPanel.this.validate();
-			}
-
-		});
+		for (TowerType t : TowerType.values()) {
+			this.add(new BuyButton(t));
+		}
 	}
 
 	public class BuyButton extends JComponent {
 
 		private static final long serialVersionUID = -307902500683318445L;
 
-		private boolean pressed;
+		private static final float PRESS_ALPHA = 0.25F, HOVER_ALPHA = 0.25F;
 
-		private Image image;
+		private boolean pressed, hovered;
+
+		private final TowerType type;
+		private BufferedImage image;
 		private BufferedImage gray;
 		private int cost;
 
-		public BuyButton(int cost, Image image) {
+		private final MouseAdapter mouseListener = new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (isEnabled()) {
+					pressed = true;
+					repaint();
+				}
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				pressed = false;
+				repaint();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				pressed = false;
+				hovered = false;
+				repaint();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				hovered = true;
+				repaint();
+			}
+
+		};
+
+		public BuyButton(TowerType type) {
 			super();
 
-			this.addMouseListener(new MouseAdapter() {
+			this.type = type;
 
-				@Override
-				public void mousePressed(MouseEvent e) {
-					if (isEnabled()) {
-						pressed = true;
-						repaint();
-					}
-				}
+			this.addMouseListener(mouseListener);
 
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					pressed = false;
-					repaint();
-				}
-				
-				@Override
-				public void mouseExited(MouseEvent e) {
-					pressed = false;
-					repaint();
-				}
+//			this.image = image;
+			this.image = new BufferedImage(63, 63, BufferedImage.TYPE_INT_ARGB);
 
-			});
-
-			this.image = image;
+			if (this.type.icon != null) {
+				Graphics2D g = this.image.createGraphics();
+				g.drawImage(type.icon.image, 0, 0, 63, 63, null);
+				g.dispose();
+			}
 
 			this.gray = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
@@ -113,7 +104,7 @@ public class BuyPanel extends JPanel {
 			op.filter(gray, gray);
 
 			this.preferredSize = new Dimension(this.image.getWidth(null), this.image.getHeight(null));
-			this.cost = cost;
+			this.cost = this.type.cost;
 		}
 
 		private Dimension preferredSize;
@@ -137,25 +128,50 @@ public class BuyPanel extends JPanel {
 			Graphics2D g = (Graphics2D) graph;
 
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			
+
 			g.setColor(!this.isEnabled() ? Color.GRAY : new Color(0.5F, 0.5F, 1.0F));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 			g.drawImage(this.isEnabled() ? image : gray, 0, 0, this.getWidth(), this.getHeight(), null);
 
 			g.setColor(Color.BLACK);
-			
 			if (this.pressed) {
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25F));
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, PRESS_ALPHA));
 				g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			}
 
+			g.setColor(Color.WHITE);
+			if (this.hovered) {
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, HOVER_ALPHA));
+				g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			}
+
+			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
 			g.drawString(Integer.toString(cost), 1, this.getHeight() - 1);
-			
+
 			g.setColor(Color.WHITE);
 			g.drawString(Integer.toString(cost), 0, this.getHeight());
+		}
+
+		/**
+		 * <ul>
+		 * <li><b><i>setEnabled</i></b><br>
+		 * <br>
+		 * {@code public boolean setEnabled(int cost)}<br>
+		 * <br>
+		 * Sets this button's enabled state based on its type's cost.<br>
+		 * @param cost - The current amount of money
+		 * @return The resulting enabled state of the button
+		 *         </ul>
+		 */
+		public boolean setEnabled(int cost) {
+			boolean enabled = cost >= this.cost;
+
+			setEnabled(enabled);
+
+			return enabled;
 		}
 
 	}

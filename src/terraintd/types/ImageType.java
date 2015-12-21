@@ -1,10 +1,16 @@
 package terraintd.types;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
+
 public class ImageType {
 
+	public BufferedImage image;
 	public final String src;
 	public final double width;
 	public final double height;
@@ -17,8 +23,15 @@ public class ImageType {
 		this.height = height;
 		this.x = x;
 		this.y = y;
+		
+		try {
+			this.image = ImageIO.read(new File(src));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	@Deprecated
 	ImageType(String s) {
 		Matcher srcM = Pattern.compile("src=([0-9a-z_\\-/\"\\.]+)").matcher(s);
 		this.src = srcM.find() ? srcM.group(1) : "";

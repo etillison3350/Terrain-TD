@@ -1,0 +1,21 @@
+{
+    "type":"enemy",
+    "speed":[
+        3000,
+        4000,
+        3000,
+        2000,
+        1000,
+        1,
+        1,
+        1
+    ],
+    "vertical-speed":[
+        1,
+        1
+    ],
+    "health":100,
+    "damage":10,
+    "reward":25,
+    "projectiles":null
+}
