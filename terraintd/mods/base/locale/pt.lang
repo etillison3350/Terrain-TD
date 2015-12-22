@@ -1,0 +1,36 @@
+title=Defesa de Torres com Terreno
+towers=Torres
+enemies=Inimigos
+obstacles=Obstáculos
+projectiles=Projéteis
+effects=Efeitos
+
+effect-fire=Fogo
+effect-paralysis=Paralisia
+effect-slowness=Lentidão
+effect-weakness=Fraqueza
+effect-bluntness=embotamento
+effect-frost=Geada
+effect-poison=Veneno
+effect-bleed=Sangrar
+
+health=Saúde
+money=Dinheiro
+
+area=Área
+tiles=praças
+dps=Dano por segundo
+delivery=Tipo
+
+delivery-singletarget=Único
+delivery-area=Área
+delivery-line=Viga
+delivery-sector=Setor
+
+damage=Danificar
+rate=Cadência de tiro
+rpm=TPM
+detect-range=Faixa de detecção
+range=Alcance
+
+example=Exemplo

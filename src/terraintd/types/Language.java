@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class Language {
 
-	private static Locale currentLocale = Locale.US;//new Locale("es");
+	private static Locale currentLocale = Locale.US;
 
 	private Language() {}
 

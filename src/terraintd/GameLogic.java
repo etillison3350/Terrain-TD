@@ -1,5 +1,6 @@
 package terraintd;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -264,14 +265,16 @@ public class GameLogic implements ActionListener {
 
 	private boolean wasPaused = true;
 	private CollidableType buying = null;
-	
+
 	/**
 	 * <ul>
-	 * <li><b><i>buyObject</i></b><br><br>
-	 * {@code public void buyObject(CollidableType type)}<br><br>
+	 * <li><b><i>buyObject</i></b><br>
+	 * <br>
+	 * {@code public void buyObject(CollidableType type)}<br>
+	 * <br>
 	 * Called when the buy button of <code>type</code> is pressed<br>
 	 * @param type
-	 * </ul>
+	 *        </ul>
 	 */
 	public void buyObject(CollidableType type) {
 		this.wasPaused = !this.timer.isRunning();
@@ -281,21 +284,32 @@ public class GameLogic implements ActionListener {
 
 	/**
 	 * <ul>
-	 * <li><b><i>buyObject</i></b><br><br>
-	 * {@code public void buyObject(int x, int y)}<br><br>
+	 * <li><b><i>buyObject</i></b><br>
+	 * <br>
+	 * {@code public void buyObject(int x, int y)}<br>
+	 * <br>
 	 * Purchases the given object and positions it at the given position<br>
 	 * @param x
 	 * @param y
-	 * </ul>
+	 *        </ul>
 	 */
 	public void buyObject(int x, int y) {
 		Entity[] newEntities = new Entity[permanentEntities.length + 1];
 		System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
 		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
-		
+
+		cancelBuy();
+	}
+	
+	public void cancelBuy() {
 		buying = null;
 		if (!this.wasPaused)
 			this.start();
+	}
+	
+	public boolean canPlaceObject(CollidableType type, int x, int y) {
+		// TODO
+		return true;
 	}
 
 	public Level getCurrentLevel() {
@@ -320,6 +334,10 @@ public class GameLogic implements ActionListener {
 
 	public Entity[] getPermanentEntities() {
 		return permanentEntities;
+	}
+
+	public CollidableType getBuyingType() {
+		return buying;
 	}
 
 }

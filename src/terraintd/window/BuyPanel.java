@@ -8,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -20,6 +19,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import terraintd.types.CollidableType;
 import terraintd.types.TowerType;
 
 public class BuyPanel extends JPanel {
@@ -55,6 +55,18 @@ public class BuyPanel extends JPanel {
 		}
 	}
 
+	private void cancelBuy() {
+		window.logic.cancelBuy();
+		
+		updateButtons();
+	}
+	
+	private void buy(CollidableType type) {
+		window.logic.buyObject(type);
+		
+		updateButtons();
+	}
+	
 	public class BuyButton extends JComponent {
 
 		private static final long serialVersionUID = -307902500683318445L;
@@ -63,7 +75,7 @@ public class BuyPanel extends JPanel {
 
 		private boolean pressed, hovered;
 
-		private final TowerType type;
+		private final CollidableType type;
 		private BufferedImage image;
 		private BufferedImage gray;
 		private BufferedImage cancelImage;
@@ -99,8 +111,8 @@ public class BuyPanel extends JPanel {
 			}
 
 		};
-
-		public BuyButton(TowerType type) {
+		
+		public BuyButton(CollidableType type) {
 			super();
 
 			this.type = type;

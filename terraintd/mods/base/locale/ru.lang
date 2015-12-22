@@ -1,0 +1,36 @@
+title=Обороны башни на территория
+towers=Башни
+enemies=враги
+obstacles=Препятствия
+projectiles=снаряды
+effects=Последствия
+                                                                  
+effect-fire=Огонь
+effect-paralysis=Паралич
+effect-slowness=медлительность
+effect-weakness=Слабое место
+effect-bluntness=неотточенный
+effect-frost=Мороз
+effect-poison=яд
+effect-bleed=кровоточить
+                                                                  
+health=Здоровье
+money=Деньги
+                                                                  
+area=Площадка
+tiles=плитка
+dps=Урон в секунду
+delivery=Тип
+                                                                  
+delivery-singletarget=Один
+delivery-area=Площадка
+delivery-line=Луч
+delivery-sector=сектор
+                                                                  
+damage=Наносить ущерб
+rate=Скорость стрельбы
+rpm=RPM
+detect-range=Диапазон обнаружения
+range=Ассортимент
+                                                                  
+example=пример
