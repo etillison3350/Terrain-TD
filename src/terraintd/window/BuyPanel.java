@@ -6,14 +6,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.io.IOException;
+import java.nio.file.Paths;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -25,12 +28,30 @@ public class BuyPanel extends JPanel {
 
 	private BuyButton[] buttons;
 
-	public BuyPanel() {
+	private final Window window;
+
+	public BuyPanel(Window window) {
+		this.window = window;
+
+		this.setBackground(Color.BLACK);
+		
 		this.setPreferredSize(new Dimension(256, 32767));
 		this.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 1));
 
-		for (TowerType t : TowerType.values()) {
-			this.add(new BuyButton(t));
+		buttons = new BuyButton[TowerType.values().length];
+
+		for (int b = 0; b < buttons.length; b++) {
+			buttons[b] = new BuyButton(TowerType.values()[b]);
+			buttons[b].setCancel(true);
+			this.add(buttons[b]);
+		}
+
+		updateButtons();
+	}
+
+	public void updateButtons() {
+		for (BuyButton b : buttons) {
+			b.setEnabled(window.logic.getMoney());
 		}
 	}
 
@@ -38,13 +59,14 @@ public class BuyPanel extends JPanel {
 
 		private static final long serialVersionUID = -307902500683318445L;
 
-		private static final float PRESS_ALPHA = 0.25F, HOVER_ALPHA = 0.25F;
+		private static final float PRESS_ALPHA = 0.25F, HOVER_ALPHA = 0.2F;
 
 		private boolean pressed, hovered;
 
 		private final TowerType type;
 		private BufferedImage image;
 		private BufferedImage gray;
+		private BufferedImage cancelImage;
 		private int cost;
 
 		private final MouseAdapter mouseListener = new MouseAdapter() {
@@ -103,20 +125,18 @@ public class BuyPanel extends JPanel {
 			ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 			op.filter(gray, gray);
 
-			this.preferredSize = new Dimension(this.image.getWidth(null), this.image.getHeight(null));
+			try {
+				this.cancelImage = ImageIO.read(Paths.get("terraintd/mods/base/images/cancel.png").toFile());
+			} catch (IOException e) {
+				this.cancelImage = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+			}
+			
 			this.cost = this.type.cost;
 		}
 
-		private Dimension preferredSize;
-
 		@Override
 		public Dimension getPreferredSize() {
-			return preferredSize;
-		}
-
-		@Override
-		public void setPreferredSize(Dimension preferredSize) {
-			this.preferredSize = preferredSize;
+			return new Dimension(64, 64);
 		}
 
 		@Override
@@ -129,19 +149,17 @@ public class BuyPanel extends JPanel {
 
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-			g.setColor(!this.isEnabled() ? Color.GRAY : new Color(0.5F, 0.5F, 1.0F));
+			g.setColor(this.cancel ? new Color(1.0F, 0.5F, 0.5F) : (this.isEnabled() ? new Color(0.5F, 0.5F, 1.0F) : Color.GRAY));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-			g.drawImage(this.isEnabled() ? image : gray, 0, 0, this.getWidth(), this.getHeight(), null);
+			g.drawImage(this.cancel ? cancelImage : (this.isEnabled() ? image : gray), 0, 0, this.getWidth(), this.getHeight(), null);
 
-			g.setColor(Color.BLACK);
 			if (this.pressed) {
+				g.setColor(Color.BLACK);
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, PRESS_ALPHA));
 				g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			}
-
-			g.setColor(Color.WHITE);
-			if (this.hovered) {
+			} else if (this.hovered) {
+				g.setColor(Color.WHITE);
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, HOVER_ALPHA));
 				g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			}
@@ -149,10 +167,10 @@ public class BuyPanel extends JPanel {
 			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-			g.drawString(Integer.toString(cost), 1, this.getHeight() - 1);
+			g.drawString(Integer.toString(cost), 3, this.getHeight() - 3);
 
 			g.setColor(Color.WHITE);
-			g.drawString(Integer.toString(cost), 0, this.getHeight());
+			g.drawString(Integer.toString(cost), 2, this.getHeight() - 2);
 		}
 
 		/**
@@ -172,6 +190,12 @@ public class BuyPanel extends JPanel {
 			setEnabled(enabled);
 
 			return enabled;
+		}
+		
+		private boolean cancel = false;
+		
+		public void setCancel(boolean cancel) {
+			this.cancel = cancel;
 		}
 
 	}

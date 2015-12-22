@@ -2,8 +2,8 @@ package terraintd.types;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
@@ -15,7 +15,6 @@ public enum StatusEffectType {
 	BLUNTNESS(Color.BLACK, null),
 	FROST(new Color(0.0F, 1.0F, 1.0F), null),
 	POISON(Color.GREEN, null),
-	// REVERSE(Color.YELLOW, null), // This effect is illogical because there is no method of reversing on open world maps
 	BLEED(Color.RED, null);
 
 	public final Color color;
@@ -24,8 +23,7 @@ public enum StatusEffectType {
 	private StatusEffectType(Color color, String imgSrc) {
 		this.color = color;
 		try {
-			// TODO
-			this.image = ImageIO.read(new File("resources" + System.getProperty("file.separator") + imgSrc));
+			this.image = ImageIO.read(Paths.get("terraintd/mods/base/images/" + imgSrc).toFile());
 		} catch (IOException e) {}
 	}
 

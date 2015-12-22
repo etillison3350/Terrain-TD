@@ -9,13 +9,18 @@ import javax.swing.Timer;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Gun;
+import terraintd.object.Obstacle;
 import terraintd.object.Projectile;
+import terraintd.object.Tower;
 import terraintd.object.Weapon;
 import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
+import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
 import terraintd.types.Level;
+import terraintd.types.ObstacleType;
+import terraintd.types.TowerType;
 import terraintd.types.World;
 import terraintd.window.GamePanel;
 
@@ -54,19 +59,21 @@ public class GameLogic implements ActionListener {
 	protected final PathFinder pathFinder;
 
 	private int money;
+	private double health, maxHealth;
 
-	private final Timer timer = new Timer(1000 / FRAME_RATE, this);
+	private final Timer timer = new Timer((int) (1000 * FRAME_TIME), this);
 
 	public GameLogic(GamePanel p) {
 		this.panel = p;
 
 		this.pathFinder = new PathFinder(this);
-		
+
 		this.reset();
 	}
 
 	public void start() {
-		this.timer.start();
+		if (!this.timer.isRunning())
+			this.timer.start();
 	}
 
 	public void stop() {
@@ -76,15 +83,15 @@ public class GameLogic implements ActionListener {
 	public void reset() {
 		this.timer.stop();
 		this.money = 1000;
+		this.health = this.maxHealth = 10000;
 
-		this.currentWorld = World.values()[1];
+		this.currentWorld = World.values()[0];
 		this.currentLevel = new Level();
 
 		// TODO init enemies
 		this.permanentEntities = new Entity[] {};
-		
+
 		Node[][][] nodes = this.pathFinder.calculatePaths(EnemyType.values()[0]);
-		this.currentWorld.setNode(nodes[4][4][0]);
 	}
 
 	/**
@@ -215,23 +222,6 @@ public class GameLogic implements ActionListener {
 		}
 	}
 
-//	public HashMap<Enemy, double[]> getEnemiesInRange(double x, double y, double range) {
-//		HashMap<Enemy, double[]> enemies = new HashMap<>();
-//
-//		for (Entity e : permanentEntities) {
-//			if (e instanceof Enemy) {
-//				double dx = e.getX() - x;
-//				double dy = e.getY() - y;
-//
-//				if (dx * dx + dy * dy > range * range) {
-//					enemies.put((Enemy) e, new double[] {e.getX(), e.getY()});
-//				}
-//			}
-//		}
-//
-//		return enemies;
-//	}
-
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
 		double cx1, cx2, cy1, cy2, pta = p.getRotation();
 		if (pta % Math.PI < Math.PI / 2) {
@@ -272,6 +262,42 @@ public class GameLogic implements ActionListener {
 		return ta1 <= ta || ta <= ta2;
 	}
 
+	private boolean wasPaused = true;
+	private CollidableType buying = null;
+	
+	/**
+	 * <ul>
+	 * <li><b><i>buyObject</i></b><br><br>
+	 * {@code public void buyObject(CollidableType type)}<br><br>
+	 * Called when the buy button of <code>type</code> is pressed<br>
+	 * @param type
+	 * </ul>
+	 */
+	public void buyObject(CollidableType type) {
+		this.wasPaused = !this.timer.isRunning();
+		this.stop();
+		buying = type;
+	}
+
+	/**
+	 * <ul>
+	 * <li><b><i>buyObject</i></b><br><br>
+	 * {@code public void buyObject(int x, int y)}<br><br>
+	 * Purchases the given object and positions it at the given position<br>
+	 * @param x
+	 * @param y
+	 * </ul>
+	 */
+	public void buyObject(int x, int y) {
+		Entity[] newEntities = new Entity[permanentEntities.length + 1];
+		System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
+		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
+		
+		buying = null;
+		if (!this.wasPaused)
+			this.start();
+	}
+
 	public Level getCurrentLevel() {
 		return currentLevel;
 	}
@@ -282,6 +308,14 @@ public class GameLogic implements ActionListener {
 
 	public int getMoney() {
 		return money;
+	}
+
+	public double getHealth() {
+		return this.health;
+	}
+
+	public double getMaxHealth() {
+		return this.maxHealth;
 	}
 
 	public Entity[] getPermanentEntities() {

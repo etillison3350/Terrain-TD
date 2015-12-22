@@ -14,6 +14,9 @@ effect-frost=Gel
 effect-poison=Poison
 effect-bleed=Saigner
 
+health=Vie
+money=Argent
+
 area=Superficie
 tiles=carrés
 dps=Dommage par Seconde

@@ -2,13 +2,26 @@ package terraintd.window;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Paths;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 
 import terraintd.types.EffectType;
 import terraintd.types.Language;
@@ -21,27 +34,77 @@ public class InfoPanel extends JPanel {
 
 	private JEditorPane info;
 
+	private BufferedImage playImage, pauseImage, ffImage, rewImage;
+	
+	private final HealthBar health;
+	private final JToggleButton pause, fastForward;
 	private final Window window;
 
 	public InfoPanel(Window window) {
+		try {
+			this.playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/play.png").toFile());
+		} catch (IOException e) {}
+		try {
+			this.pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/pause.png").toFile());
+		} catch (IOException e) {}
+		try {
+			this.ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/ff.png").toFile());
+		} catch (IOException e) {}
+		try {
+			this.rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/rew.png").toFile());
+		} catch (IOException e) {}
+		
 		this.window = window;
 
 //		this.setBackground(Color.BLACK);
 
-		this.setLayout(new GridLayout(0, 1));
+		this.setLayout(new GridBagLayout());
 
 		this.setPreferredSize(new Dimension(256, Short.MAX_VALUE));
 
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.gridwidth = 2;
+		c.gridy = 1;
+		this.health = new HealthBar();
+		this.add(this.health, c);
+
+		c.gridy = 2;
+		c.weighty = 1;
 		info = new JEditorPane("text/html", getStringForTowerType(TowerType.values()[0]));
 		info.setEditable(false);
-//		info.setForeground(Color.WHITE);
 		info.setBackground(Color.BLACK);
-		this.add(new JScrollPane(info));
+		JScrollPane scrollPane = new JScrollPane(info);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(scrollPane, c);
+
+		c.gridwidth = 1;
+		c.weighty = 0;
+		c.weightx = 0.5;
+		c.gridy = 0;
+		this.pause = new JToggleButton(new ImageIcon(playImage));
+		this.pause.setSelectedIcon(new ImageIcon(pauseImage));
+		this.pause.setMargin(new Insets(0, 0, 0, 0));
+		this.pause.setBackground(Color.LIGHT_GRAY);
+		this.pause.setBorderPainted(false);
+		this.pause.setFocusPainted(false);
+		this.add(pause, c);
+
+		c.gridx = 1;
+		this.fastForward = new JToggleButton(new ImageIcon(ffImage));
+		this.fastForward.setSelectedIcon(new ImageIcon(rewImage));
+		this.fastForward.setMargin(new Insets(0, 0, 0, 0));
+		this.fastForward.setBackground(Color.LIGHT_GRAY);
+		this.fastForward.setBorderPainted(false);
+		this.fastForward.setFocusPainted(false);
+		this.add(fastForward, c);
 	}
 
 	String getStringForTowerType(TowerType type) {
 		String ret = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head>"
-				+ "<body><h2>" + Language.get(type.id) + "</h2>" + String.format(Language.getCurrentLocale(), "<p>%s: %d x %d %s</p><p>%s: %.5g</p>", Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles))
+				+ "<body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney())
+				+ "<h2>" + Language.get(type.id) + "</h2>" + String.format(Language.getCurrentLocale(), "<p>%s: %d x %d %s</p><p>%s: %.5g</p>", Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles))
 				+ "<hr /><h3>" + Language.get("projectiles") + "</h3>";
 
 		for (ProjectileType p : type.projectiles) {
@@ -68,6 +131,42 @@ public class InfoPanel extends JPanel {
 		}
 
 		return dps;
+	}
+
+	private class HealthBar extends JComponent {
+
+		private static final long serialVersionUID = -387557069684512486L;
+
+		public HealthBar() {
+			this.setBackground(Color.BLACK);
+		}
+
+		@Override
+		public Dimension getPreferredSize() {
+			return new Dimension(256, 16);
+		}
+
+		@Override
+		public void paintComponent(Graphics g) {
+			if (g instanceof Graphics2D)
+				((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, 256, 16);
+
+			g.setColor(Color.getHSBColor((float) (window.logic.getHealth() / (window.logic.getMaxHealth() * 3)), 1.0F, 0.375F));
+
+			g.fillRect(0, 0, (int) (256 * window.logic.getHealth() / window.logic.getMaxHealth()), 16);
+
+			g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+			FontMetrics fm = g.getFontMetrics();
+
+			g.setColor(Color.WHITE);
+
+			String str = String.format(Language.getCurrentLocale(), "%s: %.1f%%", Language.get("health"), 100 * window.logic.getHealth() / window.logic.getMaxHealth());
+			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
+		}
+
 	}
 
 }

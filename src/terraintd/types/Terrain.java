@@ -3,8 +3,8 @@ package terraintd.types;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
@@ -23,7 +23,7 @@ public enum Terrain {
 	private Terrain(String imgSrc) {
 		try {
 			// TODO
-			image = ImageIO.read(new File("resources" + System.getProperty("file.separator") + imgSrc));
+			image = ImageIO.read(Paths.get("terraintd/mods/base/images/" + imgSrc).toFile());
 		} catch (IOException e) {}
 	}
 	

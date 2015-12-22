@@ -1,5 +1,6 @@
 package terraintd.window;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -20,6 +21,8 @@ public class GamePanel extends JPanel {
 	
 	public GamePanel(Window window) {
 		this.window = window;
+		
+		this.setBackground(Color.BLACK);
 		
 		this.logic = new GameLogic(this);
 

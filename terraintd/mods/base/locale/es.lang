@@ -14,6 +14,9 @@ effect-frost=Escarcha
 effect-poison=Veneno
 effect-bleed=Sangre
 
+health=Vida
+money=Dinero
+
 area=Área
 tiles=cuadrados
 dps=Daño Por Segundo

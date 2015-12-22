@@ -14,6 +14,9 @@ effect-frost=Frost
 effect-poison=Poison
 effect-bleed=Bleed
 
+health=Health
+money=Money
+
 area=Area
 tiles=tiles
 dps=Damage Per Second

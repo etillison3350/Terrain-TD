@@ -14,8 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import terraintd.pathfinder.Node;
-
 public class World {
 
 	public final Tile[][] tiles;
@@ -61,7 +59,7 @@ public class World {
 				String[] elev = world[1].split("\n");
 
 				final int r = types.length;
-				final int c = types[0].split(" +").length;
+				final int c = types[0].trim().split(" +").length;
 
 				int[][] elevations = new int[r][c];
 				Terrain[][] terrains = new Terrain[r][c];
@@ -72,8 +70,8 @@ public class World {
 				int minElev = Integer.MAX_VALUE;
 
 				for (int row = 0; row < r; row++) {
-					String[] type = types[row].split(" +");
-					String[] elv = elev[row].split(" ");
+					String[] type = types[row].trim().split(" +");
+					String[] elv = elev[row].trim().split(" +");
 
 					for (int col = 0; col < c; col++) {
 						try {
@@ -131,15 +129,12 @@ public class World {
 
 		Graphics2D g = image.createGraphics();
 
-//		g.setColor(Color.GREEN);
-
 		g.setColor(Color.BLACK);
 
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER));
 				g.drawImage(tiles[y][x].terrain.getImage(), (int) (size * x), (int) (size * y), (int) size, (int) size, null);
-//				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) tiles[y][x].elev / 8.0F));
 
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75F));
 
@@ -158,48 +153,6 @@ public class World {
 
 				if (x != getWidth() - 1 && tiles[y][x].elev - tiles[y][x + 1].elev > 0)
 					g.fillRect((int) (size * (x + 1)), (int) (size * y), (int) size / 5, 4 * (int) size / (b && tiles[y][x].elev - tiles[y + 1][x + 1].elev > 0 ? 3 : 4));
-
-//				try {
-//					d = tiles[y][x].elev - tiles[y - 1][x].elev;
-//					if (d > 0) {
-//						g.setColor(Color.WHITE);
-//						g.drawLine((int) (size * x), (int) (size * y), (int) (size * (x + 1)), (int) (size * y));
-//					}
-//				} catch (ArrayIndexOutOfBoundsException e) {}
-//				try {
-//					d = tiles[y][x].elev - tiles[y + 1][x].elev;
-//					if (d > 0) {
-//						g.setColor(Color.BLACK);
-//						g.drawLine((int) (size * x), (int) (size * y), (int) (size * x), (int) (size * (y + 1)));
-//					}
-//				} catch (ArrayIndexOutOfBoundsException e) {}
-//				try {
-//					d = tiles[y][x].elev - tiles[y][x - 1].elev;
-//					if (d > 0) {
-//						g.setColor(Color.WHITE);
-//						g.drawLine((int) (size * x), (int) (size * (y + 1)), (int) (size * (x + 1)), (int) (size * (y + 1)));
-//					}
-//				} catch (ArrayIndexOutOfBoundsException e) {}
-//				try {
-//					d = tiles[y][x].elev - tiles[y][x + 1].elev;
-//					if (d > 0) {
-//						g.setColor(Color.BLACK);
-//						g.drawLine((int) (size * (x + 1)), (int) (size * y), (int) (size * (x + 1)), (int) (size * (y + 1)));
-//					}
-//				} catch (ArrayIndexOutOfBoundsException e) {}
-			}
-		}
-
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		g.setColor(Color.WHITE);
-
-		Node node = n;
-		if (node != null) {
-			while (node.getNextNode() != null) {
-				Node nx = node.getNextNode();
-
-				g.drawLine((int) (size * node.getAbsX()), (int) (size * node.getAbsY()), (int) (size * nx.getAbsX()), (int) (size * nx.getAbsY()));
-				node = nx;
 			}
 		}
 
@@ -220,12 +173,6 @@ public class World {
 			this.spawn = spawnPoint;
 		}
 
-	}
-
-	Node n;
-
-	public void setNode(Node n) {
-		this.n = n;
 	}
 
 }
