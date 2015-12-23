@@ -1,2 +1,4 @@
-# Terrain-TD
-An open-world tower defense game that uses terrain/obstacles to redirect enemies
+# Terrain TD
+Terrain TD is an open-world tower defense game that uses terrain/obstacles to redirect enemies, rather than following a distinct path. So far, the game is not playable at all, and is just a skeleton, but hopefully that will change soon.
+## Why did I make this?
+I code for fun. I've been programming in Java for around three years now, and still, as I make these things, I find that each day I learn something new. As they say. I've discovered pathfinding, using A* and Djikstra's algorithm (which the game currently uses), some pretty intersting algorithms, including Taylor series and Newtons method (which I don't use), and a whole bunch of other ways to improve performance and UI feel. I also think I made this just to test myself, although perhaps I wasn't conscious of this and perhaps I still am not.  I had been working on this for a few months before I uploaded it to GitHub, probably sumetime in late September was when I started, and I've been working on it sporadically since then (I'm not _that_ slow).
