@@ -34,7 +34,7 @@ public class BuyPanel extends JPanel {
 		this.window = window;
 
 		this.setBackground(Color.BLACK);
-		
+
 		this.setPreferredSize(new Dimension(256, 32767));
 		this.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 1));
 
@@ -42,7 +42,6 @@ public class BuyPanel extends JPanel {
 
 		for (int b = 0; b < buttons.length; b++) {
 			buttons[b] = new BuyButton(TowerType.values()[b]);
-			buttons[b].setCancel(true);
 			this.add(buttons[b]);
 		}
 
@@ -51,22 +50,32 @@ public class BuyPanel extends JPanel {
 
 	public void updateButtons() {
 		for (BuyButton b : buttons) {
-			b.setEnabled(window.logic.getMoney());
+			if (window.logic.getBuyingType() == null) {
+				b.setCancel(false);
+				b.setEnabled(window.logic.getMoney());
+			} else if (window.logic.getBuyingType() == b.type) {
+				b.setCancel(true);
+				b.setEnabled(true);
+			} else {
+				b.setEnabled(false);
+			}
+
+			b.repaint();
 		}
 	}
 
 	private void cancelBuy() {
 		window.logic.cancelBuy();
-		
+
 		updateButtons();
 	}
-	
+
 	private void buy(CollidableType type) {
 		window.logic.buyObject(type);
-		
+
 		updateButtons();
 	}
-	
+
 	public class BuyButton extends JComponent {
 
 		private static final long serialVersionUID = -307902500683318445L;
@@ -93,6 +102,13 @@ public class BuyPanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				if (pressed && isEnabled()) {
+					if (cancel)
+						cancelBuy();
+					else
+						buy(type);
+				}
+
 				pressed = false;
 				repaint();
 			}
@@ -101,17 +117,19 @@ public class BuyPanel extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				pressed = false;
 				hovered = false;
+				if (window.logic.getBuyingType() == null) window.info.setDisplayedType(null);
 				repaint();
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				hovered = true;
+				window.info.setDisplayedType(type);
 				repaint();
 			}
 
 		};
-		
+
 		public BuyButton(CollidableType type) {
 			super();
 
@@ -142,7 +160,7 @@ public class BuyPanel extends JPanel {
 			} catch (IOException e) {
 				this.cancelImage = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
 			}
-			
+
 			this.cost = this.type.cost;
 		}
 
@@ -179,10 +197,12 @@ public class BuyPanel extends JPanel {
 			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-			g.drawString(Integer.toString(cost), 3, this.getHeight() - 3);
+			if (!this.cancel) {
+				g.drawString(Integer.toString(cost), 3, this.getHeight() - 3);
 
-			g.setColor(Color.WHITE);
-			g.drawString(Integer.toString(cost), 2, this.getHeight() - 2);
+				g.setColor(Color.WHITE);
+				g.drawString(Integer.toString(cost), 2, this.getHeight() - 2);
+			}
 		}
 
 		/**
@@ -203,9 +223,9 @@ public class BuyPanel extends JPanel {
 
 			return enabled;
 		}
-		
+
 		private boolean cancel = false;
-		
+
 		public void setCancel(boolean cancel) {
 			this.cancel = cancel;
 		}

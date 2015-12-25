@@ -1,5 +1,6 @@
 package terraintd.object;
 
+import terraintd.types.CollidableType;
 import terraintd.types.ObstacleType;
 
 public class Obstacle extends CollidableEntity {
@@ -25,6 +26,11 @@ public class Obstacle extends CollidableEntity {
 	@Override
 	public double getHeight() {
 		return this.type.height;
+	}
+	
+	@Override
+	public CollidableType getType() {
+		return this.type;
 	}
 
 	public Obstacle(ObstacleType type, double x, double y) {

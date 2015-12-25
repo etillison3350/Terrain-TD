@@ -23,8 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
+import terraintd.types.CollidableType;
 import terraintd.types.EffectType;
 import terraintd.types.Language;
+import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
 
@@ -35,7 +37,7 @@ public class InfoPanel extends JPanel {
 	private JEditorPane info;
 
 	private BufferedImage playImage, pauseImage, ffImage, rewImage;
-	
+
 	private final HealthBar health;
 	private final JToggleButton pause, fastForward;
 	private final Window window;
@@ -53,7 +55,7 @@ public class InfoPanel extends JPanel {
 		try {
 			this.rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/rew.png").toFile());
 		} catch (IOException e) {}
-		
+
 		this.window = window;
 
 //		this.setBackground(Color.BLACK);
@@ -72,7 +74,7 @@ public class InfoPanel extends JPanel {
 
 		c.gridy = 2;
 		c.weighty = 1;
-		info = new JEditorPane("text/html", getStringForTowerType(TowerType.values()[0]));
+		info = new JEditorPane("text/html", "");
 		info.setEditable(false);
 		info.setBackground(Color.BLACK);
 		JScrollPane scrollPane = new JScrollPane(info);
@@ -86,7 +88,7 @@ public class InfoPanel extends JPanel {
 		this.pause = new JToggleButton(new ImageIcon(playImage));
 		this.pause.setSelectedIcon(new ImageIcon(pauseImage));
 		this.pause.setMargin(new Insets(0, 0, 0, 0));
-		this.pause.setBackground(Color.LIGHT_GRAY);
+		this.pause.setBackground(new Color(184, 207, 229));
 		this.pause.setBorderPainted(false);
 		this.pause.setFocusPainted(false);
 		this.add(pause, c);
@@ -95,7 +97,7 @@ public class InfoPanel extends JPanel {
 		this.fastForward = new JToggleButton(new ImageIcon(ffImage));
 		this.fastForward.setSelectedIcon(new ImageIcon(rewImage));
 		this.fastForward.setMargin(new Insets(0, 0, 0, 0));
-		this.fastForward.setBackground(Color.LIGHT_GRAY);
+		this.fastForward.setBackground(new Color(184, 207, 229));
 		this.fastForward.setBorderPainted(false);
 		this.fastForward.setFocusPainted(false);
 		this.add(fastForward, c);
@@ -121,6 +123,11 @@ public class InfoPanel extends JPanel {
 		ret += "</body></html>";
 
 		return ret;
+	}
+
+	String getStringForObstacleType(ObstacleType type) {
+		// TODO
+		return null;
 	}
 
 	private double getDamagePerSecond(ProjectileType[] projectiles) {
@@ -167,6 +174,13 @@ public class InfoPanel extends JPanel {
 			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
 		}
 
+	}
+
+	public void setDisplayedType(CollidableType type) {
+		if (type == null)
+			this.info.setText("<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()));
+		else
+			this.info.setText(type instanceof TowerType ? getStringForTowerType((TowerType) type) : getStringForObstacleType((ObstacleType) type));
 	}
 
 }

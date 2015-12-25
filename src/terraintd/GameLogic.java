@@ -1,6 +1,5 @@
 package terraintd;
 
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import terraintd.types.ObstacleType;
 import terraintd.types.TowerType;
 import terraintd.types.World;
 import terraintd.window.GamePanel;
+import terraintd.window.Window;
 
 public class GameLogic implements ActionListener {
 
@@ -49,6 +49,7 @@ public class GameLogic implements ActionListener {
 	 */
 	public static final double FRAME_TIME = 1.0 / FRAME_RATE;
 
+	private final Window window;
 	private final GamePanel panel;
 
 	private Entity[] permanentEntities;
@@ -64,8 +65,9 @@ public class GameLogic implements ActionListener {
 
 	private final Timer timer = new Timer((int) (1000 * FRAME_TIME), this);
 
-	public GameLogic(GamePanel p) {
+	public GameLogic(GamePanel p, Window w) {
 		this.panel = p;
+		this.window = w;
 
 		this.pathFinder = new PathFinder(this);
 
@@ -280,6 +282,7 @@ public class GameLogic implements ActionListener {
 		this.wasPaused = !this.timer.isRunning();
 		this.stop();
 		buying = type;
+		window.info.setDisplayedType(type);
 	}
 
 	/**
@@ -297,14 +300,21 @@ public class GameLogic implements ActionListener {
 		Entity[] newEntities = new Entity[permanentEntities.length + 1];
 		System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
 		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
-
+		permanentEntities = newEntities;
+		
+		this.money -= buying.cost;
+		
 		cancelBuy();
+		panel.repaint();
+		window.info.setDisplayedType(null);
+		window.buy.updateButtons();
 	}
 	
 	public void cancelBuy() {
 		buying = null;
 		if (!this.wasPaused)
 			this.start();
+		window.info.setDisplayedType(null);
 	}
 	
 	public boolean canPlaceObject(CollidableType type, int x, int y) {

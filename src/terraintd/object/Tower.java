@@ -1,6 +1,7 @@
 package terraintd.object;
 
 import terraintd.object.Gun.TempProjectile;
+import terraintd.types.CollidableType;
 import terraintd.types.TowerType;
 
 public class Tower extends CollidableEntity implements Weapon {
@@ -50,6 +51,11 @@ public class Tower extends CollidableEntity implements Weapon {
 		this.gun = new Gun(type.projectiles, x, y);
 	}
 
+	@Override
+	public CollidableType getType() {
+		return this.type;
+	}
+	
 	@Override
 	public Gun getGun() {
 		return gun;

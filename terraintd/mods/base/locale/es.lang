@@ -1,4 +1,16 @@
+lang-name=Español
+
 title=Defensa de Torres Con Terreno
+
+game=Juego
+help=Ayuda
+
+new=Nuevo
+open=Abrir
+save=Guardar
+save-as=Guardar como
+enix=Salir
+
 towers=Torres
 enemies=Enemigos
 obstacles=Obstáculos
