@@ -1,4 +1,16 @@
+lang-name=Português
+
 title=Defesa de Torres com Terreno
+
+game=Jogo
+help=Ajuda
+
+new=Novo
+open=Abrir
+save=Guardar
+save-as=Guardar como
+exit=Sair
+
 towers=Torres
 enemies=Inimigos
 obstacles=Obstáculos

@@ -1,4 +1,16 @@
+lang-name=English (United States)
+
 title=Terrain TD
+
+game=Game
+help=Help
+
+new=New
+open=Open
+save=Save
+save-as=Save As
+exit=Exit
+
 towers=Towers
 enemies=Enemies
 obstacles=Obstacles

@@ -1,4 +1,16 @@
+lang-name=Français
+
 title=Défense des Tours Avec Terrain
+
+game=Jeu
+help=Aide
+
+new=Nouveau
+open=Ouvrir
+save=Enregistrer
+save-as=Enregistrer sous
+exit=Quitter
+
 towers=Tours
 enemies=Ennemis
 obstacles=Obstacles

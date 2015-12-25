@@ -4,8 +4,8 @@
         "id":"example",
         "cost":100,
         "collision":[
-            1,
-            2
+            2,
+            4
         ],
         "terrain":[
             "land",
@@ -14,6 +14,9 @@
         "on-hill":true,
         "rotate":true,
         "icon":{
+            "src":"terraintd\\mods\\base\\images\\test.png"
+        },
+        "image":{
             "src":"terraintd\\mods\\base\\images\\test.png"
         },
         "projectiles":[

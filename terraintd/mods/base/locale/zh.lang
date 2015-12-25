@@ -1,4 +1,16 @@
+lang-name=中文
+
 title=塔防與地形
+
+game=遊戲
+help=幫助
+
+new=新
+open=打開
+save=保存
+save-as=另存為
+exit=退出
+
 towers=塔
 enemies=敵人
 obstacles=障礙
