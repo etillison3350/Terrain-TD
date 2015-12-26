@@ -8,8 +8,14 @@ help=幫助
 new=新
 open=打開
 save=保存
+dont-save=丟棄
 save-as=另存為
+pause=暂停
 exit=退出
+cancel=取消
+
+confirm-new=保存這個遊戲？
+title-confirm-new=新遊戲
 
 towers=塔
 enemies=敵人

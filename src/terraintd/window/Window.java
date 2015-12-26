@@ -1,11 +1,15 @@
 package terraintd.window;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import terraintd.GameLogic;
 import terraintd.types.Language;
@@ -27,9 +31,49 @@ public class Window extends JFrame {
 	public final JMenuItem openGame;
 	public final JMenuItem saveGame;
 	public final JMenuItem saveGameAs;
+	public final JCheckBoxMenuItem pauseGame;
 	public final JMenuItem exit;
 
 	public final JMenu help;
+
+	private final ActionListener menuListener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == newGame) {
+				boolean wasPaused = logic.isPaused();
+				logic.stop();
+
+				int i = JOptionPane.showOptionDialog(Window.this, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+
+				if (i == 0) {
+					actionPerformed(new ActionEvent(saveGame, 0, "Save"));
+					logic.reset();
+				} else if (i == 1) {
+					logic.reset();
+				} else {
+					if (!wasPaused) logic.start();
+					return;
+				}
+			} else if (e.getSource() == openGame) {
+
+			} else if (e.getSource() == saveGame) {
+
+			} else if (e.getSource() == saveGameAs) {
+
+			} else if (e.getSource() == pauseGame) {
+				info.pause.setSelected(!pauseGame.isSelected());
+				
+				if (pauseGame.isSelected()) {
+					logic.stop();
+				} else {
+					logic.start();
+				}
+			} else if (e.getSource() == exit) {
+
+			}
+		}
+	};
 
 	public Window() {
 		super(Language.get("title"));
@@ -38,26 +82,37 @@ public class Window extends JFrame {
 		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
 		menuBar = new JMenuBar();
-		
+
 		game = new JMenu(Language.get("game"));
-		
+
 		newGame = new JMenuItem(Language.get("new"));
+		newGame.addActionListener(menuListener);
 		game.add(newGame);
-		
+
 		openGame = new JMenuItem(Language.get("open"));
+		openGame.addActionListener(menuListener);
 		game.add(openGame);
-		
+
 		saveGame = new JMenuItem(Language.get("save"));
+		saveGame.addActionListener(menuListener);
 		game.add(saveGame);
-		
+
 		saveGameAs = new JMenuItem(Language.get("save-as"));
+		saveGameAs.addActionListener(menuListener);
 		game.add(saveGameAs);
-		
+
+		game.addSeparator();
+
+		pauseGame = new JCheckBoxMenuItem(Language.get("pause"), true);
+		pauseGame.addActionListener(menuListener);
+		game.add(pauseGame);
+
 		game.addSeparator();
 
 		exit = new JMenuItem(Language.get("exit"));
+		exit.addActionListener(menuListener);
 		game.add(exit);
-		
+
 		menuBar.add(game);
 
 		help = new JMenu(Language.get("help"));

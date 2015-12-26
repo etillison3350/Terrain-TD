@@ -10,6 +10,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -39,7 +41,7 @@ public class InfoPanel extends JPanel {
 	private BufferedImage playImage, pauseImage, ffImage, rewImage;
 
 	private final HealthBar health;
-	private final JToggleButton pause, fastForward;
+	public final JToggleButton pause, fastForward;
 	private final Window window;
 
 	public InfoPanel(Window window) {
@@ -91,6 +93,14 @@ public class InfoPanel extends JPanel {
 		this.pause.setBackground(new Color(184, 207, 229));
 		this.pause.setBorderPainted(false);
 		this.pause.setFocusPainted(false);
+		this.pause.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (window.pauseGame.isSelected() == pause.isSelected())
+					window.pauseGame.doClick();
+			}
+		});
 		this.add(pause, c);
 
 		c.gridx = 1;

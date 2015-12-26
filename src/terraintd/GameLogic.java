@@ -93,8 +93,11 @@ public class GameLogic implements ActionListener {
 
 		// TODO init enemies
 		this.permanentEntities = new Entity[] {};
-
+		this.projectiles = new ArrayList<>();
+		
 		Node[][][] nodes = this.pathFinder.calculatePaths(EnemyType.values()[0]);
+		
+		this.panel.repaint();
 	}
 
 	/**
@@ -301,24 +304,37 @@ public class GameLogic implements ActionListener {
 		System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
 		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
 		permanentEntities = newEntities;
-		
+
 		this.money -= buying.cost;
-		
+
 		cancelBuy();
 		panel.repaint();
 		window.info.setDisplayedType(null);
 		window.buy.updateButtons();
 	}
-	
+
 	public void cancelBuy() {
 		buying = null;
 		if (!this.wasPaused)
 			this.start();
 		window.info.setDisplayedType(null);
 	}
-	
+
 	public boolean canPlaceObject(CollidableType type, int x, int y) {
-		// TODO
+		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
+
+		if (type instanceof TowerType) {
+			TowerType tower = (TowerType) type;
+			
+			int e = currentWorld.tiles[y][x].elev;
+			for (int xx = 0; xx < type.width; xx++) {
+				for (int yy = 0; yy < type.height; yy++) {
+					if (!tower.terrain.get(currentWorld.tiles[yy + y][xx + x].terrain)) return false;
+					if (currentWorld.tiles[yy + y][xx + x].elev != e) return false;
+				}
+			}
+		}
+
 		return true;
 	}
 
@@ -348,6 +364,10 @@ public class GameLogic implements ActionListener {
 
 	public CollidableType getBuyingType() {
 		return buying;
+	}
+	
+	public boolean isPaused() {
+		return !this.timer.isRunning();
 	}
 
 }

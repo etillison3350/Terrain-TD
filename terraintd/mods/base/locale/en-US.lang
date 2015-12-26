@@ -8,8 +8,14 @@ help=Help
 new=New
 open=Open
 save=Save
+dont-save=Don't Save
 save-as=Save As
+pause=Pause
 exit=Exit
+cancel=Cancel
+
+confirm-new=Save this game?
+title-confirm-new=New Game
 
 towers=Towers
 enemies=Enemies

@@ -8,8 +8,14 @@ help=Ayuda
 new=Nuevo
 open=Abrir
 save=Guardar
+dont-save=Descartar
 save-as=Guardar como
-enix=Salir
+pause=Pausar
+exit=Salir
+cancel=Cancelar
+
+confirm-new=Guarde este juego?
+title-confirm-new=Nuevo Juego
 
 towers=Torres
 enemies=Enemigos

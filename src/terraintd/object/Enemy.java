@@ -1,7 +1,6 @@
 package terraintd.object;
 
 import terraintd.object.Gun.TempProjectile;
-import terraintd.pathfinder.Node;
 import terraintd.types.EnemyType;
 
 public class Enemy extends Entity implements Weapon {

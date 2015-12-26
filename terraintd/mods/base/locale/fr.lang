@@ -8,8 +8,14 @@ help=Aide
 new=Nouveau
 open=Ouvrir
 save=Enregistrer
+dont-save=Jeter
 save-as=Enregistrer sous
+pause=Arrêter
 exit=Quitter
+cancel=Annuler
+
+confirm-new=Enregistrer ce jeu?
+title-confirm-new=Nouveau Jeu
 
 towers=Tours
 enemies=Ennemis

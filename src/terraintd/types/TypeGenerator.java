@@ -1,6 +1,5 @@
 package terraintd.types;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -588,7 +587,7 @@ public class TypeGenerator {
 					} else if (obj.get("type").equals("obstacle")) {
 						String id = (String) obj.get("id");
 						if (id == null) continue;
-						
+
 						Object collision = obj.get("collision");
 						int width = 1;
 						int height = 1;
@@ -599,11 +598,11 @@ public class TypeGenerator {
 							width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).intValue() : 1;
 							height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).intValue() : 1;
 						}
-						
+
 						int cost = obj.get("cost") instanceof Number ? ((Number) obj.get("cost")).intValue() : 1;
-						
+
 						int removeCost = obj.get("remove-cost") instanceof Number ? ((Number) obj.get("remove-cost")).intValue() : 1;
-						
+
 						Object spr = obj.get("spawn-rate");
 						HashMap<Terrain, Double> spawnRates = new HashMap<>();
 						if (spr instanceof Number) {
@@ -666,11 +665,11 @@ public class TypeGenerator {
 								}
 							}
 						}
-						
+
 						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
 
 						ImageType icon = obj.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("icon")) : null;
-						
+
 						newObstacles.add(new ObstacleType(id, width, height, cost, removeCost, spawnRates, image, icon));
 					}
 				}
@@ -678,7 +677,7 @@ public class TypeGenerator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		towers = newTowers.toArray(new TowerType[newTowers.size()]);
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
@@ -756,15 +755,31 @@ public class TypeGenerator {
 	static ImageType parseImage(Map<?, ?> map) {
 		String src = (String) map.get("src");
 		if (src == null) return null;
-		
+
 //		System.out.println("Q" + new File(src));
-		
-		// TODO
+
+		Object collision = map.get("collision");
 		double width = 1;
 		double height = 1;
-		double x = 0;
-		double y = 0;
-		
+		if (collision instanceof List<?>) {
+			width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).doubleValue() : 1;
+			height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).doubleValue() : 1;
+		} else if (collision instanceof Map<?, ?>) {
+			width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).doubleValue() : 1;
+			height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).doubleValue() : 1;
+		}
+
+		Object origin = map.get("origin");
+		double x = 1;
+		double y = 1;
+		if (origin instanceof List<?>) {
+			x = ((List<?>) origin).get(0) instanceof Number ? ((Number) ((List<?>) origin).get(0)).doubleValue() : 1;
+			y = ((List<?>) origin).get(1) instanceof Number ? ((Number) ((List<?>) origin).get(1)).doubleValue() : 1;
+		} else if (origin instanceof Map<?, ?>) {
+			x = ((Map<?, ?>) origin).get("x") instanceof Number ? ((Number) ((Map<?, ?>) origin).get("x")).doubleValue() : 1;
+			y = ((Map<?, ?>) origin).get("y") instanceof Number ? ((Number) ((Map<?, ?>) origin).get("y")).doubleValue() : 1;
+		}
+
 		return new ImageType(src, width, height, x, y);
 	}
 
