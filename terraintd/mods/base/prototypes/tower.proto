@@ -5,7 +5,7 @@
         "cost":100,
         "collision":[
             2,
-            4
+            1
         ],
         "terrain":[
             "land",

@@ -56,9 +56,4 @@ public class Node {
 	void setClosed(boolean closed) {
 		this.closed = closed;
 	}
-
-//	@Override
-//	public String toString() {
-//		return String.format("Node [x=%d, y=%d, top=%b, cost=%f, closed=%b]", x, y, top, cost, closed);
-//	}
 }

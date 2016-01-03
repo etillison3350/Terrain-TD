@@ -3,9 +3,11 @@ package terraintd;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.Timer;
 
+import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Gun;
@@ -33,7 +35,7 @@ public class GameLogic implements ActionListener {
 	 * <br>
 	 * {@code public static final int FRAME_RATE}<br>
 	 * <br>
-	 * The frame rate of GameLogic objects (the number of calculations per second)<br>
+	 * The frame rate of GameLogic objects in fps (the number of calculations per second)<br>
 	 * </ul>
 	 */
 	public static final int FRAME_RATE = 40;
@@ -44,7 +46,7 @@ public class GameLogic implements ActionListener {
 	 * <br>
 	 * {@code public static final double FRAME_TIME}<br>
 	 * <br>
-	 * The length of a frame for GameLogic objects (the number of seconds between calculations)<br>
+	 * The length of a frame for GameLogic objects in seconds (the number of seconds between calculations)<br>
 	 * </ul>
 	 */
 	public static final double FRAME_TIME = 1.0 / FRAME_RATE;
@@ -59,6 +61,7 @@ public class GameLogic implements ActionListener {
 	private Level currentLevel;
 	private World currentWorld;
 	protected final PathFinder pathFinder;
+	private HashMap<EnemyType, Node[][][]> nodes = new HashMap<>(EnemyType.values().length);
 
 	private int money;
 	private double health, maxHealth;
@@ -88,15 +91,17 @@ public class GameLogic implements ActionListener {
 		this.money = 1000;
 		this.health = this.maxHealth = 10000;
 
-		this.currentWorld = World.values()[0];
+		this.currentWorld = World.values()[1];
 		this.currentLevel = new Level();
 
 		// TODO init enemies
 		this.permanentEntities = new Entity[] {};
 		this.projectiles = new ArrayList<>();
-		
-		Node[][][] nodes = this.pathFinder.calculatePaths(EnemyType.values()[0]);
-		
+
+		for (EnemyType type : EnemyType.values()) {
+			this.nodes.put(type, this.pathFinder.calculatePaths(type));
+		}
+
 		this.panel.repaint();
 	}
 
@@ -129,8 +134,7 @@ public class GameLogic implements ActionListener {
 	 * @return an array of three <code>long</code>s, representing:
 	 *         <ul>
 	 *         <li>0: the total time</li>
-	 *         <li>1: the time to process "permanent" objects, i.e. towers, enemies, and obstacles (although there is no logic
-	 *         associated with them)</li>
+	 *         <li>1: the time to process "permanent" objects, i.e. towers, enemies, and obstacles</li>
 	 *         <li>2: the time to process projectiles</li>
 	 *         </ul>
 	 *         of the last frame/cycle of this logic, in nanoseconds.</li>
@@ -305,6 +309,9 @@ public class GameLogic implements ActionListener {
 		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
 		permanentEntities = newEntities;
 
+		for (EnemyType type : EnemyType.values())
+			this.nodes.put(type, this.pathFinder.calculatePaths(type));
+		
 		this.money -= buying.cost;
 
 		cancelBuy();
@@ -323,14 +330,20 @@ public class GameLogic implements ActionListener {
 	public boolean canPlaceObject(CollidableType type, int x, int y) {
 		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
 
+		for (Entity e : permanentEntities) {
+			if (!(e instanceof CollidableEntity)) continue;
+
+			if (((CollidableEntity) e).getRectangle().intersects(x, y, type.width, type.height)) return false;
+		}
+
 		if (type instanceof TowerType) {
 			TowerType tower = (TowerType) type;
-			
+
 			int e = currentWorld.tiles[y][x].elev;
 			for (int xx = 0; xx < type.width; xx++) {
 				for (int yy = 0; yy < type.height; yy++) {
 					if (!tower.terrain.get(currentWorld.tiles[yy + y][xx + x].terrain)) return false;
-					if (currentWorld.tiles[yy + y][xx + x].elev != e) return false;
+					if (!tower.onHill && currentWorld.tiles[yy + y][xx + x].elev != e) return false;
 				}
 			}
 		}
@@ -346,6 +359,10 @@ public class GameLogic implements ActionListener {
 		return currentWorld;
 	}
 
+	public Node[][][] getNodes(EnemyType type) {
+		return nodes.get(type);
+	}
+	
 	public int getMoney() {
 		return money;
 	}
@@ -365,7 +382,7 @@ public class GameLogic implements ActionListener {
 	public CollidableType getBuyingType() {
 		return buying;
 	}
-	
+
 	public boolean isPaused() {
 		return !this.timer.isRunning();
 	}

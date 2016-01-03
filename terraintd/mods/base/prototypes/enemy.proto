@@ -1,19 +1,19 @@
 {
     "type":"enemy",
     "speed":[
-        3000,
-        4000,
-        3000,
-        2000,
-        1000,
+        3,
+        4,
+        3,
+        2,
         1,
-        1,
-        1
+        0,
+        0,
+        0
     ],
-    "vertical-speed":[
-        1,
-        1
-    ],
+    "vertical-speed":{
+        "up":0.125,
+        "down":1.25
+    },
     "health":100,
     "damage":10,
     "reward":25,
