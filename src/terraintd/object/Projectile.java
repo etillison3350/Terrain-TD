@@ -17,6 +17,7 @@ public class Projectile {
 	private double deathTime;
 
 	private final Entity target;
+	private final double targetX, targetY;
 	private ArrayList<Entity> hitTargets;
 
 	public <E extends Entity & Weapon> Projectile(ProjectileType type, E shootingEntity) {
@@ -29,26 +30,41 @@ public class Projectile {
 		this.deathTime = -1;
 
 		this.target = shootingEntity.getGun().getTarget();
+		targetX = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
+		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
 	}
 
 	public boolean move() {
-		double dx = target.getX() - this.x;
-		double dy = target.getY() - this.y;
-
-		if (this.type.follow) this.rotation = Math.atan2(dy, dx);
-
 		if (this.type.delivery == DeliveryType.SINGLE_TARGET) {
+			double tx, ty;
+			double dx, dy;
+			if (this.type.follow) {
+				tx = target.getX();
+				ty = target.getY();
+				dx = tx - this.x;
+				dy = ty - this.y;
+
+				this.rotation = Math.atan2(dy, dx);
+			} else {
+				tx = targetX;
+				ty = targetY;
+				dx = tx - this.x;
+				dy = ty - this.y;
+			}
+
+			if (dx * dx + dy * dy < 2) {
+				this.x = tx;
+				this.y = ty;
+				return false;
+			}
+
 			this.x += Math.cos(this.rotation) * this.type.speed * GameLogic.FRAME_TIME;
 			this.y += Math.sin(this.rotation) * this.type.speed * GameLogic.FRAME_TIME;
 
-			if (this.type.follow && dx * dx + dy * dy < 2) {
-				this.x = target.getX();
-				this.y = target.getY();
-				return false;
-			}
+			this.radius = Math.hypot(this.x - startX, this.y - startY);
+		} else {
+			this.radius += this.type.speed * GameLogic.FRAME_TIME;
 		}
-
-		this.radius += this.type.speed * GameLogic.FRAME_TIME;
 
 		if (this.type.maxDist - this.radius < 0.01) {
 			this.radius = this.type.maxDist;
@@ -80,7 +96,7 @@ public class Projectile {
 	 * <br>
 	 * @param e The entity to calcualte damage for
 	 * @return The amount of damage that this projectile should do to this entity (based on distance)
-	 *        </ul>
+	 *         </ul>
 	 */
 	public double damageForEntity(Entity e) {
 		return this.type.damage - this.type.falloff * Math.hypot(e.getX() - startX, e.getY() - startY) / this.type.maxDist;

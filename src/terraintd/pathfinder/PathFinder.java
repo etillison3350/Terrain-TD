@@ -112,45 +112,45 @@ public class PathFinder {
 				
 //				double nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + ((node.top ? node.y : node.x) <= 0 ? world.tiles[node.y][node.x].elev : (node.top ? world.tiles[node.y - 1][node.x].elev : world.tiles[node.y][node.x - 1].elev)));
 //				double nElev = 0.5 * (double) (world.tiles[n.y][n.x].elev + ((n.top ? n.y : n.x) <= 0 ? world.tiles[n.y][n.x].elev : (n.top ? world.tiles[n.y - 1][n.x].elev : world.tiles[n.y][n.x - 1].elev)));
-				double nodeElev, nElev;
-				if (node.top) {
-					if (node.y <= 0)
-						nodeElev = world.tiles[node.y][node.x].elev;
-					else if (node.y >= world.getHeight())
-						nodeElev = world.tiles[node.y - 1][node.x].elev;
-					else
-						nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y - 1][node.x].elev);
-				} else {
-					if (node.x <= 0)
-						nodeElev = world.tiles[node.y][node.x].elev;
-					else if (node.x >= world.getWidth())
-						nodeElev = world.tiles[node.y][node.x - 1].elev;
-					else
-						nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y][node.x - 1].elev);
-				}
-
-				if (n.top) {
-					if (n.y <= 0)
-						nElev = world.tiles[n.y][n.x].elev;
-					else if (n.y >= world.getHeight())
-						nElev = world.tiles[n.y - 1][n.x].elev;
-					else
-						nElev = 0.5 * (double) (world.tiles[n.y][n.x].elev + world.tiles[n.y - 1][n.x].elev);
-				} else {
-					if (n.x <= 0)
-						nElev = world.tiles[n.y][n.x].elev;
-					else if (n.x >= world.getWidth())
-						nElev = world.tiles[n.y][n.x - 1].elev;
-					else
-						nElev = 0.5 * (double) (world.tiles[n.y][n.x].elev + world.tiles[n.y][n.x - 1].elev);
-				}
-
-				if (nElev > nodeElev)
-					speed *= Math.pow(type.downSpeed, nElev - nodeElev);
-				else if (nodeElev > nElev)
-					speed *= Math.pow(type.upSpeed, nodeElev - nElev);
-
-				if (speed < Double.MIN_VALUE) continue;
+//				double nodeElev, nElev;
+//				if (node.top) {
+//					if (node.y <= 0)
+//						nodeElev = world.tiles[node.y][node.x].elev;
+//					else if (node.y >= world.getHeight())
+//						nodeElev = world.tiles[node.y - 1][node.x].elev;
+//					else
+//						nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y - 1][node.x].elev);
+//				} else {
+//					if (node.x <= 0)
+//						nodeElev = world.tiles[node.y][node.x].elev;
+//					else if (node.x >= world.getWidth())
+//						nodeElev = world.tiles[node.y][node.x - 1].elev;
+//					else
+//						nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y][node.x - 1].elev);
+//				}
+//
+//				if (n.top) {
+//					if (n.y <= 0)
+//						nElev = world.tiles[n.y][n.x].elev;
+//					else if (n.y >= world.getHeight())
+//						nElev = world.tiles[n.y - 1][n.x].elev;
+//					else
+//						nElev = 0.5 * (double) (world.tiles[n.y][n.x].elev + world.tiles[n.y - 1][n.x].elev);
+//				} else {
+//					if (n.x <= 0)
+//						nElev = world.tiles[n.y][n.x].elev;
+//					else if (n.x >= world.getWidth())
+//						nElev = world.tiles[n.y][n.x - 1].elev;
+//					else
+//						nElev = 0.5 * (double) (world.tiles[n.y][n.x].elev + world.tiles[n.y][n.x - 1].elev);
+//				}
+//
+//				if (nElev > nodeElev)
+//					speed *= Math.pow(type.downSpeed, nElev - nodeElev);
+//				else if (nodeElev > nElev)
+//					speed *= Math.pow(type.upSpeed, nodeElev - nElev);
+//
+//				if (speed < Double.MIN_VALUE) continue;
 				
 				double newCost = node.getCost() + (i < 2 ? 1 : SQRT2D2) / speed;
 				if (n.getCost() == 0 || newCost < n.getCost()) {

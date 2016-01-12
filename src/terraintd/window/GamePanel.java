@@ -16,12 +16,11 @@ import javax.swing.JPanel;
 import terraintd.GameLogic;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Entity;
+import terraintd.object.Projectile;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;
-import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
-import terraintd.types.World;
 
 public class GamePanel extends JPanel {
 
@@ -99,30 +98,10 @@ public class GamePanel extends JPanel {
 
 		g.drawImage(logic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
 
-		g.setColor(Color.RED);
-		World world = logic.getCurrentWorld();
+		g.setColor(Color.WHITE);
 		for (Node[][] nodess : logic.getNodes(EnemyType.values()[0])) {
 			for (Node[] nodes : nodess) {
 				for (Node node : nodes) {
-					try {
-						double nodeElev;
-						if (node.top) {
-							if (node.y <= 0)
-								nodeElev = world.tiles[node.y][node.x].elev;
-							else if (node.y >= world.getHeight())
-								nodeElev = world.tiles[node.y - 1][node.x].elev;
-							else
-								nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y - 1][node.x].elev);
-						} else {
-							if (node.x <= 0)
-								nodeElev = world.tiles[node.y][node.x].elev;
-							else if (node.x >= world.getWidth())
-								nodeElev = world.tiles[node.y][node.x - 1].elev;
-							else
-								nodeElev = 0.5 * (double) (world.tiles[node.y][node.x].elev + world.tiles[node.y][node.x - 1].elev);
-						}
-						g.drawString(String.format("%.3g %.3g", node.getCost(), nodeElev), (int) (dx + node.getAbsX() * tile) - 25, (int) (dy + node.getAbsY() * tile) + 5);
-					} catch (ArrayIndexOutOfBoundsException e) {}
 					if (node.getNextNode() == null) continue;
 					g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
 				}
@@ -147,10 +126,7 @@ public class GamePanel extends JPanel {
 			if (logic.getBuyingType() instanceof TowerType) {
 				TowerType tower = (TowerType) logic.getBuyingType();
 
-				double r = 0;
-				for (ProjectileType p : tower.projectiles) {
-					if (p.range > r) r = p.range;
-				}
+				double r = tower.range;
 
 				g.setColor(Color.WHITE);
 				g.setStroke(new BasicStroke(3));
@@ -160,6 +136,12 @@ public class GamePanel extends JPanel {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25F));
 				g.fillOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
 			}
+		}
+		
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		
+		for (Projectile p : logic.getProjectiles()) {
+			g.drawRect((int) (dx + p.getX() * tile), (int) (dy + p.getY() * tile), 3, 3);
 		}
 	}
 

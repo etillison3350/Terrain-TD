@@ -10,7 +10,6 @@ public class ProjectileType {
 	public final double falloff;
 	public final double rate;
 	public final boolean follow;
-	public final double range;
 	public final double maxDist;
 	public final double angle;
 	public final double rotation;
@@ -22,7 +21,7 @@ public class ProjectileType {
 	public final ImageType explosion;
 	public final EffectType[] effects;
 
-	ProjectileType(DeliveryType delivery, double explodeRadius, double speed, double damage, double falloff, double rate, boolean follow, double range, double maxDist, double angle, double rotation, boolean absRotation, double dyingFadeTime, boolean dyingFade, boolean damageFade, ImageType image, ImageType explosion, EffectType[] effects) {
+	ProjectileType(DeliveryType delivery, double explodeRadius, double speed, double damage, double falloff, double rate, boolean follow, double maxDist, double angle, double rotation, boolean absRotation, double dyingFadeTime, boolean dyingFade, boolean damageFade, ImageType image, ImageType explosion, EffectType[] effects) {
 		this.delivery = delivery;
 		this.explodeRadius = explodeRadius;
 		this.speed = speed;
@@ -30,7 +29,6 @@ public class ProjectileType {
 		this.falloff = falloff;
 		this.rate = rate;
 		this.follow = follow;
-		this.range = range;
 		this.maxDist = maxDist;
 		this.angle = angle;
 		this.rotation = rotation;

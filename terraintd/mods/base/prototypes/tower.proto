@@ -1,7 +1,7 @@
 [
     {
         "type":"tower",
-        "id":"example",
+        "id":"tower-example",
         "cost":100,
         "collision":[
             2,
@@ -12,6 +12,7 @@
             "shallow_water"
         ],
         "on-hill":true,
+        "range":10,
         "rotate":true,
         "icon":{
             "src":"terraintd\\mods\\base\\images\\test.png"
@@ -30,7 +31,6 @@
                 ],
                 "rate":2,
                 "follow":true,
-                "range":10,
                 "max-dist":"inf",
                 "rotation":0,
                 "abs-rotation":false,

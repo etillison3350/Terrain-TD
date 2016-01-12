@@ -36,8 +36,14 @@ public class TypeGenerator {
 				Path path = iter.next();
 				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("proto")) continue;
 
-				ArrayList<?> json = parseJSON(new String(Files.readAllBytes(path)));
+				List<?> json = parseJSON(new String(Files.readAllBytes(path)));
 
+				if (json.size() == 0 && json.get(0) instanceof List<?>) {
+					json = (ArrayList<?>) json.get(0);
+				}
+
+				System.out.println(json);
+				
 				for (Object o : json) {
 					if (!(o instanceof Map<?, ?>)) return;
 
@@ -99,6 +105,8 @@ public class TypeGenerator {
 						boolean onHill = obj.get("on-hill") instanceof Boolean ? (Boolean) obj.get("on-hill") : false;
 
 						boolean rotate = obj.get("rotate") instanceof Boolean ? (Boolean) obj.get("rotate") : true;
+						
+						double range = obj.get("range") instanceof Number ? ((Number) obj.get("range")).doubleValue() : 1;
 
 						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
 
@@ -112,7 +120,7 @@ public class TypeGenerator {
 							}
 						}
 
-						newTowers.add(new TowerType(id, cost, width, height, terrain, onHill, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()])));
+						newTowers.add(new TowerType(id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()])));
 					} else if (obj.get("type").equals("enemy")) {
 						HashMap<Terrain, Double> speed = new HashMap<>();
 						Object spd = obj.get("speed");
@@ -191,6 +199,8 @@ public class TypeGenerator {
 
 						int reward = obj.get("reward") instanceof Number ? ((Number) obj.get("reward")).intValue() : 1;
 
+						double range = obj.get("range") instanceof Number ? ((Number) obj.get("range")).doubleValue() : 1;
+
 						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
 
 						ImageType death = obj.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("death")) : null;
@@ -203,7 +213,7 @@ public class TypeGenerator {
 							}
 						}
 
-						newEnemies.add(new EnemyType(speed, upSpeed, downSpeed, health, damage, reward, image, death, projectiles.toArray(new ProjectileType[projectiles.size()])));
+						newEnemies.add(new EnemyType(speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()])));
 					} else if (obj.get("type").equals("obstacle")) {
 						String id = (String) obj.get("id");
 						if (id == null) continue;
@@ -330,8 +340,6 @@ public class TypeGenerator {
 
 		boolean follow = map.get("follow") instanceof Boolean ? (Boolean) map.get("follow") : true;
 
-		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
-
 		Object md = map.get("max-dist");
 		double maxDist = md instanceof Number ? ((Number) md).doubleValue() : (md instanceof String && ((String) md).matches("^inf(?:init[ey])?$") ? 1e300 : 1);
 
@@ -359,7 +367,7 @@ public class TypeGenerator {
 			}
 		}
 
-		return new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, range, maxDist, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()]));
+		return new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()]));
 	}
 
 	static EffectType parseEffect(Map<?, ?> map) {

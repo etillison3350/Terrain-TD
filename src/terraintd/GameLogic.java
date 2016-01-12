@@ -91,7 +91,7 @@ public class GameLogic implements ActionListener {
 		this.money = 1000;
 		this.health = this.maxHealth = 10000;
 
-		this.currentWorld = World.values()[1];
+		this.currentWorld = World.values()[0];
 		this.currentLevel = new Level();
 
 		// TODO init enemies
@@ -377,6 +377,10 @@ public class GameLogic implements ActionListener {
 
 	public Entity[] getPermanentEntities() {
 		return permanentEntities;
+	}
+	
+	public Projectile[] getProjectiles() {
+		return projectiles.toArray(new Projectile[projectiles.size()]);
 	}
 
 	public CollidableType getBuyingType() {

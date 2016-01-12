@@ -48,7 +48,7 @@ public class Tower extends CollidableEntity implements Weapon {
 		this.type = type;
 		this.x = x;
 		this.y = y;
-		this.gun = new Gun(type.projectiles, x, y);
+		this.gun = new Gun(type.projectiles, type.range, x, y);
 	}
 
 	@Override
