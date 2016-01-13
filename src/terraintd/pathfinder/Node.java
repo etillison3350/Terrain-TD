@@ -6,11 +6,11 @@ public class Node {
 
 	/**
 	 * <ul>
-	 * <li><b><i>side</i></b><br>
+	 * <li><b><i>top</i></b><br>
 	 * <br>
 	 * {@code public final int top}<br>
 	 * <br>
-	 * Tru if this Node is on top of its tile, false if on the left side.<br>
+	 * <code>true</code> if this Node is on top of its tile, <code>false</code> if on the left side.<br>
 	 * </ul>
 	 */
 	public final boolean top;

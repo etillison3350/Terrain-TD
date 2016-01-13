@@ -13,6 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import terraintd.pathfinder.Node;
+import terraintd.types.World.Tile;
+
 public class TypeGenerator {
 
 	private TypeGenerator() {}
@@ -20,6 +23,8 @@ public class TypeGenerator {
 	private static TowerType[] towers;
 	private static EnemyType[] enemies;
 	private static ObstacleType[] obstacles;
+	private static World[] worlds;
+	private static Level[] levels;
 
 	public static void generateValues() {
 		try {
@@ -29,12 +34,14 @@ public class TypeGenerator {
 		ArrayList<TowerType> newTowers = new ArrayList<>();
 		ArrayList<EnemyType> newEnemies = new ArrayList<>();
 		ArrayList<ObstacleType> newObstacles = new ArrayList<>();
+		ArrayList<World> newWorlds = new ArrayList<>();
+//		ArrayList<Level> newLevels = new ArrayList<>();
 
 		try (Stream<Path> files = Files.walk(Paths.get("terraintd/mods"))) {
 			Iterator<Path> iter = files.iterator();
 			while (iter.hasNext()) {
 				Path path = iter.next();
-				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("proto")) continue;
+				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("json")) continue;
 
 				List<?> json = parseJSON(new String(Files.readAllBytes(path)));
 
@@ -42,8 +49,6 @@ public class TypeGenerator {
 					json = (ArrayList<?>) json.get(0);
 				}
 
-				System.out.println(json);
-				
 				for (Object o : json) {
 					if (!(o instanceof Map<?, ?>)) return;
 
@@ -52,255 +57,19 @@ public class TypeGenerator {
 					if (obj.get("type") == null || !(obj.get("type") instanceof String)) return;
 
 					if (obj.get("type").equals("tower")) {
-						String id = (String) obj.get("id");
-						if (id == null) continue;
-
-						int cost = obj.get("cost") instanceof Number ? ((Number) obj.get("cost")).intValue() : 1;
-
-						Object collision = obj.get("collision");
-						int width = 1;
-						int height = 1;
-						if (collision instanceof List<?>) {
-							width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).intValue() : 1;
-							height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).intValue() : 1;
-						} else if (collision instanceof Map<?, ?>) {
-							width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).intValue() : 1;
-							height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).intValue() : 1;
-						}
-
-						HashMap<Terrain, Boolean> terrain = new HashMap<>(Terrain.values().length);
-						for (Terrain t : Terrain.values())
-							terrain.put(t, false);
-
-						if (obj.get("terrain") instanceof List<?>) {
-							for (Object ter : (List<?>) obj.get("terrain")) {
-								if (ter instanceof String) {
-									switch ((String) ter) {
-										case "all":
-											for (Terrain t : Terrain.values())
-												terrain.put(t, true);
-											break;
-										case "water":
-											for (Terrain t : Terrain.values()) {
-												if (t.name().toLowerCase().endsWith("water"))
-													terrain.put(t, true);
-											}
-											break;
-										case "land":
-											for (Terrain t : Terrain.values()) {
-												if (!t.name().toLowerCase().endsWith("water"))
-													terrain.put(t, true);
-											}
-											break;
-										default:
-											try {
-												terrain.put(Terrain.valueOf(((String) ter).toUpperCase()), true);
-											} catch (IllegalArgumentException e) {}
-											break;
-									}
-								}
-							}
-						}
-
-						boolean onHill = obj.get("on-hill") instanceof Boolean ? (Boolean) obj.get("on-hill") : false;
-
-						boolean rotate = obj.get("rotate") instanceof Boolean ? (Boolean) obj.get("rotate") : true;
-						
-						double range = obj.get("range") instanceof Number ? ((Number) obj.get("range")).doubleValue() : 1;
-
-						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
-
-						ImageType icon = obj.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("icon")) : null;
-
-						List<ProjectileType> projectiles = new ArrayList<>();
-						if (obj.get("projectiles") instanceof List<?>) {
-							for (Object p : (List<?>) obj.get("projectiles")) {
-								if (p instanceof Map<?, ?>)
-									projectiles.add(parseProjectile((Map<?, ?>) p));
-							}
-						}
-
-						newTowers.add(new TowerType(id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()])));
+						try {
+							newTowers.add(parseTower(obj));
+						} catch (Exception e) {}
 					} else if (obj.get("type").equals("enemy")) {
-						HashMap<Terrain, Double> speed = new HashMap<>();
-						Object spd = obj.get("speed");
-						if (spd instanceof List<?>) {
-							List<Object> spl = new ArrayList<>((List<?>) spd);
-
-							if (spl.size() == 1) {
-								for (Terrain t : Terrain.values())
-									speed.put(t, ((Number) spl.get(0)).doubleValue());
-							} else if (spl.size() == 2) {
-								if (!(spl.get(0) instanceof Number)) spl.set(0, 1.0);
-								if (!(spl.get(1) instanceof Number)) spl.set(1, 1.0);
-
-								for (Terrain t : Terrain.values())
-									speed.put(t, ((Number) spl.get(t.name().toLowerCase().endsWith("water") ? 1 : 0)).doubleValue());
-							} else {
-								for (int i = 0; i < spl.size() && i < Terrain.values().length; i++) {
-									if (spl.get(i) instanceof Number)
-										speed.put(Terrain.values()[i], ((Number) spl.get(i)).doubleValue());
-									else
-										speed.put(Terrain.values()[i], 1.0);
-								}
-							}
-						} else if (spd instanceof Map<?, ?>) {
-							Map<?, ?> sm = (Map<?, ?>) spd;
-							Map<String, Number> spm = new HashMap<>(sm.size());
-							for (Object k : sm.keySet()) {
-								Object v = sm.get(k);
-								spm.put(k.toString(), v instanceof Number ? (Number) v : 1);
-							}
-
-							for (Terrain t : Terrain.values())
-								speed.put(t, 1.0);
-
-							for (String key : spm.keySet()) {
-								switch (key) {
-									case "all":
-										for (Terrain t : Terrain.values())
-											speed.put(t, spm.get(key).doubleValue());
-										break;
-									case "water":
-										for (Terrain t : Terrain.values()) {
-											if (t.name().toLowerCase().endsWith("water"))
-												speed.put(t, spm.get(key).doubleValue());
-										}
-										break;
-									case "land":
-										for (Terrain t : Terrain.values()) {
-											if (!t.name().toLowerCase().endsWith("water"))
-												speed.put(t, spm.get(key).doubleValue());
-										}
-										break;
-									default:
-										try {
-											speed.put(Terrain.valueOf(key.toUpperCase()), spm.get(key).doubleValue());
-										} catch (IllegalArgumentException e) {}
-										break;
-								}
-							}
-						}
-
-						Object collision = obj.get("vertical-speed");
-						double upSpeed = 1;
-						double downSpeed = 1;
-						if (collision instanceof List<?>) {
-							upSpeed = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).doubleValue() : 1;
-							downSpeed = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).doubleValue() : 1;
-						} else if (collision instanceof Map<?, ?>) {
-							upSpeed = ((Map<?, ?>) collision).get("up") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("up")).doubleValue() : 1;
-							downSpeed = ((Map<?, ?>) collision).get("down") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("down")).doubleValue() : 1;
-						}
-
-						double health = obj.get("health") instanceof Number ? ((Number) obj.get("health")).doubleValue() : 1.0;
-
-						double damage = obj.get("damage") instanceof Number ? ((Number) obj.get("damage")).doubleValue() : 1.0;
-
-						int reward = obj.get("reward") instanceof Number ? ((Number) obj.get("reward")).intValue() : 1;
-
-						double range = obj.get("range") instanceof Number ? ((Number) obj.get("range")).doubleValue() : 1;
-
-						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
-
-						ImageType death = obj.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("death")) : null;
-
-						List<ProjectileType> projectiles = new ArrayList<>();
-						if (obj.get("projectiles") instanceof List<?>) {
-							for (Object p : (List<?>) obj.get("projectiles")) {
-								if (p instanceof Map<?, ?>)
-									projectiles.add(parseProjectile((Map<?, ?>) p));
-							}
-						}
-
-						newEnemies.add(new EnemyType(speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()])));
+						newEnemies.add(parseEnemy(obj));
 					} else if (obj.get("type").equals("obstacle")) {
-						String id = (String) obj.get("id");
-						if (id == null) continue;
-
-						Object collision = obj.get("collision");
-						int width = 1;
-						int height = 1;
-						if (collision instanceof List<?>) {
-							width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).intValue() : 1;
-							height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).intValue() : 1;
-						} else if (collision instanceof Map<?, ?>) {
-							width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).intValue() : 1;
-							height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).intValue() : 1;
-						}
-
-						int cost = obj.get("cost") instanceof Number ? ((Number) obj.get("cost")).intValue() : 1;
-
-						int removeCost = obj.get("remove-cost") instanceof Number ? ((Number) obj.get("remove-cost")).intValue() : 1;
-
-						Object spr = obj.get("spawn-rate");
-						HashMap<Terrain, Double> spawnRates = new HashMap<>();
-						if (spr instanceof Number) {
-							for (Terrain t : Terrain.values())
-								spawnRates.put(t, ((Number) spr).doubleValue());
-						} else if (spr instanceof Map<?, ?>) {
-							Map<?, ?> sm = (Map<?, ?>) spr;
-							Map<String, Number> srm = new HashMap<>(sm.size());
-							for (Object k : sm.keySet()) {
-								Object v = sm.get(k);
-								srm.put(k.toString(), v instanceof Number ? (Number) v : 1);
-							}
-
-							for (Terrain t : Terrain.values())
-								spawnRates.put(t, 1.0);
-
-							for (String key : srm.keySet()) {
-								switch (key) {
-									case "all":
-										for (Terrain t : Terrain.values())
-											spawnRates.put(t, srm.get(key).doubleValue());
-										break;
-									case "water":
-										for (Terrain t : Terrain.values()) {
-											if (t.name().toLowerCase().endsWith("water"))
-												spawnRates.put(t, srm.get(key).doubleValue());
-										}
-										break;
-									case "land":
-										for (Terrain t : Terrain.values()) {
-											if (!t.name().toLowerCase().endsWith("water"))
-												spawnRates.put(t, srm.get(key).doubleValue());
-										}
-										break;
-									default:
-										try {
-											spawnRates.put(Terrain.valueOf(key.toUpperCase()), srm.get(key).doubleValue());
-										} catch (IllegalArgumentException e) {}
-										break;
-								}
-							}
-						} else if (spr instanceof List<?>) {
-							List<Object> srl = new ArrayList<>((List<?>) spr);
-
-							if (srl.size() == 1) {
-								for (Terrain t : Terrain.values())
-									spawnRates.put(t, ((Number) srl.get(0)).doubleValue());
-							} else if (srl.size() == 2) {
-								if (!(srl.get(0) instanceof Number)) srl.set(0, 1.0);
-								if (!(srl.get(1) instanceof Number)) srl.set(1, 1.0);
-
-								for (Terrain t : Terrain.values())
-									spawnRates.put(t, ((Number) srl.get(t.name().toLowerCase().endsWith("water") ? 1 : 0)).doubleValue());
-							} else {
-								for (int i = 0; i < srl.size() && i < Terrain.values().length; i++) {
-									if (srl.get(i) instanceof Number)
-										spawnRates.put(Terrain.values()[i], ((Number) srl.get(i)).doubleValue());
-									else
-										spawnRates.put(Terrain.values()[i], 1.0);
-								}
-							}
-						}
-
-						ImageType image = obj.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("image")) : null;
-
-						ImageType icon = obj.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) obj.get("icon")) : null;
-
-						newObstacles.add(new ObstacleType(id, width, height, cost, removeCost, spawnRates, image, icon));
+						try {
+							newObstacles.add(parseObstacle(obj));
+						} catch (Exception e) {}
+					} else if (obj.get("type").equals("world")) {
+						try {
+							newWorlds.add(parseWorld(obj));
+						} catch (Exception e) {}
 					}
 				}
 			}
@@ -311,6 +80,256 @@ public class TypeGenerator {
 		towers = newTowers.toArray(new TowerType[newTowers.size()]);
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
+		worlds = newWorlds.toArray(new World[newWorlds.size()]);
+	}
+
+	static TowerType parseTower(Map<?, ?> map) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
+
+		Object collision = map.get("collision");
+		int width = 1;
+		int height = 1;
+		if (collision instanceof List<?>) {
+			width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).intValue() : 1;
+			height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).intValue() : 1;
+		} else if (collision instanceof Map<?, ?>) {
+			width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).intValue() : 1;
+			height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).intValue() : 1;
+		}
+
+		HashMap<Terrain, Boolean> terrain = new HashMap<>(Terrain.values().length);
+		for (Terrain t : Terrain.values())
+			terrain.put(t, false);
+
+		if (map.get("terrain") instanceof List<?>) {
+			for (Object ter : (List<?>) map.get("terrain")) {
+				if (ter instanceof String) {
+					switch ((String) ter) {
+						case "all":
+							for (Terrain t : Terrain.values())
+								terrain.put(t, true);
+							break;
+						case "water":
+							for (Terrain t : Terrain.values()) {
+								if (t.name().toLowerCase().endsWith("water")) terrain.put(t, true);
+							}
+							break;
+						case "land":
+							for (Terrain t : Terrain.values()) {
+								if (!t.name().toLowerCase().endsWith("water")) terrain.put(t, true);
+							}
+							break;
+						default:
+							try {
+								terrain.put(Terrain.valueOf(((String) ter).toUpperCase()), true);
+							} catch (IllegalArgumentException e) {}
+							break;
+					}
+				}
+			}
+		}
+
+		boolean onHill = map.get("on-hill") instanceof Boolean ? (Boolean) map.get("on-hill") : false;
+
+		boolean rotate = map.get("rotate") instanceof Boolean ? (Boolean) map.get("rotate") : true;
+
+		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
+
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon")) : null;
+
+		List<ProjectileType> projectiles = new ArrayList<>();
+		if (map.get("projectiles") instanceof List<?>) {
+			for (Object p : (List<?>) map.get("projectiles")) {
+				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p));
+			}
+		}
+
+		return new TowerType(id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
+	}
+
+	static EnemyType parseEnemy(Map<?, ?> map) {
+		HashMap<Terrain, Double> speed = new HashMap<>();
+		Object spd = map.get("speed");
+		if (spd instanceof List<?>) {
+			List<Object> spl = new ArrayList<>((List<?>) spd);
+
+			if (spl.size() == 1) {
+				for (Terrain t : Terrain.values())
+					speed.put(t, ((Number) spl.get(0)).doubleValue());
+			} else if (spl.size() == 2) {
+				if (!(spl.get(0) instanceof Number)) spl.set(0, 1.0);
+				if (!(spl.get(1) instanceof Number)) spl.set(1, 1.0);
+
+				for (Terrain t : Terrain.values())
+					speed.put(t, ((Number) spl.get(t.name().toLowerCase().endsWith("water") ? 1 : 0)).doubleValue());
+			} else {
+				for (int i = 0; i < spl.size() && i < Terrain.values().length; i++) {
+					if (spl.get(i) instanceof Number)
+						speed.put(Terrain.values()[i], ((Number) spl.get(i)).doubleValue());
+					else
+						speed.put(Terrain.values()[i], 1.0);
+				}
+			}
+		} else if (spd instanceof Map<?, ?>) {
+			Map<?, ?> sm = (Map<?, ?>) spd;
+			Map<String, Number> spm = new HashMap<>(sm.size());
+			for (Object k : sm.keySet()) {
+				Object v = sm.get(k);
+				spm.put(k.toString(), v instanceof Number ? (Number) v : 1);
+			}
+
+			for (Terrain t : Terrain.values())
+				speed.put(t, 1.0);
+
+			for (String key : spm.keySet()) {
+				switch (key) {
+					case "all":
+						for (Terrain t : Terrain.values())
+							speed.put(t, spm.get(key).doubleValue());
+						break;
+					case "water":
+						for (Terrain t : Terrain.values()) {
+							if (t.name().toLowerCase().endsWith("water")) speed.put(t, spm.get(key).doubleValue());
+						}
+						break;
+					case "land":
+						for (Terrain t : Terrain.values()) {
+							if (!t.name().toLowerCase().endsWith("water")) speed.put(t, spm.get(key).doubleValue());
+						}
+						break;
+					default:
+						try {
+							speed.put(Terrain.valueOf(key.toUpperCase()), spm.get(key).doubleValue());
+						} catch (IllegalArgumentException e) {}
+						break;
+				}
+			}
+		}
+
+		Object collision = map.get("vertical-speed");
+		double upSpeed = 1;
+		double downSpeed = 1;
+		if (collision instanceof List<?>) {
+			upSpeed = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).doubleValue() : 1;
+			downSpeed = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).doubleValue() : 1;
+		} else if (collision instanceof Map<?, ?>) {
+			upSpeed = ((Map<?, ?>) collision).get("up") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("up")).doubleValue() : 1;
+			downSpeed = ((Map<?, ?>) collision).get("down") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("down")).doubleValue() : 1;
+		}
+
+		double health = map.get("health") instanceof Number ? ((Number) map.get("health")).doubleValue() : 1.0;
+
+		double damage = map.get("damage") instanceof Number ? ((Number) map.get("damage")).doubleValue() : 1.0;
+
+		int reward = map.get("reward") instanceof Number ? ((Number) map.get("reward")).intValue() : 1;
+
+		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
+
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+
+		ImageType death = map.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("death")) : null;
+
+		List<ProjectileType> projectiles = new ArrayList<>();
+		if (map.get("projectiles") instanceof List<?>) {
+			for (Object p : (List<?>) map.get("projectiles")) {
+				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p));
+			}
+		}
+
+		return new EnemyType(speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
+	}
+
+	static ObstacleType parseObstacle(Map<?, ?> map) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		Object collision = map.get("collision");
+		int width = 1;
+		int height = 1;
+		if (collision instanceof List<?>) {
+			width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).intValue() : 1;
+			height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).intValue() : 1;
+		} else if (collision instanceof Map<?, ?>) {
+			width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).intValue() : 1;
+			height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).intValue() : 1;
+		}
+
+		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
+
+		int removeCost = map.get("remove-cost") instanceof Number ? ((Number) map.get("remove-cost")).intValue() : 1;
+
+		Object spr = map.get("spawn-rate");
+		HashMap<Terrain, Double> spawnRates = new HashMap<>();
+		if (spr instanceof Number) {
+			for (Terrain t : Terrain.values())
+				spawnRates.put(t, ((Number) spr).doubleValue());
+		} else if (spr instanceof Map<?, ?>) {
+			Map<?, ?> sm = (Map<?, ?>) spr;
+			Map<String, Number> srm = new HashMap<>(sm.size());
+			for (Object k : sm.keySet()) {
+				Object v = sm.get(k);
+				srm.put(k.toString(), v instanceof Number ? (Number) v : 1);
+			}
+
+			for (Terrain t : Terrain.values())
+				spawnRates.put(t, 1.0);
+
+			for (String key : srm.keySet()) {
+				switch (key) {
+					case "all":
+						for (Terrain t : Terrain.values())
+							spawnRates.put(t, srm.get(key).doubleValue());
+						break;
+					case "water":
+						for (Terrain t : Terrain.values()) {
+							if (t.name().toLowerCase().endsWith("water")) spawnRates.put(t, srm.get(key).doubleValue());
+						}
+						break;
+					case "land":
+						for (Terrain t : Terrain.values()) {
+							if (!t.name().toLowerCase().endsWith("water")) spawnRates.put(t, srm.get(key).doubleValue());
+						}
+						break;
+					default:
+						try {
+							spawnRates.put(Terrain.valueOf(key.toUpperCase()), srm.get(key).doubleValue());
+						} catch (IllegalArgumentException e) {}
+						break;
+				}
+			}
+		} else if (spr instanceof List<?>) {
+			List<Object> srl = new ArrayList<>((List<?>) spr);
+
+			if (srl.size() == 1) {
+				for (Terrain t : Terrain.values())
+					spawnRates.put(t, ((Number) srl.get(0)).doubleValue());
+			} else if (srl.size() == 2) {
+				if (!(srl.get(0) instanceof Number)) srl.set(0, 1.0);
+				if (!(srl.get(1) instanceof Number)) srl.set(1, 1.0);
+
+				for (Terrain t : Terrain.values())
+					spawnRates.put(t, ((Number) srl.get(t.name().toLowerCase().endsWith("water") ? 1 : 0)).doubleValue());
+			} else {
+				for (int i = 0; i < srl.size() && i < Terrain.values().length; i++) {
+					if (srl.get(i) instanceof Number)
+						spawnRates.put(Terrain.values()[i], ((Number) srl.get(i)).doubleValue());
+					else
+						spawnRates.put(Terrain.values()[i], 1.0);
+				}
+			}
+		}
+
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon")) : null;
+
+		return new ObstacleType(id, width, height, cost, removeCost, spawnRates, image, icon);
+
 	}
 
 	static ProjectileType parseProjectile(Map<?, ?> map) {
@@ -362,8 +381,7 @@ public class TypeGenerator {
 		List<EffectType> effects = new ArrayList<>();
 		if (map.get("effects") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("effects")) {
-				if (p instanceof Map<?, ?>)
-					effects.add(parseEffect((Map<?, ?>) p));
+				if (p instanceof Map<?, ?>) effects.add(parseEffect((Map<?, ?>) p));
 			}
 		}
 
@@ -407,6 +425,130 @@ public class TypeGenerator {
 		}
 
 		return new ImageType(src, width, height, x, y);
+	}
+
+	static World parseWorld(Map<?, ?> map) {
+		String id = (String) map.get("id");
+		if (id == null || !(map.get("terrain") instanceof List<?>)) throw new IllegalArgumentException();
+
+		List<?> terrain = (List<?>) map.get("terrain");
+
+		while (!(terrain.get(0) instanceof List<?>))
+			terrain.remove(0);
+
+		Terrain[][] terrains = new Terrain[terrain.size()][((List<?>) terrain.get(0)).size()];
+
+		for (int y = 0; y < terrains.length; y++) {
+			for (int x = 0; x < terrains[0].length; x++) {
+				if (!(terrain.get(y) instanceof List<?>) || y >= ((List<?>) terrain.get(y)).size() || !(((List<?>) terrain.get(y)).get(x) instanceof Number)) {
+					terrains[y][x] = Terrain.DEEP_WATER;
+				} else {
+					try {
+						terrains[y][x] = Terrain.values()[((Number) ((List<?>) terrain.get(y)).get(x)).intValue()];
+					} catch (ArrayIndexOutOfBoundsException e) {
+						terrains[y][x] = Terrain.DEEP_WATER;
+					}
+				}
+			}
+		}
+
+		Object goal = map.get("goal");
+		int goalX = 0, goalY = 0;
+		boolean goalTop = true;
+		if (goal instanceof List<?>) {
+			List<?> g = (List<?>) goal;
+
+			try {
+				if (g.get(0) instanceof Number) goalX = ((Number) g.get(0)).intValue();
+				if (g.get(1) instanceof Number) goalY = ((Number) g.get(1)).intValue();
+				if (g.get(2) instanceof Boolean) goalTop = (Boolean) g.get(2);
+			} catch (IndexOutOfBoundsException e) {}
+		} else if (goal instanceof Map<?, ?>) {
+			Map<?, ?> g = (Map<?, ?>) goal;
+
+			if (g.get("x") instanceof Number) goalX = ((Number) g.get("x")).intValue();
+			if (g.get("y") instanceof Number) goalY = ((Number) g.get("y")).intValue();
+			if (g.get("top") instanceof Boolean) goalTop = (Boolean) g.get("top");
+		}
+
+		Object spawnpoints = map.get("spawnpoints");
+		List<?> top = null, left = null, bottom = null, right = null;
+		if (spawnpoints instanceof List<?>) {
+			List<?> s = (List<?>) spawnpoints;
+
+			try {
+				if (s.get(0) instanceof List<?>) top = (List<?>) s.get(0);
+				if (s.get(1) instanceof List<?>) left = (List<?>) s.get(1);
+				if (s.get(2) instanceof List<?>) bottom = (List<?>) s.get(2);
+				if (s.get(3) instanceof List<?>) right = (List<?>) s.get(3);
+			} catch (IndexOutOfBoundsException e) {}
+		} else if (spawnpoints instanceof Map<?, ?>) {
+			Map<?, ?> s = (Map<?, ?>) spawnpoints;
+
+			if (s.get("top") instanceof List<?>) top = (List<?>) s.get("top");
+			if (s.get("left") instanceof List<?>) left = (List<?>) s.get("left");
+			if (s.get("bottom") instanceof List<?>) bottom = (List<?>) s.get("bottom");
+			if (s.get("right") instanceof List<?>) right = (List<?>) s.get("right");
+		}
+
+		ArrayList<Node> spawnNodes = new ArrayList<>();
+
+		if (top != null) {
+			for (Object o : top) {
+				if (o instanceof Number) spawnNodes.add(new Node(((Number) o).intValue(), 0, true));
+			}
+		}
+
+		if (left != null) {
+			for (Object o : left) {
+				if (o instanceof Number) spawnNodes.add(new Node(0, ((Number) o).intValue(), false));
+			}
+		}
+
+		if (bottom != null) {
+			for (Object o : bottom) {
+				if (o instanceof Number) spawnNodes.add(new Node(((Number) o).intValue(), terrains.length, true));
+			}
+		}
+
+		if (right != null) {
+			for (Object o : bottom) {
+				if (o instanceof Number) spawnNodes.add(new Node(terrains[0].length, ((Number) o).intValue(), false));
+			}
+		}
+
+		int[][] elevations = new int[terrains.length][terrains[0].length];
+		if (map.get("elevations") instanceof List<?>) {
+			List<?> elevs = (List<?>) map.get("elevations");
+
+			for (int y = 0; y < elevations.length; y++) {
+				for (int x = 0; x < elevations[0].length; x++) {
+					if (!(elevs.get(y) instanceof List<?>) || y >= ((List<?>) elevs.get(y)).size() || !(((List<?>) elevs.get(y)).get(x) instanceof Number)) {
+						elevations[y][x] = 0;
+					} else {
+						try {
+							elevations[y][x] = ((Number) ((List<?>) elevs.get(y)).get(x)).intValue();
+						} catch (ArrayIndexOutOfBoundsException e) {
+							elevations[y][x] = 0;
+						}
+					}
+				}
+			}
+		}
+
+		Tile[][] tiles = new Tile[terrains.length][terrains[0].length];
+		for (int y = 0; y < tiles.length; y++) {
+			for (int x = 0; x < tiles[0].length; x++) {
+				tiles[y][x] = new Tile(terrains[y][x], elevations[y][x]);
+			}
+		}
+
+		return new World(tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
+	}
+
+	static Level parseLevel(Map<?, ?> map) {
+		// TODO
+		return null;
 	}
 
 	static ArrayList<Object> parseJSON(String json) {
@@ -521,6 +663,18 @@ public class TypeGenerator {
 		if (obstacles == null) generateValues();
 
 		return obstacles;
+	}
+
+	static World[] worlds() {
+		if (worlds == null) generateValues();
+
+		return worlds;
+	}
+
+	static Level[] levels() {
+		if (levels == null) generateValues();
+
+		return levels;
 	}
 
 }
