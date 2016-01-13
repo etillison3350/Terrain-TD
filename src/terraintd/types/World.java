@@ -3,113 +3,28 @@ package terraintd.types;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
+
+import terraintd.pathfinder.Node;
 
 public class World {
 
 	public final Tile[][] tiles;
-	public final Point goal;
+	public final Node[] spawnpoints;
+	public final Node goal;
 
 	private BufferedImage image;
 
 	static World[] values;
 
-	public World(Tile[][] tiles, Point goal) {
+	World(Tile[][] tiles, Node goal, Node[] spawnpoints) {
 		this.tiles = tiles;
 		this.goal = goal;
-	}
-
-	public World(Tile[][] tiles, int goalX, int goalY) {
-		this(tiles, new Point(goalX, goalY));
+		this.spawnpoints = spawnpoints;
 	}
 
 	public static World[] values() {
-		if (values == null) generateValues();
-
-		return values;
-	}
-
-	static void generateValues() {
-		try {
-			Files.createDirectories(Paths.get("terraintd/mods"));
-		} catch (IOException e) {}
-
-		List<World> newValues = new ArrayList<>();
-
-		try (Stream<Path> files = Files.walk(Paths.get("terraintd/mods"))) {
-			Iterator<Path> iter = files.iterator();
-
-			while (iter.hasNext()) {
-				Path path = iter.next();
-
-				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("world")) continue;
-
-				String world[] = new String(Files.readAllBytes(path)).split("\n[ \t\\x0B\\f\\r]*\n");
-
-				String[] types = world[0].split("\n");
-				String[] elev = world[1].split("\n");
-
-				final int r = types.length;
-				final int c = types[0].trim().split(" +").length;
-
-				int[][] elevations = new int[r][c];
-				Terrain[][] terrains = new Terrain[r][c];
-				boolean[][] spawnPoints = new boolean[r][c];
-
-				int goalX = 0, goalY = 0;
-
-				int minElev = Integer.MAX_VALUE;
-
-				for (int row = 0; row < r; row++) {
-					String[] type = types[row].trim().split(" +");
-					String[] elv = elev[row].trim().split(" +");
-
-					for (int col = 0; col < c; col++) {
-						try {
-							terrains[row][col] = Terrain.values()[Integer.parseUnsignedInt(type[col].replaceAll("\\D+", ""))];
-						} catch (Exception e) {
-							terrains[row][col] = Terrain.DEEP_WATER;
-						}
-
-						try {
-							if (type[col].toLowerCase().contains("s")) {
-								spawnPoints[row][col] = true;
-							} else if (type[col].toLowerCase().contains("x")) {
-								goalX = col;
-								goalY = row;
-							}
-						} catch (ArrayIndexOutOfBoundsException e) {}
-
-						try {
-							elevations[row][col] = Integer.parseInt(elv[col]);
-							if (elevations[row][col] < minElev) minElev = elevations[row][col];
-						} catch (Exception e) {
-							elevations[row][col] = 0;
-						}
-					}
-				}
-
-				Tile[][] tiles = new Tile[r][c];
-				for (int row = 0; row < r; row++) {
-					for (int col = 0; col < c; col++) {
-						tiles[row][col] = new Tile(terrains[row][col], elevations[row][col] - minElev, spawnPoints[row][col]);
-					}
-				}
-
-				newValues.add(new World(tiles, goalX, goalY));
-			}
-		} catch (IOException e) {}
-
-		values = newValues.toArray(new World[newValues.size()]);
+		return TypeGenerator.worlds();
 	}
 
 	public int getWidth() {
@@ -165,12 +80,10 @@ public class World {
 
 		public final Terrain terrain;
 		public final int elev;
-		public final boolean spawn;
 
-		Tile(Terrain terrain, int elevation, boolean spawnPoint) {
+		Tile(Terrain terrain, int elevation) {
 			this.terrain = terrain;
 			this.elev = elevation;
-			this.spawn = spawnPoint;
 		}
 
 	}
