@@ -14,9 +14,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import terraintd.pathfinder.Node;
+import terraintd.types.Level.Unit;
 import terraintd.types.World.Tile;
 
-public class TypeGenerator {
+public final class TypeGenerator {
 
 	private TypeGenerator() {}
 
@@ -35,7 +36,7 @@ public class TypeGenerator {
 		ArrayList<EnemyType> newEnemies = new ArrayList<>();
 		ArrayList<ObstacleType> newObstacles = new ArrayList<>();
 		ArrayList<World> newWorlds = new ArrayList<>();
-//		ArrayList<Level> newLevels = new ArrayList<>();
+		ArrayList<Level> newLevels = new ArrayList<>();
 
 		try (Stream<Path> files = Files.walk(Paths.get("terraintd/mods"))) {
 			Iterator<Path> iter = files.iterator();
@@ -50,26 +51,26 @@ public class TypeGenerator {
 				}
 
 				for (Object o : json) {
-					if (!(o instanceof Map<?, ?>)) return;
+					if (!(o instanceof Map<?, ?>)) continue;
 
 					Map<?, ?> obj = (Map<?, ?>) o;
 
-					if (obj.get("type") == null || !(obj.get("type") instanceof String)) return;
+					if (obj.get("type") == null || !(obj.get("type") instanceof String)) continue;
 
-					if (obj.get("type").equals("tower")) {
-						try {
+					try {
+						if (obj.get("type").equals("tower")) {
 							newTowers.add(parseTower(obj));
-						} catch (Exception e) {}
-					} else if (obj.get("type").equals("enemy")) {
-						newEnemies.add(parseEnemy(obj));
-					} else if (obj.get("type").equals("obstacle")) {
-						try {
+						} else if (obj.get("type").equals("enemy")) {
+							newEnemies.add(parseEnemy(obj));
+						} else if (obj.get("type").equals("obstacle")) {
 							newObstacles.add(parseObstacle(obj));
-						} catch (Exception e) {}
-					} else if (obj.get("type").equals("world")) {
-						try {
+						} else if (obj.get("type").equals("world")) {
 							newWorlds.add(parseWorld(obj));
-						} catch (Exception e) {}
+						} else if (obj.get("type").equals("level")) {
+							newLevels.add(parseLevel(obj));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}
@@ -81,6 +82,7 @@ public class TypeGenerator {
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
 		worlds = newWorlds.toArray(new World[newWorlds.size()]);
+		levels = newLevels.toArray(new Level[newLevels.size()]);
 	}
 
 	static TowerType parseTower(Map<?, ?> map) {
@@ -153,6 +155,9 @@ public class TypeGenerator {
 	}
 
 	static EnemyType parseEnemy(Map<?, ?> map) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
 		HashMap<Terrain, Double> speed = new HashMap<>();
 		Object spd = map.get("speed");
 		if (spd instanceof List<?>) {
@@ -241,7 +246,7 @@ public class TypeGenerator {
 			}
 		}
 
-		return new EnemyType(speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		return new EnemyType(id, speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
 	static ObstacleType parseObstacle(Map<?, ?> map) {
@@ -543,12 +548,52 @@ public class TypeGenerator {
 			}
 		}
 
-		return new World(tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
+		return new World(id, tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
 	}
 
 	static Level parseLevel(Map<?, ?> map) {
-		// TODO
-		return null;
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		double health = map.get("health") instanceof Number ? ((Number) map.get("health")).doubleValue() : 100;
+
+		ArrayList<Unit> units = new ArrayList<>();
+
+		if (map.get("enemies") instanceof List<?>) {
+			List<?> enemies = (List<?>) map.get("enemies");
+			for (Object enemy : enemies) {
+				String typeId = "";
+				double delay = 1000;
+				int count = 1;
+
+				if (enemy instanceof List<?>) {
+					List<?> unit = (List<?>) enemy;
+
+					System.out.println(unit);
+					
+					if (unit.size() <= 0 || !(unit.get(0) instanceof String)) continue;
+
+					typeId = (String) unit.get(0);
+					delay = unit.size() > 1 && unit.get(1) instanceof Number ? ((Number) unit.get(1)).doubleValue() : 1000;
+					count = unit.size() > 2 && unit.get(2) instanceof Number ? ((Number) unit.get(2)).intValue() : 1;
+				} else if (enemy instanceof Map<?, ?>) {
+					Map<?, ?> unit = (Map<?, ?>) enemy;
+
+					if (!(unit.get("type") instanceof String)) continue;
+
+					typeId = (String) unit.get("type");
+					delay = unit.get("delay") instanceof Number ? ((Number) unit.get("delay")).doubleValue() : 1000;
+					count = unit.get("count") instanceof Number ? ((Number) unit.get("count")).intValue() : 1;
+				}
+
+				for (int c = 0; c < count; c++)
+					units.add(new Unit(typeId, delay));
+			}
+		}
+
+		if (units.size() <= 0) throw new IllegalArgumentException();
+
+		return new Level(id, units.toArray(new Unit[units.size()]), health);
 	}
 
 	static ArrayList<Object> parseJSON(String json) {

@@ -1,21 +1,24 @@
-{
-    "type":"enemy",
-    "speed":[
-        3,
-        4,
-        3,
-        2,
-        1,
-        0,
-        0,
-        0
-    ],
-    "vertical-speed":{
-        "up":0.125,
-        "down":1.25
-    },
-    "health":100,
-    "damage":10,
-    "reward":25,
-    "projectiles":null
-}
+[
+    {
+        "type":"enemy",
+        "id": "enemy-example",
+        "speed":[
+            3,
+            4,
+            3,
+            2,
+            1,
+            0,
+            0,
+            0
+        ],
+        "vertical-speed":{
+            "up":0.125,
+            "down":1.25
+        },
+        "health":100,
+        "damage":10,
+        "reward":25,
+        "projectiles":null
+    }
+]

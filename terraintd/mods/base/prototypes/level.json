@@ -1,0 +1,10 @@
+[
+    {
+        "type": "level",
+        "id": "level-example",
+        "health": 100,
+        "enemies": [
+            ["enemy-example", 1000, 20]
+        ]
+    }
+]

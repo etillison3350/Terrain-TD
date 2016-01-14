@@ -21,6 +21,7 @@ import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
 import terraintd.types.Level;
+import terraintd.types.Level.Unit;
 import terraintd.types.ObstacleType;
 import terraintd.types.TowerType;
 import terraintd.types.World;
@@ -66,7 +67,17 @@ public class GameLogic implements ActionListener {
 	private int money;
 	private double health, maxHealth;
 
-	private final Timer timer = new Timer((int) (1000 * FRAME_TIME), this);
+	private final Timer timer = new Timer((int) (1000 * FRAME_TIME), this), pauseTimer = new Timer((int) (1000 * FRAME_TIME), this);
+
+	private double timeToNextEnemy;
+	private int enemyIndex;
+
+	private long t0, t1, t2;
+
+	private boolean wasPaused = true;
+	private CollidableType buying = null;
+
+	private Entity selected = null;
 
 	public GameLogic(GamePanel p, Window w) {
 		this.panel = p;
@@ -78,12 +89,13 @@ public class GameLogic implements ActionListener {
 	}
 
 	public void start() {
-		if (!this.timer.isRunning())
-			this.timer.start();
+		if (!this.timer.isRunning()) this.timer.start();
+		this.pauseTimer.stop();
 	}
 
 	public void stop() {
 		this.timer.stop();
+		if (!this.pauseTimer.isRunning()) this.pauseTimer.start();
 	}
 
 	public void reset() {
@@ -92,15 +104,16 @@ public class GameLogic implements ActionListener {
 		this.health = this.maxHealth = 10000;
 
 		this.currentWorld = World.values()[0];
-		this.currentLevel = new Level();
+		this.currentLevel = Level.values()[0];
 
-		// TODO init enemies
+		this.timeToNextEnemy = currentLevel.units[0].delay;
+		this.enemyIndex = 0;
+
 		this.permanentEntities = new Entity[] {};
 		this.projectiles = new ArrayList<>();
 
-		for (EnemyType type : EnemyType.values()) {
+		for (EnemyType type : EnemyType.values())
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
-		}
 
 		this.panel.repaint();
 	}
@@ -110,20 +123,20 @@ public class GameLogic implements ActionListener {
 	 */
 	@Override
 	public synchronized void actionPerformed(ActionEvent e) {
-		t0 = System.nanoTime();
-
-		processPermanents();
-
-		t1 = System.nanoTime();
-
-		processProjectiles();
-
-		t2 = System.nanoTime();
-
-		GameLogic.this.panel.repaint();
+		if (e.getSource() == pauseTimer) {
+			if (selected != null && selected instanceof CollidableEntity) {
+				CollidableType type = ((CollidableEntity) selected).getType();
+				this.panel.repaint((int) (panel.getDx() + selected.getX() * panel.getTile()), (int) (panel.getDy() + selected.getY() * panel.getTile()), (int) (panel.getTile() * type.width), (int) (panel.getTile() * type.height));
+			}
+		} else {
+			t0 = System.nanoTime();
+			processPermanents();
+			t1 = System.nanoTime();
+			processProjectiles();
+			t2 = System.nanoTime();
+			this.panel.repaint();
+		}
 	}
-
-	private long t0, t1, t2;
 
 	/**
 	 * <ul>
@@ -145,6 +158,13 @@ public class GameLogic implements ActionListener {
 	}
 
 	private void processPermanents() {
+		timeToNextEnemy -= FRAME_TIME;
+		while (timeToNextEnemy < 0) {
+			Enemy e = createEnemyFromUnit(currentLevel.units[enemyIndex++], 0, 0); // TODO find spawnpoint
+			if (e == null) continue;
+			timeToNextEnemy += currentLevel.units[enemyIndex].delay;
+		}
+
 		for (Entity e : permanentEntities) {
 			if (e instanceof Weapon) {
 				Gun g = ((Weapon) e).getGun();
@@ -232,6 +252,14 @@ public class GameLogic implements ActionListener {
 		}
 	}
 
+	private static Enemy createEnemyFromUnit(Unit unit, double x, double y) {
+		EnemyType type = EnemyType.getTypeForId(unit.typeId);
+
+		if (type == null) return null;
+
+		return new Enemy(type, x, y);
+	}
+
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
 		double cx1, cx2, cy1, cy2, pta = p.getRotation();
 		if (pta % Math.PI < Math.PI / 2) {
@@ -266,14 +294,10 @@ public class GameLogic implements ActionListener {
 		ta1 = (PI2 + ta1) % PI2;
 		ta2 = (PI2 + ta2) % PI2;
 
-		if (ta1 < ta2)
-			return ta1 <= ta && ta <= ta2;
+		if (ta1 < ta2) return ta1 <= ta && ta <= ta2;
 
 		return ta1 <= ta || ta <= ta2;
 	}
-
-	private boolean wasPaused = true;
-	private CollidableType buying = null;
 
 	/**
 	 * <ul>
@@ -290,6 +314,7 @@ public class GameLogic implements ActionListener {
 		this.stop();
 		buying = type;
 		window.info.setDisplayedType(type);
+		selected = null;
 	}
 
 	/**
@@ -311,20 +336,34 @@ public class GameLogic implements ActionListener {
 
 		for (EnemyType type : EnemyType.values())
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
-		
+
 		this.money -= buying.cost;
 
 		cancelBuy();
 		panel.repaint();
-		window.info.setDisplayedType(null);
 		window.buy.updateButtons();
+
+		setSelectedEntity(permanentEntities[permanentEntities.length - 1]);
 	}
 
 	public void cancelBuy() {
 		buying = null;
-		if (!this.wasPaused)
-			this.start();
+		if (!this.wasPaused) this.start();
 		window.info.setDisplayedType(null);
+	}
+
+	public Entity getSelectedEntity() {
+		return selected;
+	}
+
+	public void setSelectedEntity(Entity selected) {
+		this.selected = selected;
+
+		if (selected instanceof CollidableEntity) {
+			window.info.setDisplayedType(((CollidableEntity) selected).getType());
+		} else if (selected == null) {
+			window.info.setDisplayedType(null);
+		}
 	}
 
 	public boolean canPlaceObject(CollidableType type, int x, int y) {
@@ -362,7 +401,7 @@ public class GameLogic implements ActionListener {
 	public Node[][][] getNodes(EnemyType type) {
 		return nodes.get(type);
 	}
-	
+
 	public int getMoney() {
 		return money;
 	}
@@ -378,7 +417,7 @@ public class GameLogic implements ActionListener {
 	public Entity[] getPermanentEntities() {
 		return permanentEntities;
 	}
-	
+
 	public Projectile[] getProjectiles() {
 		return projectiles.toArray(new Projectile[projectiles.size()]);
 	}

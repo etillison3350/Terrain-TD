@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import terraintd.pathfinder.Node;
 
-public class World {
+public class World extends Type {
 
 	public final Tile[][] tiles;
 	public final Node[] spawnpoints;
@@ -17,7 +17,9 @@ public class World {
 
 	static World[] values;
 
-	World(Tile[][] tiles, Node goal, Node[] spawnpoints) {
+	World(String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
+		super(id);
+		
 		this.tiles = tiles;
 		this.goal = goal;
 		this.spawnpoints = spawnpoints;

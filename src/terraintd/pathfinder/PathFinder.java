@@ -59,9 +59,9 @@ public class PathFinder {
 			}
 		}
 
-		if (nodes[world.goal.y][world.goal.x][0].isClosed()) return nodes;
+		if (nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0].isClosed()) return nodes;
 
-		nodeSet.add(nodes[world.goal.y][world.goal.x][0]);
+		nodeSet.add(nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0]);
 
 		while (nodeSet.size() > 0) {
 			Node node = nodeSet.iterator().next();

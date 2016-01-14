@@ -1,7 +1,6 @@
 package terraintd.types;
 
-public abstract class CollidableType {
-	public final String id;
+public abstract class CollidableType extends Type{
 	public final int width;
 	public final int height;
 	public final int cost;
@@ -9,7 +8,8 @@ public abstract class CollidableType {
 	public final ImageType icon;
 
 	public CollidableType(String id, int width, int height, int cost, ImageType image, ImageType icon) {
-		this.id = id;
+		super(id);
+		
 		this.width = width;
 		this.height = height;
 		this.cost = cost;
