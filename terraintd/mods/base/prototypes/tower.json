@@ -18,7 +18,7 @@
             "src":"terraintd\\mods\\base\\images\\test.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\test.png"
+            "src":"terraintd\\mods\\base\\images\\magnet.png"
         },
         "projectiles":[
             {
@@ -29,7 +29,7 @@
                     10,
                     9
                 ],
-                "rate":200,
+                "rate":10,
                 "follow":true,
                 "max-dist":"inf",
                 "rotation":0,

@@ -32,6 +32,7 @@ public class Window extends JFrame {
 	public final JMenuItem saveGame;
 	public final JMenuItem saveGameAs;
 	public final JCheckBoxMenuItem pauseGame;
+	public final JCheckBoxMenuItem fastForward;
 	public final JMenuItem exit;
 
 	public final JMenu help;
@@ -70,6 +71,8 @@ public class Window extends JFrame {
 				} else {
 					logic.start();
 				}
+			} else if (e.getSource() == fastForward) {
+				logic.setFastForward(fastForward.isSelected());
 			} else if (e.getSource() == exit) {
 
 			}
@@ -107,6 +110,10 @@ public class Window extends JFrame {
 		pauseGame = new JCheckBoxMenuItem(Language.get("pause"), true);
 		pauseGame.addActionListener(menuListener);
 		game.add(pauseGame);
+		
+		fastForward = new JCheckBoxMenuItem(Language.get("fast-forward"), false);
+		fastForward.addActionListener(menuListener);
+		game.add(fastForward);
 
 		game.addSeparator();
 

@@ -1,7 +1,7 @@
 package terraintd.object;
 
-import terraintd.object.Gun.TempProjectile;
 import terraintd.types.CollidableType;
+import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
 
 public class Tower extends CollidableEntity implements Weapon {
@@ -48,7 +48,7 @@ public class Tower extends CollidableEntity implements Weapon {
 		this.type = type;
 		this.x = x;
 		this.y = y;
-		this.gun = new Gun(type.projectiles, type.range, x + this.getWidth() / 2, y + this.getHeight() / 2);
+		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height);
 	}
 
 	@Override
@@ -62,12 +62,11 @@ public class Tower extends CollidableEntity implements Weapon {
 	}
 
 	@Override
-	public Projectile[] convertFromTempProjectiles(TempProjectile[] temps) {
-		Projectile[] ps = new Projectile[temps.length];
+	public Projectile[] createProjectiles(ProjectileType[] types) {
+		Projectile[] ps = new Projectile[types.length];
 
-		for (int n = 0; n < temps.length; n++) {
-			ps[n] = new Projectile(temps[n].type, this);
-		}
+		for (int n = 0; n < types.length; n++)
+			ps[n] = new Projectile(types[n], this);
 
 		return ps;
 	}

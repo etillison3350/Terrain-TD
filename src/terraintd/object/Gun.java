@@ -81,8 +81,8 @@ public class Gun {
 		return target == null ? Float.MAX_VALUE : shooter.getY() - target.getY() * shooter.getY() - target.getY() + shooter.getX() - target.getX() * shooter.getX() - target.getX();
 	}
 
-	public TempProjectile[] fire() {
-		ArrayList<TempProjectile> firing = new ArrayList<>();
+	public ProjectileType[] fire() {
+		ArrayList<ProjectileType> firing = new ArrayList<>();
 
 		if (getDistanceSq() < range * range) {
 			for (int n = 0; n < time.length; n++) {
@@ -90,25 +90,12 @@ public class Gun {
 
 				while (time[n] > 0) {
 					time[n] -= 1.0 / projectiles[n].rate;
-					firing.add(new TempProjectile(projectiles[n], shooter.getX(), shooter.getY()));
+					firing.add(projectiles[n]);
 				}
 			}
 		}
 
-		return firing.toArray(new TempProjectile[firing.size()]);
-	}
-
-	public static class TempProjectile {
-
-		public final ProjectileType type;
-		public final double x, y;
-
-		public TempProjectile(ProjectileType type, double x, double y) {
-			this.type = type;
-			this.x = x;
-			this.y = y;
-		}
-
+		return firing.toArray(new ProjectileType[firing.size()]);
 	}
 
 }

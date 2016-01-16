@@ -23,6 +23,7 @@ import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Projectile;
 import terraintd.object.Tower;
+import terraintd.object.Weapon;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import terraintd.GameLogic;
-import terraintd.object.Gun.TempProjectile;
 import terraintd.pathfinder.Node;
 import terraintd.types.EnemyType;
+import terraintd.types.ProjectileType;
 import terraintd.types.Type;
 import terraintd.types.World;
 
@@ -54,12 +54,11 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	@Override
-	public Projectile[] convertFromTempProjectiles(TempProjectile[] temps) {
-		Projectile[] ps = new Projectile[temps.length];
+	public Projectile[] createProjectiles(ProjectileType[] types) {
+		Projectile[] ps = new Projectile[types.length];
 
-		for (int n = 0; n < temps.length; n++) {
-			ps[n] = new Projectile(temps[n].type, this);
-		}
+		for (int n = 0; n < types.length; n++)
+			ps[n] = new Projectile(types[n], this);
 
 		return ps;
 	}

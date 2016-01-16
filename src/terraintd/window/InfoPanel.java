@@ -47,16 +47,16 @@ public class InfoPanel extends JPanel {
 
 	public InfoPanel(Window window) {
 		try {
-			this.playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/play.png").toFile());
+			this.playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/play.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/pause.png").toFile());
+			this.pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/pause.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/ff.png").toFile());
+			this.ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/ff.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/rew.png").toFile());
+			this.rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/rew.png").toFile());
 		} catch (IOException e) {}
 
 		this.window = window;
@@ -110,6 +110,13 @@ public class InfoPanel extends JPanel {
 		this.fastForward.setBackground(new Color(184, 207, 229));
 		this.fastForward.setBorderPainted(false);
 		this.fastForward.setFocusPainted(false);
+		this.fastForward.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (window.fastForward.isSelected() != fastForward.isSelected()) window.fastForward.doClick();
+			}
+		});
 		this.add(fastForward, c);
 
 		this.setDisplayedType(null);

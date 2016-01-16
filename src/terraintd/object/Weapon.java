@@ -1,9 +1,11 @@
 package terraintd.object;
 
+import terraintd.types.ProjectileType;
+
 public interface Weapon {
 
 	public Gun getGun();
 	
-	public Projectile[] convertFromTempProjectiles(Gun.TempProjectile[] temps);
+	public Projectile[] createProjectiles(ProjectileType[] types);
 	
 }

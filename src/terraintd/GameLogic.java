@@ -131,6 +131,10 @@ public class GameLogic implements ActionListener {
 		this.window.repaint();
 		if (this.window.buy != null) this.window.buy.updateButtons();
 	}
+	
+	public void setFastForward(boolean fastForward) {
+		this.timer.setDelay((int) ((fastForward ? 500 : 1000) * FRAME_TIME));
+	}
 
 	/**
 	 * Runs a single frame
@@ -230,7 +234,7 @@ public class GameLogic implements ActionListener {
 
 					g.target(target);
 
-					for (Projectile p : ((Weapon) e).convertFromTempProjectiles(g.fire())) {
+					for (Projectile p : ((Weapon) e).createProjectiles(g.fire())) {
 						if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow) p.getTarget().damageFuture(p);
 
 						this.projectiles.add(p);

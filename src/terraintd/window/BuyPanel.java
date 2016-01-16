@@ -156,7 +156,7 @@ public class BuyPanel extends JPanel {
 			op.filter(gray, gray);
 
 			try {
-				this.cancelImage = ImageIO.read(Paths.get("terraintd/mods/base/images/cancel.png").toFile());
+				this.cancelImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/cancel.png").toFile());
 			} catch (IOException e) {
 				this.cancelImage = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
 			}
