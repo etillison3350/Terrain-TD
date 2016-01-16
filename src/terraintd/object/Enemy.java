@@ -1,9 +1,13 @@
 package terraintd.object;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import terraintd.GameLogic;
 import terraintd.object.Gun.TempProjectile;
 import terraintd.pathfinder.Node;
 import terraintd.types.EnemyType;
+import terraintd.types.Type;
 import terraintd.types.World;
 
 public class Enemy extends Entity implements Weapon {
@@ -13,6 +17,9 @@ public class Enemy extends Entity implements Weapon {
 
 	private double x, y;
 	private double health;
+	private double deathTime = 0;
+	private int dead;
+	public List<Projectile> futureDamage;
 
 	public final World world;
 
@@ -35,7 +42,10 @@ public class Enemy extends Entity implements Weapon {
 		this.prevNode = location;
 		this.nextNode = location.getNextNode();
 		this.world = world;
+		this.health = type.health;
 		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
+
+		this.futureDamage = new ArrayList<>();
 	}
 
 	@Override
@@ -71,7 +81,9 @@ public class Enemy extends Entity implements Weapon {
 			this.y = nextNode.getAbsY();
 			this.prevNode = nextNode;
 			this.nextNode = nextNode.getNextNode();
-			return nextNode == null ? false : move((distance - d) / speed);
+			boolean ret = nextNode == null ? false : move((distance - d) / speed);
+			if (!ret) dead = 2;
+			return ret;
 		}
 
 		double dx = nextNode.getAbsX() - prevNode.getAbsX();
@@ -98,18 +110,59 @@ public class Enemy extends Entity implements Weapon {
 	 * @return The amount of money given to the player as a result of damaging this enemy. Returns 0 if the enemy did not die.
 	 *         </ul>
 	 */
-	public int damage(double damage) {
+	public boolean damage(double damage) {
 		this.health -= damage;
 
-		if (this.health <= 0.00001) {
-			return this.type.reward;
+		if (this.health <= 0.00001 && this.dead == 0) {
+			this.dead = 1;
+			return true;
 		}
+		return false;
+	}
 
-		return 0;
+	public boolean damage(Projectile p) {
+		this.futureDamage.remove(p);
+
+		return this.damage(p.damageForEntity(this));
 	}
 
 	public double getHealth() {
 		return this.health;
+	}
+
+	public void damageFuture(Projectile p) {
+		this.futureDamage.add(p);
+	}
+
+	public double getFutureHealth() {
+		double ret = this.health;
+
+		for (Projectile p : futureDamage)
+			ret -= p.type.damage - (p.type.falloff < 0 ? 0 : p.type.falloff);
+
+		return ret;
+	}
+
+	public Node getNextNode() {
+		return nextNode;
+	}
+
+	public boolean die() {
+		this.deathTime += GameLogic.FRAME_TIME;
+		return this.deathTime >= 1;
+	}
+
+	public double getDeathTime() {
+		return deathTime;
+	}
+
+	public boolean isDead() {
+		return dead == 1;
+	}
+
+	@Override
+	public Type getType() {
+		return this.type;
 	}
 
 }

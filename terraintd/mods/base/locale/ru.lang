@@ -17,6 +17,9 @@ cancel=отменить
 confirm-new=Сохранить в эту игру?
 title-confirm-new=Новая игра
 
+level-complete=Уровень пройден
+level-failed=Уровень провален
+
 towers=Башни
 enemies=враги
 obstacles=Препятствия

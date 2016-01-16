@@ -3,6 +3,8 @@ package terraintd.window;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -15,6 +17,7 @@ import java.awt.geom.Point2D;
 import javax.swing.JPanel;
 
 import terraintd.GameLogic;
+import terraintd.GameLogic.State;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
@@ -23,6 +26,7 @@ import terraintd.object.Tower;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;
+import terraintd.types.Language;
 import terraintd.types.TowerType;
 
 public class GamePanel extends JPanel {
@@ -198,9 +202,36 @@ public class GamePanel extends JPanel {
 			g.drawRect((int) (dx + p.getX() * tile), (int) (dy + p.getY() * tile), 3, 3);
 		}
 
-		g.setColor(Color.RED);
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
 		for (Entity e : logic.getPermanentEntities()) {
+			if (e instanceof Enemy) {
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - ((Enemy) e).getDeathTime())));
+				g.setColor(Color.GREEN);
+				if (((Enemy) e).isDead()) g.drawString(String.format(Language.getCurrentLocale(), "+%d", ((Enemy) e).type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - ((Enemy) e).getDeathTime()) * tile));
+			} else {
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+			}
+			g.setColor(Color.RED);
 			g.fillRect((int) (dx + e.getX() * tile), (int) (dy + e.getY() * tile), 3, 3);
+		}
+
+		if (logic.getState() != State.PLAYING) {
+			g.setColor(Color.BLACK);
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5F));
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+			String str = logic.getState().toString();
+
+			g.setColor(Color.WHITE);
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+
+			FontMetrics fm;
+			int fsize = 0;
+			do {
+				fm = g.getFontMetrics(new Font(Font.SANS_SERIF, Font.BOLD, ++fsize));
+			} while (fm.stringWidth(str) < this.getWidth() * 0.9);
+			g.setFont(fm.getFont());
+			g.drawString(str, 0.5F * (this.getWidth() - fm.stringWidth(str)), this.getHeight() - (0.5F * (this.getHeight() - fm.getAscent())));
 		}
 	}
 

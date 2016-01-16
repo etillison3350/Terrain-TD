@@ -16,9 +16,9 @@ public class Projectile {
 	private double radius;
 	private double deathTime;
 
-	private final Entity target;
+	private final Enemy target;
 	private final double targetX, targetY;
-	private ArrayList<Entity> hitTargets;
+	private ArrayList<Enemy> hitTargets;
 
 	public <E extends Entity & Weapon> Projectile(ProjectileType type, E shootingEntity) {
 		this.type = type;
@@ -118,7 +118,7 @@ public class Projectile {
 		return radius;
 	}
 
-	public Entity getTarget() {
+	public Enemy getTarget() {
 		return target;
 	}
 
@@ -138,11 +138,11 @@ public class Projectile {
 //
 //	}
 
-	public ArrayList<Entity> getHitTargets() {
+	public ArrayList<Enemy> getHitTargets() {
 		return hitTargets;
 	}
 
-	public void hitTarget(Entity target) {
+	public void hitTarget(Enemy target) {
 		this.hitTargets.add(target);
 	}
 

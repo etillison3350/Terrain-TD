@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.Timer;
@@ -21,6 +22,7 @@ import terraintd.pathfinder.PathFinder;
 import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
+import terraintd.types.Language;
 import terraintd.types.Level;
 import terraintd.types.Level.Unit;
 import terraintd.types.ObstacleType;
@@ -54,13 +56,15 @@ public class GameLogic implements ActionListener {
 	public static final double FRAME_TIME = 1.0 / FRAME_RATE;
 
 	public final Random rand = new Random();
-	
+
 	private final Window window;
 	private final GamePanel panel;
 
-	private Entity[] permanentEntities;
+	private State state = State.PLAYING;
+	
+	private List<Entity> permanentEntities;
 
-	private ArrayList<Projectile> projectiles;
+	private List<Projectile> projectiles;
 
 	private Level currentLevel;
 	private World currentWorld;
@@ -102,23 +106,29 @@ public class GameLogic implements ActionListener {
 	}
 
 	public void reset() {
-		this.timer.stop();
-		this.money = 1000;
-		this.health = this.maxHealth = 10000;
-
-		this.currentWorld = World.values()[2];
+		if (!this.isPaused()) this.window.pauseGame.doClick();
+		this.stop();
+		
+		this.state = State.PLAYING;
+		
+		this.currentWorld = World.values()[1];
 		this.currentLevel = Level.values()[0];
 
+		this.money = this.currentLevel.money;
+		this.health = this.maxHealth = this.currentLevel.health;
+		
 		this.timeToNextEnemy = currentLevel.units[0].delay;
 		this.enemyIndex = 0;
 
-		this.permanentEntities = new Entity[] {};
+		this.permanentEntities = new ArrayList<>();
 		this.projectiles = new ArrayList<>();
 
 		for (EnemyType type : EnemyType.values())
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
 
-		this.panel.repaint();
+		this.selected = null;
+		
+		this.window.repaint();
 		if (this.window.buy != null) this.window.buy.updateButtons();
 	}
 
@@ -162,34 +172,67 @@ public class GameLogic implements ActionListener {
 	}
 
 	private void processPermanents() {
+		if (this.health <= 0) {
+			this.health = 0;
+			if (!this.isPaused()) window.pauseGame.doClick();
+			this.stop();
+			this.state = State.FAILED;
+			this.window.info.paintHealthBar();
+			this.panel.repaint();
+		} else if (enemyIndex == currentLevel.units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
+			if (!this.isPaused()) window.pauseGame.doClick();
+			this.stop();
+			this.state = State.COMPLETE;
+			this.panel.repaint();
+		}
+		
 		timeToNextEnemy -= FRAME_TIME;
 		while (timeToNextEnemy < 0 && enemyIndex < currentLevel.units.length) {
-			EnemyType et = typeOfUnit(currentLevel.units[enemyIndex++]);
+			EnemyType et = typeOfUnit(currentLevel.units[enemyIndex]);
 			if (et == null || enemyIndex == currentLevel.units.length) continue;
-			
+
 			ArrayList<Node> spawnPoints = new ArrayList<>();
 			Node[][][] nodes = this.nodes.get(et);
-			
+
 			for (Node n : currentWorld.spawnpoints) {
-				if (nodes[n.y][n.x][n.top ? 1 : 0].getNextNode() != null) 
-					spawnPoints.add(nodes[n.y][n.x][n.top ? 1 : 0]);
+				if (nodes[n.y][n.x][n.top ? 1 : 0].getNextNode() != null) spawnPoints.add(nodes[n.y][n.x][n.top ? 1 : 0]);
 			}
-			
+
 			if (spawnPoints.size() == 0) continue; // TODO Remove obstacles?
-			
-			Entity[] newEntities = new Entity[permanentEntities.length + 1];
-			System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
-			newEntities[permanentEntities.length] = new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size())), currentWorld);
-			permanentEntities = newEntities;
-			
-			timeToNextEnemy += currentLevel.units[enemyIndex].delay;
+
+			permanentEntities.add(new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size())), currentWorld));
+
+			timeToNextEnemy += currentLevel.units[enemyIndex++].delay;
 		}
 
-		for (Entity e : permanentEntities) {
+		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
+		for (Entity e : permanents) {
 			if (e instanceof Weapon) {
 				Gun g = ((Weapon) e).getGun();
 				if (g != null) {
+					double minCost = Float.MAX_VALUE;
+					Enemy target = null;
+
+					for (Entity entity : permanents) {
+						if (!(entity instanceof Enemy)) continue;
+
+						Enemy enemy = (Enemy) entity;
+						if (enemy.getFutureHealth() < 0) continue;
+
+						double dx = enemy.getX() - g.shooter.getX();
+						double dy = enemy.getY() - g.shooter.getY();
+
+						if (dx * dx + dy * dy < g.range * g.range && enemy.getNextNode().getCost() < minCost) {
+							target = enemy;
+							minCost = enemy.getNextNode().getCost();
+						}
+					}
+
+					g.target(target);
+
 					for (Projectile p : ((Weapon) e).convertFromTempProjectiles(g.fire())) {
+						if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow) p.getTarget().damageFuture(p);
+
 						this.projectiles.add(p);
 					}
 				}
@@ -198,17 +241,22 @@ public class GameLogic implements ActionListener {
 			if (e instanceof Enemy) {
 				Enemy enemy = (Enemy) e;
 
-				if (enemy.getHealth() < 0) continue;
-				
+				if (enemy.getHealth() < 0) {
+					if (enemy.die()) permanentEntities.remove(enemy);
+					continue;
+				}
+
 				if (!enemy.move()) {
-					// TODO Damage
+					this.health -= enemy.type.damage;
 					enemy.damage(Float.MAX_VALUE);
+					window.info.paintHealthBar();
 				}
 			}
 		}
 	}
 
 	private void processProjectiles() {
+		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
 		Projectile[] projectiles = this.projectiles.toArray(new Projectile[this.projectiles.size()]);
 		for (Projectile p : projectiles) {
 			if (p.getDeathTime() >= 0) {
@@ -220,13 +268,17 @@ public class GameLogic implements ActionListener {
 				p.fade();
 
 				if (p.type.delivery == DeliveryType.SINGLE_TARGET) {
-					if (p.type.follow && p.getTarget() instanceof Enemy) {
-						this.money += ((Enemy) p.getTarget()).damage(p.type.damage);
+					if (p.type.follow) {
+						if (p.getTarget().damage(p)) {
+							this.money += p.getTarget().type.reward;
+							this.window.buy.updateButtons();
+							this.window.info.refreshDisplay();
+						}
 					}
 
 					if (p.type.explodeRadius > 0.00001) {
-						for (Entity e : permanentEntities) {
-							if (!(e instanceof Enemy)) continue;
+						for (Entity e : permanents) {
+							if (!(e instanceof Enemy) || (p.type.follow && p.getTarget() == e)) continue;
 
 							Enemy enemy = (Enemy) e;
 
@@ -234,12 +286,16 @@ public class GameLogic implements ActionListener {
 							double dy = e.getY() - p.getX();
 
 							if (dy * dy + dx * dx <= p.type.explodeRadius * p.type.explodeRadius) {
-								this.money += enemy.damage(p.damageForEntity(enemy));
+								if (enemy.damage(p)) {
+									this.money += enemy.type.reward;
+									this.window.buy.updateButtons();
+									this.window.info.refreshDisplay();
+								}
 							}
 						}
 					}
 				} else {
-					for (Entity e : permanentEntities) {
+					for (Entity e : permanents) {
 						if (!(e instanceof Enemy)) continue;
 
 						double dx = e.getX() - p.getX();
@@ -266,8 +322,12 @@ public class GameLogic implements ActionListener {
 						}
 
 						if (damage) {
-							this.money += ((Enemy) e).damage(p.damageForEntity(e));
-							p.hitTarget(e);
+							if (((Enemy) e).damage(p)) {
+								this.money += ((Enemy) e).type.reward;
+								this.window.buy.updateButtons();
+								this.window.info.refreshDisplay();
+							}
+							p.hitTarget((Enemy) e);
 						}
 					}
 				}
@@ -348,27 +408,25 @@ public class GameLogic implements ActionListener {
 	 *        </ul>
 	 */
 	public void buyObject(int x, int y) {
-		Entity[] newEntities = new Entity[permanentEntities.length + 1];
-		System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
-		newEntities[permanentEntities.length] = buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y);
-		permanentEntities = newEntities;
+		permanentEntities.add(buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y));
 
 		for (EnemyType type : EnemyType.values())
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
 
-		for (Entity e : permanentEntities) {
+		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
+		for (Entity e : permanents) {
 			if (!(e instanceof Enemy)) continue;
-			
+
 			((Enemy) e).resetNodes(this.nodes.get(((Enemy) e).type));
 		}
-		
+
 		this.money -= buying.cost;
 
 		cancelBuy();
 		panel.repaint();
 		window.buy.updateButtons();
 
-		setSelectedEntity(permanentEntities[permanentEntities.length - 1]);
+		setSelectedEntity(permanentEntities.get(permanentEntities.size() - 1));
 	}
 
 	public void cancelBuy() {
@@ -394,7 +452,8 @@ public class GameLogic implements ActionListener {
 	public boolean canPlaceObject(CollidableType type, int x, int y) {
 		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
 
-		for (Entity e : permanentEntities) {
+		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
+		for (Entity e : permanents) {
 			if (!(e instanceof CollidableEntity)) continue;
 
 			if (((CollidableEntity) e).getRectangle().intersects(x, y, type.width, type.height)) return false;
@@ -440,7 +499,7 @@ public class GameLogic implements ActionListener {
 	}
 
 	public Entity[] getPermanentEntities() {
-		return permanentEntities;
+		return permanentEntities.toArray(new Entity[permanentEntities.size()]);
 	}
 
 	public Projectile[] getProjectiles() {
@@ -453,6 +512,20 @@ public class GameLogic implements ActionListener {
 
 	public boolean isPaused() {
 		return !this.timer.isRunning();
+	}
+	
+	public enum State {
+		PLAYING,
+		COMPLETE,
+		FAILED;
+		
+		public String toString() {
+			return Language.get("level-" + this.name().toLowerCase());
+		}
+	}
+
+	public State getState() {
+		return state;
 	}
 
 }

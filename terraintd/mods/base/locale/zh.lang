@@ -17,6 +17,9 @@ cancel=取消
 confirm-new=保存這個遊戲？
 title-confirm-new=新遊戲
 
+level-complete=級別完成
+level-failed=級別失敗
+
 towers=塔
 enemies=敵人
 obstacles=障礙

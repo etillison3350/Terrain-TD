@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -556,7 +555,8 @@ public final class TypeGenerator {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
-		double health = map.get("health") instanceof Number ? ((Number) map.get("health")).doubleValue() : 100;
+		double health = map.get("health") instanceof Number ? ((Number) map.get("health")).doubleValue() : 1000;
+		int money = map.get("money") instanceof Number ? ((Number) map.get("money")).intValue() : 1000;
 
 		ArrayList<Unit> units = new ArrayList<>();
 
@@ -592,7 +592,7 @@ public final class TypeGenerator {
 
 		if (units.size() <= 0) throw new IllegalArgumentException();
 
-		return new Level(id, units.toArray(new Unit[units.size()]), health);
+		return new Level(id, units.toArray(new Unit[units.size()]), health, money);
 	}
 
 	static ArrayList<Object> parseJSON(String json) {

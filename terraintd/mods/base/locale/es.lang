@@ -17,6 +17,9 @@ cancel=Cancelar
 confirm-new=Guarde este juego?
 title-confirm-new=Nuevo Juego
 
+level-complete=Nivel Completado
+level-failed=Nivel Fallado
+
 towers=Torres
 enemies=Enemigos
 obstacles=Obstáculos

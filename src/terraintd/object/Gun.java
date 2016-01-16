@@ -7,11 +7,11 @@ import terraintd.types.ProjectileType;
 
 public class Gun {
 
-	final ProjectileType[] projectiles;
-	final double range;
-	final double x, y;
+	public final ProjectileType[] projectiles;
+	public final double range;
+	public final Entity shooter;
 
-	private Entity target;
+	private Enemy target;
 
 	private double[] time;
 
@@ -20,8 +20,7 @@ public class Gun {
 		if (this.projectiles == null || this.projectiles.length == 0) throw new IllegalArgumentException("projectiles must not be null or empty.");
 		this.range = range;
 		this.time = new double[projectiles.length];
-		this.x = x;
-		this.y = y;
+		this.shooter = new Position(x, y);
 	}
 
 	/**
@@ -54,15 +53,14 @@ public class Gun {
 
 		this.time = new double[projectiles.length];
 
-		this.x = e.getX();
-		this.y = e.getY();
+		this.shooter = e;
 	}
 
-	public Entity target(Entity e) {
+	public Enemy target(Enemy e) {
 		return this.target = e;
 	}
 
-	public Entity getTarget() {
+	public Enemy getTarget() {
 		return target;
 	}
 
@@ -76,11 +74,11 @@ public class Gun {
 	 *         </ul>
 	 */
 	public double getRotation() {
-		return target == null ? 0 : Math.atan2(this.y - target.getY(), this.x - target.getX());
+		return target == null ? 0 : Math.atan2(shooter.getY() - target.getY(), shooter.getX() - target.getX());
 	}
 
 	private double getDistanceSq() {
-		return target == null ? Float.MAX_VALUE : this.y - target.getY() * this.y - target.getY() + this.x - target.getX() * this.x - target.getX();
+		return target == null ? Float.MAX_VALUE : shooter.getY() - target.getY() * shooter.getY() - target.getY() + shooter.getX() - target.getX() * shooter.getX() - target.getX();
 	}
 
 	public TempProjectile[] fire() {
@@ -92,7 +90,7 @@ public class Gun {
 
 				while (time[n] > 0) {
 					time[n] -= 1.0 / projectiles[n].rate;
-					firing.add(new TempProjectile(projectiles[n], this.x, this.y));
+					firing.add(new TempProjectile(projectiles[n], shooter.getX(), shooter.getY()));
 				}
 			}
 		}

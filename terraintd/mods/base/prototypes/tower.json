@@ -22,14 +22,14 @@
         },
         "projectiles":[
             {
-                "delivery":"area",
+                "delivery":"single_target",
                 "explosion-radius":0,
-                "speed":1,
+                "speed":20,
                 "damage":[
                     10,
                     9
                 ],
-                "rate":2,
+                "rate":200,
                 "follow":true,
                 "max-dist":"inf",
                 "rotation":0,

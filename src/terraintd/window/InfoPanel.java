@@ -25,18 +25,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
-import terraintd.types.CollidableType;
 import terraintd.types.EffectType;
 import terraintd.types.Language;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
+import terraintd.types.Type;
 
 public class InfoPanel extends JPanel {
 
 	private static final long serialVersionUID = -7585731701891500747L;
 
 	private JEditorPane info;
+	private Type displayedType;
 
 	private BufferedImage playImage, pauseImage, ffImage, rewImage;
 
@@ -97,8 +98,7 @@ public class InfoPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (window.pauseGame.isSelected() == pause.isSelected())
-					window.pauseGame.doClick();
+				if (window.pauseGame.isSelected() == pause.isSelected()) window.pauseGame.doClick();
 			}
 		});
 		this.add(pause, c);
@@ -111,15 +111,16 @@ public class InfoPanel extends JPanel {
 		this.fastForward.setBorderPainted(false);
 		this.fastForward.setFocusPainted(false);
 		this.add(fastForward, c);
-		
+
 		this.setDisplayedType(null);
 	}
 
+	public void paintHealthBar() {
+		this.health.repaint();
+	}
+
 	String getStringForTowerType(TowerType type) {
-		String ret = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head>"
-				+ "<body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney())
-				+ "<h2>" + Language.get(type.id) + "</h2>" + String.format(Language.getCurrentLocale(), "<p>%s: %d x %d %s</p><p>%s: %.5g</p><p>%s: %.3g %s</p>", Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles), Language.get("detect-range"), type.range, Language.get("tiles"))
-				+ "<hr /><h3>" + Language.get("projectiles") + "</h3>";
+		String ret = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head>" + "<body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()) + "<h2>" + Language.get(type.id) + "</h2>" + String.format(Language.getCurrentLocale(), "<p>%s: %d x %d %s</p><p>%s: %.5g</p><p>%s: %.3g %s</p>", Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles), Language.get("detect-range"), type.range, Language.get("tiles")) + "<hr /><h3>" + Language.get("projectiles") + "</h3>";
 
 		for (ProjectileType p : type.projectiles) {
 			ret += String.format(Language.getCurrentLocale(), "<ul><li>%s: %s</li><li>%s: %.3g - %.3g</li><li>%s: %.4g %s</li><li>%s: %s</li><li style=\"font-weight: bold\">%s</li>", Language.get("delivery"), p.delivery.toString(), Language.get("damage"), p.damage, p.damage - p.falloff, Language.get("rate"), p.rate * 60, Language.get("rpm"), Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles")), Language.get("effects"));
@@ -167,8 +168,7 @@ public class InfoPanel extends JPanel {
 
 		@Override
 		public void paintComponent(Graphics g) {
-			if (g instanceof Graphics2D)
-				((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (g instanceof Graphics2D) ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, 256, 16);
@@ -182,13 +182,22 @@ public class InfoPanel extends JPanel {
 
 			g.setColor(Color.WHITE);
 
-			String str = String.format(Language.getCurrentLocale(), "%s: %.1f%%", Language.get("health"), 100 * window.logic.getHealth() / window.logic.getMaxHealth());
+			String str = String.format(Language.getCurrentLocale(), "%s: %.1f%%", Language.get("health"), Math.max(0, 100 * window.logic.getHealth() / window.logic.getMaxHealth()));
 			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
 		}
 
 	}
 
-	public void setDisplayedType(CollidableType type) {
+	public Type getDisplayedType() {
+		return displayedType;
+	}
+	
+	public void refreshDisplay() {
+		this.setDisplayedType(displayedType);
+	}
+	
+	public void setDisplayedType(Type type) {
+		this.displayedType = type;
 		if (type == null)
 			this.info.setText("<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()));
 		else

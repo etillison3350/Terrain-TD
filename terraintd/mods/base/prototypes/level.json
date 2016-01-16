@@ -2,9 +2,10 @@
     {
         "type": "level",
         "id": "level-example",
-        "health": 100,
+        "health": 1000,
+        "money": 1000,
         "enemies": [
-            ["enemy-example", 0.1, 2000]
+            ["enemy-example", 0.01, 2000]
         ]
     }
 ]

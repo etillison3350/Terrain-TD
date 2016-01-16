@@ -17,6 +17,9 @@ cancel=Annuler
 confirm-new=Enregistrer ce jeu?
 title-confirm-new=Nouveau Jeu
 
+level-complete=Niveau Complet
+level-failed=Niveau Échoué
+
 towers=Tours
 enemies=Ennemis
 obstacles=Obstacles

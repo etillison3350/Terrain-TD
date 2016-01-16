@@ -117,7 +117,7 @@ public class BuyPanel extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				pressed = false;
 				hovered = false;
-				if (window.logic.getBuyingType() == null) window.info.setDisplayedType(null);
+				if (window.logic.getBuyingType() == null) window.info.setDisplayedType(window.logic.getSelectedEntity() == null ? null : window.logic.getSelectedEntity().getType());
 				repaint();
 			}
 

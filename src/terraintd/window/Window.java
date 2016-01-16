@@ -42,6 +42,7 @@ public class Window extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == newGame) {
 				boolean wasPaused = logic.isPaused();
+				if (!wasPaused) pauseGame.doClick();
 				logic.stop();
 
 				int i = JOptionPane.showOptionDialog(Window.this, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
