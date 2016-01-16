@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -445,7 +446,7 @@ public final class TypeGenerator {
 
 		for (int y = 0; y < terrains.length; y++) {
 			for (int x = 0; x < terrains[0].length; x++) {
-				if (!(terrain.get(y) instanceof List<?>) || y >= ((List<?>) terrain.get(y)).size() || !(((List<?>) terrain.get(y)).get(x) instanceof Number)) {
+				if (!(terrain.get(y) instanceof List<?>) || x >= ((List<?>) terrain.get(y)).size() || !(((List<?>) terrain.get(y)).get(x) instanceof Number)) {
 					terrains[y][x] = Terrain.DEEP_WATER;
 				} else {
 					try {
@@ -517,7 +518,7 @@ public final class TypeGenerator {
 		}
 
 		if (right != null) {
-			for (Object o : bottom) {
+			for (Object o : right) {
 				if (o instanceof Number) spawnNodes.add(new Node(terrains[0].length, ((Number) o).intValue(), false));
 			}
 		}
@@ -528,7 +529,7 @@ public final class TypeGenerator {
 
 			for (int y = 0; y < elevations.length; y++) {
 				for (int x = 0; x < elevations[0].length; x++) {
-					if (!(elevs.get(y) instanceof List<?>) || y >= ((List<?>) elevs.get(y)).size() || !(((List<?>) elevs.get(y)).get(x) instanceof Number)) {
+					if (!(elevs.get(y) instanceof List<?>) || x >= ((List<?>) elevs.get(y)).size() || !(((List<?>) elevs.get(y)).get(x) instanceof Number)) {
 						elevations[y][x] = 0;
 					} else {
 						try {
@@ -569,8 +570,6 @@ public final class TypeGenerator {
 				if (enemy instanceof List<?>) {
 					List<?> unit = (List<?>) enemy;
 
-					System.out.println(unit);
-					
 					if (unit.size() <= 0 || !(unit.get(0) instanceof String)) continue;
 
 					typeId = (String) unit.get(0);

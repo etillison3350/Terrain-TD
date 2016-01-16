@@ -4,7 +4,7 @@
         "id": "level-example",
         "health": 100,
         "enemies": [
-            ["enemy-example", 1000, 20]
+            ["enemy-example", 0.1, 2000]
         ]
     }
 ]

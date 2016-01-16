@@ -1,4 +1,22 @@
+lang-name=русский язык
+
 title=Обороны башни на территория
+
+game=играть
+help=Помогите
+	
+new=новый
+open=открытым
+save=Сохранить
+dont-save=отбрасывать
+save-as=Сохранить как
+pause=пауза
+exit=оставлять
+cancel=отменить
+	
+confirm-new=Сохранить в эту игру?
+title-confirm-new=Новая игра
+
 towers=Башни
 enemies=враги
 obstacles=Препятствия

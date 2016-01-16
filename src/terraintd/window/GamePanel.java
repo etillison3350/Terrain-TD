@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import terraintd.GameLogic;
 import terraintd.object.CollidableEntity;
+import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Projectile;
 import terraintd.object.Tower;
@@ -116,10 +117,18 @@ public class GamePanel extends JPanel {
 
 		g.drawImage(logic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
 
-		g.setColor(Color.WHITE);
 		for (Node[][] nodess : logic.getNodes(EnemyType.values()[0])) {
 			for (Node[] nodes : nodess) {
 				for (Node node : nodes) {
+					for (Node spawn : logic.getCurrentWorld().spawnpoints) {
+						if (node.x == spawn.x && node.y == spawn.y && node.top == spawn.top) {
+							g.setColor(Color.GREEN);
+							g.drawRect((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), 3, 3);
+						}
+					}
+
+					g.setColor(Color.WHITE);
+
 					if (node.getNextNode() == null) continue;
 					g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
 				}
@@ -187,6 +196,11 @@ public class GamePanel extends JPanel {
 
 		for (Projectile p : logic.getProjectiles()) {
 			g.drawRect((int) (dx + p.getX() * tile), (int) (dy + p.getY() * tile), 3, 3);
+		}
+
+		g.setColor(Color.RED);
+		for (Entity e : logic.getPermanentEntities()) {
+			g.fillRect((int) (dx + e.getX() * tile), (int) (dy + e.getY() * tile), 3, 3);
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.swing.Timer;
 
@@ -52,6 +53,8 @@ public class GameLogic implements ActionListener {
 	 */
 	public static final double FRAME_TIME = 1.0 / FRAME_RATE;
 
+	public final Random rand = new Random();
+	
 	private final Window window;
 	private final GamePanel panel;
 
@@ -103,7 +106,7 @@ public class GameLogic implements ActionListener {
 		this.money = 1000;
 		this.health = this.maxHealth = 10000;
 
-		this.currentWorld = World.values()[0];
+		this.currentWorld = World.values()[2];
 		this.currentLevel = Level.values()[0];
 
 		this.timeToNextEnemy = currentLevel.units[0].delay;
@@ -116,6 +119,7 @@ public class GameLogic implements ActionListener {
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
 
 		this.panel.repaint();
+		if (this.window.buy != null) this.window.buy.updateButtons();
 	}
 
 	/**
@@ -159,9 +163,25 @@ public class GameLogic implements ActionListener {
 
 	private void processPermanents() {
 		timeToNextEnemy -= FRAME_TIME;
-		while (timeToNextEnemy < 0) {
-			Enemy e = createEnemyFromUnit(currentLevel.units[enemyIndex++], 0, 0); // TODO find spawnpoint
-			if (e == null) continue;
+		while (timeToNextEnemy < 0 && enemyIndex < currentLevel.units.length) {
+			EnemyType et = typeOfUnit(currentLevel.units[enemyIndex++]);
+			if (et == null || enemyIndex == currentLevel.units.length) continue;
+			
+			ArrayList<Node> spawnPoints = new ArrayList<>();
+			Node[][][] nodes = this.nodes.get(et);
+			
+			for (Node n : currentWorld.spawnpoints) {
+				if (nodes[n.y][n.x][n.top ? 1 : 0].getNextNode() != null) 
+					spawnPoints.add(nodes[n.y][n.x][n.top ? 1 : 0]);
+			}
+			
+			if (spawnPoints.size() == 0) continue; // TODO Remove obstacles?
+			
+			Entity[] newEntities = new Entity[permanentEntities.length + 1];
+			System.arraycopy(permanentEntities, 0, newEntities, 0, permanentEntities.length);
+			newEntities[permanentEntities.length] = new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size())), currentWorld);
+			permanentEntities = newEntities;
+			
 			timeToNextEnemy += currentLevel.units[enemyIndex].delay;
 		}
 
@@ -178,8 +198,11 @@ public class GameLogic implements ActionListener {
 			if (e instanceof Enemy) {
 				Enemy enemy = (Enemy) e;
 
+				if (enemy.getHealth() < 0) continue;
+				
 				if (!enemy.move()) {
 					// TODO Damage
+					enemy.damage(Float.MAX_VALUE);
 				}
 			}
 		}
@@ -252,12 +275,8 @@ public class GameLogic implements ActionListener {
 		}
 	}
 
-	private static Enemy createEnemyFromUnit(Unit unit, double x, double y) {
-		EnemyType type = EnemyType.getTypeForId(unit.typeId);
-
-		if (type == null) return null;
-
-		return new Enemy(type, x, y);
+	private static EnemyType typeOfUnit(Unit unit) {
+		return EnemyType.getTypeForId(unit.typeId);
 	}
 
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
@@ -337,6 +356,12 @@ public class GameLogic implements ActionListener {
 		for (EnemyType type : EnemyType.values())
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
 
+		for (Entity e : permanentEntities) {
+			if (!(e instanceof Enemy)) continue;
+			
+			((Enemy) e).resetNodes(this.nodes.get(((Enemy) e).type));
+		}
+		
 		this.money -= buying.cost;
 
 		cancelBuy();

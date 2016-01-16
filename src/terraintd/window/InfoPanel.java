@@ -111,6 +111,8 @@ public class InfoPanel extends JPanel {
 		this.fastForward.setBorderPainted(false);
 		this.fastForward.setFocusPainted(false);
 		this.add(fastForward, c);
+		
+		this.setDisplayedType(null);
 	}
 
 	String getStringForTowerType(TowerType type) {
