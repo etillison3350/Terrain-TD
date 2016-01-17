@@ -407,27 +407,11 @@ public final class TypeGenerator {
 		String src = (String) map.get("src");
 		if (src == null) return null;
 
-		Object collision = map.get("collision");
-		double width = 1;
-		double height = 1;
-		if (collision instanceof List<?>) {
-			width = ((List<?>) collision).get(0) instanceof Number ? ((Number) ((List<?>) collision).get(0)).doubleValue() : 1;
-			height = ((List<?>) collision).get(1) instanceof Number ? ((Number) ((List<?>) collision).get(1)).doubleValue() : 1;
-		} else if (collision instanceof Map<?, ?>) {
-			width = ((Map<?, ?>) collision).get("width") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("width")).doubleValue() : 1;
-			height = ((Map<?, ?>) collision).get("height") instanceof Number ? ((Number) ((Map<?, ?>) collision).get("height")).doubleValue() : 1;
-		}
+		double width = map.get("width") instanceof Number ? ((Number) map.get("width")).doubleValue() : 1;
+		double height = map.get("height") instanceof Number ? ((Number) map.get("height")).doubleValue() : 1;
 
-		Object origin = map.get("origin");
-		double x = 1;
-		double y = 1;
-		if (origin instanceof List<?>) {
-			x = ((List<?>) origin).get(0) instanceof Number ? ((Number) ((List<?>) origin).get(0)).doubleValue() : 1;
-			y = ((List<?>) origin).get(1) instanceof Number ? ((Number) ((List<?>) origin).get(1)).doubleValue() : 1;
-		} else if (origin instanceof Map<?, ?>) {
-			x = ((Map<?, ?>) origin).get("x") instanceof Number ? ((Number) ((Map<?, ?>) origin).get("x")).doubleValue() : 1;
-			y = ((Map<?, ?>) origin).get("y") instanceof Number ? ((Number) ((Map<?, ?>) origin).get("y")).doubleValue() : 1;
-		}
+		double x = map.get("x") instanceof Number ? ((Number) map.get("x")).doubleValue() : 1;
+		double y = map.get("y") instanceof Number ? ((Number) map.get("y")).doubleValue() : 1;
 
 		return new ImageType(src, width, height, x, y);
 	}

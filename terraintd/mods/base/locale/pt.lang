@@ -55,4 +55,7 @@ rpm=TPM
 detect-range=Faixa de detecção
 range=Alcance
 
-tower-example=Exemplo
+tower-single=Canhão
+tower-line=Canhão Laser
+tower-area=PEM
+tower-sector=Torre de Torta

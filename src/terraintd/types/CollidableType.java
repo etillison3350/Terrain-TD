@@ -1,6 +1,6 @@
 package terraintd.types;
 
-public abstract class CollidableType extends Type{
+public abstract class CollidableType extends IdType{
 	public final int width;
 	public final int height;
 	public final int cost;

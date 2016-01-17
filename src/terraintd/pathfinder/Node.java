@@ -24,11 +24,11 @@ public class Node {
 		this.y = y;
 		this.top = top;
 	}
-	
+
 	public double getAbsX() {
 		return this.x + (this.top ? 0.5 : 0);
 	}
-	
+
 	public double getAbsY() {
 		return this.y + (this.top ? 0 : 0.5);
 	}
@@ -55,5 +55,27 @@ public class Node {
 
 	void setClosed(boolean closed) {
 		this.closed = closed;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (top ? 1231 : 1237);
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Node other = (Node) obj;
+		if (top != other.top) return false;
+		if (x != other.x) return false;
+		if (y != other.y) return false;
+		return true;
 	}
 }

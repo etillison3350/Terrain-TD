@@ -7,7 +7,7 @@ import terraintd.GameLogic;
 import terraintd.pathfinder.Node;
 import terraintd.types.EnemyType;
 import terraintd.types.ProjectileType;
-import terraintd.types.Type;
+import terraintd.types.IdType;
 import terraintd.types.World;
 
 public class Enemy extends Entity implements Weapon {
@@ -158,10 +158,18 @@ public class Enemy extends Entity implements Weapon {
 	public boolean isDead() {
 		return dead == 1;
 	}
+	
+	public int getDead() {
+		return dead;
+	}
 
 	@Override
-	public Type getType() {
+	public IdType getType() {
 		return this.type;
+	}
+
+	public double getRotation() {
+		return nextNode == null ? 0 : Math.atan2(nextNode.getAbsY() - prevNode.getAbsY(), nextNode.getAbsX() - prevNode.getAbsX());
 	}
 
 }

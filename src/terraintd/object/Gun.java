@@ -74,7 +74,7 @@ public class Gun {
 	 *         </ul>
 	 */
 	public double getRotation() {
-		return target == null ? 0 : Math.atan2(shooter.getY() - target.getY(), shooter.getX() - target.getX());
+		return target == null ? 0 : Math.atan2(target.getY() - shooter.getY(), target.getX() - shooter.getX());
 	}
 
 	private double getDistanceSq() {

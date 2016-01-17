@@ -55,4 +55,7 @@ rpm=RPM
 detect-range=Диапазон обнаружения
 range=Ассортимент
 
-tower-example=пример
+tower-single=пушка
+tower-line=Лазерная пушка
+tower-area=ЭМИ
+tower-sector=Пирог вышка

@@ -55,4 +55,7 @@ rpm=RPM
 detect-range=Detection Range
 range=Range
 
-tower-example=Example
+tower-single=Cannon
+tower-line=Laser Cannon
+tower-area=EMP
+tower-sector=Pie Tower

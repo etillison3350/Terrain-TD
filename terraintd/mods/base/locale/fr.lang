@@ -55,4 +55,7 @@ rpm=CPM
 detect-range=Distance de Vision
 range=Portée
 
-tower-example=Exemple
+tower-single=Canon
+tower-line=Canon Laser
+tower-area=IEM
+tower-sector=Tour de Gâteau

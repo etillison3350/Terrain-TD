@@ -8,4 +8,8 @@ public interface Weapon {
 	
 	public Projectile[] createProjectiles(ProjectileType[] types);
 	
+	public default void target(Enemy e) {
+		this.getGun().target(e);
+	}
+	
 }

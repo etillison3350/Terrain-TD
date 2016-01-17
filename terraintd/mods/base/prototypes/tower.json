@@ -1,49 +1,189 @@
 [
     {
         "type":"tower",
-        "id":"tower-example",
+        "id":"tower-single",
         "cost":100,
         "collision":[
             2,
-            1
+            2
         ],
         "terrain":[
             "land",
-            "shallow_water"
+            "frozen_water"
         ],
         "on-hill":true,
-        "range":10,
+        "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\test.png"
+            "src":"terraintd\\mods\\base\\images\\bullet.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\magnet.png"
+            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "width":3,
+            "height":3
         },
         "projectiles":[
             {
                 "delivery":"single_target",
                 "explosion-radius":0,
-                "speed":20,
+                "speed":10,
                 "damage":[
                     10,
                     9
                 ],
                 "rate":10,
                 "follow":true,
-                "max-dist":"inf",
+                "max-dist":10,
                 "rotation":0,
                 "abs-rotation":false,
                 "dying-fade-time":0.1,
                 "dying-fade":true,
                 "damage-fade":false,
-                "effects":[
-                    {
-                        "type":"frost",
-                        "amplifier":3,
-                        "duration":2.75
-                    }
-                ]
+                "image":{
+                    "src":"terraintd\\mods\\base\\images\\bullet.png",
+                    "width":0.5,
+                    "height":0.5
+                }
+            }
+        ]
+    },
+    {
+        "type":"tower",
+        "id":"tower-line",
+        "cost":100,
+        "collision":[
+            2,
+            2
+        ],
+        "terrain":[
+            "land",
+            "frozen_water"
+        ],
+        "on-hill":true,
+        "range":8,
+        "rotate":true,
+        "icon":{
+            "src":"terraintd\\mods\\base\\images\\beam.png"
+        },
+        "image":{
+            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "width":3,
+            "height":3
+        },
+        "projectiles":[
+            {
+                "delivery":"line",
+                "explosion-radius":0,
+                "speed":80,
+                "damage":[
+                    50,
+                    45
+                ],
+                "rate":2,
+                "follow":true,
+                "max-dist":10,
+                "rotation":0,
+                "abs-rotation":false,
+                "dying-fade-time":0.1,
+                "dying-fade":true,
+                "damage-fade":false,
+                "image":{
+                    "src":"terraintd\\mods\\base\\images\\beam.png",
+                    "height":0.5
+                }
+            }
+        ]
+    },
+    {
+        "type":"tower",
+        "id":"tower-area",
+        "cost":100,
+        "collision":[
+            2,
+            2
+        ],
+        "terrain":[
+            "land",
+            "frozen_water"
+        ],
+        "on-hill":true,
+        "range":8,
+        "rotate":true,
+        "icon":{
+            "src":"terraintd\\mods\\base\\images\\electricity.png"
+        },
+        "image":{
+            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "width":3,
+            "height":3
+        },
+        "projectiles":[
+            {
+                "delivery":"area",
+                "explosion-radius":0,
+                "speed":60,
+                "damage":[
+                    25,
+                    22.5
+                ],
+                "rate":4,
+                "follow":true,
+                "max-dist":10,
+                "rotation":0,
+                "abs-rotation":false,
+                "dying-fade-time":0.1,
+                "dying-fade":true,
+                "damage-fade":false,
+                "image":{
+                    "src":"terraintd\\mods\\base\\images\\electricity.png",
+                }
+            }
+        ]
+    },
+    {
+        "type":"tower",
+        "id":"tower-sector",
+        "cost":100,
+        "collision":[
+            2,
+            2
+        ],
+        "terrain":[
+            "land",
+            "frozen_water"
+        ],
+        "on-hill":true,
+        "range":8,
+        "rotate":true,
+        "icon":{
+            "src":"terraintd\\mods\\base\\images\\electricity.png"
+        },
+        "image":{
+            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "width":3,
+            "height":3
+        },
+        "projectiles":[
+            {
+                "delivery":"sector",
+                "explosion-radius":0,
+                "speed":60,
+                "damage":[
+                    37.5,
+                    33.25
+                ],
+                "rate":2.6666666,
+                "follow":true,
+                "max-dist":10,
+                "rotation":0,
+                "abs-rotation":false,
+                "angle":1,
+                "dying-fade-time":0.1,
+                "dying-fade":true,
+                "damage-fade":false,
+                "image":{
+                    "src":"terraintd\\mods\\base\\images\\electricity.png",
+                }
             }
         ]
     }

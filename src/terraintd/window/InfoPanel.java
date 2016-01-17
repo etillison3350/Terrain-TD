@@ -30,14 +30,14 @@ import terraintd.types.Language;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
-import terraintd.types.Type;
+import terraintd.types.IdType;
 
 public class InfoPanel extends JPanel {
 
 	private static final long serialVersionUID = -7585731701891500747L;
 
 	private JEditorPane info;
-	private Type displayedType;
+	private IdType displayedType;
 
 	private BufferedImage playImage, pauseImage, ffImage, rewImage;
 
@@ -195,7 +195,7 @@ public class InfoPanel extends JPanel {
 
 	}
 
-	public Type getDisplayedType() {
+	public IdType getDisplayedType() {
 		return displayedType;
 	}
 	
@@ -203,7 +203,7 @@ public class InfoPanel extends JPanel {
 		this.setDisplayedType(displayedType);
 	}
 	
-	public void setDisplayedType(Type type) {
+	public void setDisplayedType(IdType type) {
 		this.displayedType = type;
 		if (type == null)
 			this.info.setText("<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()));

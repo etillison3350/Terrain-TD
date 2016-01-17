@@ -1,6 +1,6 @@
 package terraintd.types;
 
-public class Level extends Type {
+public class Level extends IdType {
 
 	public final Unit[] units;
 	public final double health;

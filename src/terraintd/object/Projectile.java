@@ -18,13 +18,13 @@ public class Projectile {
 
 	private final Enemy target;
 	private final double targetX, targetY;
-	private ArrayList<Enemy> hitTargets;
+	private final ArrayList<Enemy> hitTargets;
 
 	public <E extends Entity & Weapon> Projectile(ProjectileType type, E shootingEntity) {
 		this.type = type;
 		this.x = this.startX = shootingEntity.getGun().shooter.getX();
 		this.y = this.startY = shootingEntity.getGun().shooter.getY();
-		this.rotation = type.rotation + ((type.absRotation && shootingEntity instanceof Tower) ? ((Tower) shootingEntity).getRotation() : 0);
+		this.rotation = type.rotation + ((!type.absRotation && shootingEntity instanceof Tower) ? ((Tower) shootingEntity).getRotation() : 0);
 		this.shootingEntity = shootingEntity;
 
 		this.deathTime = -1;
@@ -32,6 +32,8 @@ public class Projectile {
 		this.target = shootingEntity.getGun().getTarget();
 		targetX = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
 		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
+		
+		this.hitTargets = new ArrayList<>();
 	}
 
 	public boolean move() {
@@ -64,14 +66,18 @@ public class Projectile {
 			this.radius = Math.hypot(this.x - startX, this.y - startY);
 		} else {
 			this.radius += this.type.speed * GameLogic.FRAME_TIME;
+
+			if (this.type.follow && this.target != null) {
+				this.rotation = Math.atan2(this.target.getY() - this.y, this.target.getX() - this.x);
+			}
 		}
 
 		if (this.type.maxDist - this.radius < 0.01) {
 			this.radius = this.type.maxDist;
-			if (!this.type.follow) {
-				this.x = this.startX + this.radius * Math.cos(this.rotation);
-				this.y = this.startY + this.radius * Math.sin(this.rotation);
-			}
+//			if (!this.type.follow) {
+//				this.x = this.startX + this.radius * Math.cos(this.rotation);
+//				this.y = this.startY + this.radius * Math.sin(this.rotation);
+//			}
 			return false;
 		}
 
@@ -85,7 +91,7 @@ public class Projectile {
 			this.deathTime += GameLogic.FRAME_TIME;
 		}
 
-		return this.deathTime >= this.type.dyingFadeTime;
+		return this.deathTime < this.type.dyingFadeTime;
 	}
 
 	/**

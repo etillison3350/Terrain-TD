@@ -1,7 +1,7 @@
 [
     {
         "type":"enemy",
-        "id": "enemy-example",
+        "id":"enemy-example",
         "speed":[
             5,
             3,
@@ -16,15 +16,21 @@
             "up":0.125,
             "down":1.25
         },
-        "health":100,
+        "health":200,
         "damage":10,
-        "reward":25,
+        "reward":20,
+        "image":{
+            "src":"terraintd\\mods\\base\\images\\tank.png"
+        },
+        "death":{
+            "src":"terraintd\\mods\\base\\images\\explosion.png"
+        },
         "projectiles":null
     },
     {
-        "type": "enemy",
-        "id": "enemy-dukw",
-        "speed": [
+        "type":"enemy",
+        "id":"enemy-dukw",
+        "speed":[
             0.01,
             0.01,
             0.01,

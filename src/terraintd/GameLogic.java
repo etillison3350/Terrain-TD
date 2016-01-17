@@ -111,7 +111,7 @@ public class GameLogic implements ActionListener {
 		
 		this.state = State.PLAYING;
 		
-		this.currentWorld = World.values()[1];
+		this.currentWorld = World.values()[2];
 		this.currentLevel = Level.values()[0];
 
 		this.money = this.currentLevel.money;
@@ -232,7 +232,7 @@ public class GameLogic implements ActionListener {
 						}
 					}
 
-					g.target(target);
+					((Weapon) e).target(target);
 
 					for (Projectile p : ((Weapon) e).createProjectiles(g.fire())) {
 						if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow) p.getTarget().damageFuture(p);
@@ -245,7 +245,7 @@ public class GameLogic implements ActionListener {
 			if (e instanceof Enemy) {
 				Enemy enemy = (Enemy) e;
 
-				if (enemy.getHealth() < 0) {
+				if (enemy.getDead() != 0) {
 					if (enemy.die()) permanentEntities.remove(enemy);
 					continue;
 				}
@@ -298,41 +298,43 @@ public class GameLogic implements ActionListener {
 							}
 						}
 					}
-				} else {
-					for (Entity e : permanents) {
-						if (!(e instanceof Enemy)) continue;
+				}
+			}
+			
+			if (p.type.delivery != DeliveryType.SINGLE_TARGET) {
+				for (Entity e : permanents) {
+					if (!(e instanceof Enemy)) continue;
 
-						double dx = e.getX() - p.getX();
-						double dy = e.getY() - p.getX();
+					double dx = e.getX() - p.getX();
+					double dy = e.getY() - p.getY();
 
-						if (dy * dy + dx * dx > p.type.maxDist * p.type.maxDist) continue;
+					if (dy * dy + dx * dx > p.getRadius() * p.getRadius()) continue;
 
-						boolean damage = false;
+					boolean damage = false;
 
-						if (p.getHitTargets().contains(e)) continue;
+					if (p.getHitTargets().contains(e)) continue;
 
-						switch (p.type.delivery) {
-							case AREA:
-								damage = true;
-								break;
-							case LINE:
-								damage = lineCollides(e, p, 1.25);
-								break;
-							case SECTOR:
-								damage = sectorCollides(e, p);
-								break;
-							default:
-								break;
+					switch (p.type.delivery) {
+						case AREA:
+							damage = true;
+							break;
+						case LINE:
+							damage = lineCollides(e, p, 1.25);
+							break;
+						case SECTOR:
+							damage = sectorCollides(e, p);
+							break;
+						default:
+							break;
+					}
+
+					if (damage) {
+						if (((Enemy) e).damage(p)) {
+							this.money += ((Enemy) e).type.reward;
+							this.window.buy.updateButtons();
+							this.window.info.refreshDisplay();
 						}
-
-						if (damage) {
-							if (((Enemy) e).damage(p)) {
-								this.money += ((Enemy) e).type.reward;
-								this.window.buy.updateButtons();
-								this.window.info.refreshDisplay();
-							}
-							p.hitTarget((Enemy) e);
-						}
+						p.hitTarget((Enemy) e);
 					}
 				}
 			}

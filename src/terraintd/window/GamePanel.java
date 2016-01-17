@@ -12,7 +12,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -23,10 +27,10 @@ import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Projectile;
 import terraintd.object.Tower;
-import terraintd.object.Weapon;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;
+import terraintd.types.ImageType;
 import terraintd.types.Language;
 import terraintd.types.TowerType;
 
@@ -50,7 +54,7 @@ public class GamePanel extends JPanel {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				// tile = getWidth()
-				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) logic.getCurrentWorld().getWidth(), (double) getHeight() / (double) logic.getCurrentWorld().getHeight()));
+				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) (logic.getCurrentWorld().getWidth() + 1), (double) getHeight() / (double) (logic.getCurrentWorld().getHeight() + 1)));
 				dx = ((double) getWidth() - (logic.getCurrentWorld().getWidth() * tile)) * 0.5;
 				dy = ((double) getHeight() - (logic.getCurrentWorld().getHeight() * tile)) * 0.5;
 
@@ -122,22 +126,46 @@ public class GamePanel extends JPanel {
 
 		g.drawImage(logic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
 
+		g.setColor(Color.WHITE);
 		for (Node[][] nodess : logic.getNodes(EnemyType.values()[0])) {
 			for (Node[] nodes : nodess) {
 				for (Node node : nodes) {
-					for (Node spawn : logic.getCurrentWorld().spawnpoints) {
-						if (node.x == spawn.x && node.y == spawn.y && node.top == spawn.top) {
-							g.setColor(Color.GREEN);
-							g.drawRect((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), 3, 3);
-						}
-					}
-
-					g.setColor(Color.WHITE);
-
 					if (node.getNextNode() == null) continue;
 					g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
 				}
 			}
+		}
+
+		g.setColor(new Color(255, 255, 192));
+		List<Node> spawnpoints = Arrays.asList(logic.getCurrentWorld().spawnpoints);
+		for (Node spawn : spawnpoints) {
+			int w = spawn.top && spawnpoints.contains(new Node(spawn.x + 1, spawn.y, true)) ? (int) tile : 7;
+			int h = !spawn.top && spawnpoints.contains(new Node(spawn.x, spawn.y + 1, false)) ? (int) tile : 7;
+			g.fillRect((int) (dx + spawn.getAbsX() * tile) - 3, (int) (dy + spawn.getAbsY() * tile) - 3, w, h);
+		}
+
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
+		for (Entity e : logic.getPermanentEntities()) {
+			if (!(e instanceof Enemy)) continue;
+
+			Enemy en = (Enemy) e;
+
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - en.getDeathTime())));
+
+			ImageType img;
+			if (en.isDead()) {
+				g.setColor(Color.GREEN);
+				g.drawString(String.format(Language.getCurrentLocale(), "+%d", en.type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
+				img = en.type.death;
+			} else {
+				img = en.type.image;
+			}
+
+			AffineTransform trans = new AffineTransform();
+			trans.translate(dx + tile * (en.getX() - img.width * 0.5), dy + tile * (en.getY() - img.height * 0.5));
+			trans.rotate(en.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
+			trans.scale(tile * img.width / img.image.getWidth(), tile * img.height / img.image.getHeight());
+			g.drawImage(img.image, trans, null);
 		}
 
 		for (Entity e : logic.getPermanentEntities()) {
@@ -145,7 +173,12 @@ public class GamePanel extends JPanel {
 
 			CollidableType type = ((CollidableEntity) e).getType();
 
-			g.drawImage(type.image.image, (int) (dx + e.getX() * tile), (int) (dy + e.getY() * tile), (int) (tile * type.width), (int) (tile * type.height), null);
+			AffineTransform trans = new AffineTransform();
+			trans.translate(dx + tile * (e.getX() - 0.5 * (type.image.width - type.width)), dy + tile * (e.getY() - 0.5 * (type.image.height - type.height)));
+			if (e instanceof Tower) trans.rotate(((Tower) e).getRotation(), 0.5 * type.image.width * tile, 0.5 * type.image.height * tile);
+			trans.scale(type.image.width * tile / (double) type.image.image.getWidth(), type.image.height * tile / (double) type.image.image.getHeight());
+
+			g.drawImage(type.image.image, trans, null);
 		}
 
 		if (logic.getSelectedEntity() != null && logic.getSelectedEntity() instanceof CollidableEntity) {
@@ -164,6 +197,7 @@ public class GamePanel extends JPanel {
 			}
 
 			float t = System.currentTimeMillis() % 1500;
+
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0008F * t - 0.00000053333F * t * t));
 			g.setColor(Color.BLACK);
 			double width = ((CollidableEntity) logic.getSelectedEntity()).getWidth();
@@ -200,23 +234,44 @@ public class GamePanel extends JPanel {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
 		for (Projectile p : logic.getProjectiles()) {
-			g.drawRect((int) (dx + p.getX() * tile), (int) (dy + p.getY() * tile), 3, 3);
-		}
+			ImageType img = p.type.image;
 
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
-		for (Entity e : logic.getPermanentEntities()) {
-			if (e instanceof Enemy) {
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - ((Enemy) e).getDeathTime())));
-				g.setColor(Color.GREEN);
-				if (((Enemy) e).isDead()) g.drawString(String.format(Language.getCurrentLocale(), "+%d", ((Enemy) e).type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - ((Enemy) e).getDeathTime()) * tile));
-			} else {
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, p.type.dyingFade ? 1 - (float) (Math.max(0, p.getDeathTime()) / p.type.dyingFadeTime) : 1));
+			AffineTransform trans = new AffineTransform();
+
+			switch (p.type.delivery) {
+				case AREA:
+					g.drawImage(img.image, (int) (dx + tile * (p.getX() - p.getRadius())), (int) (dy + tile * (p.getY() - p.getRadius())), (int) (2 * tile * p.getRadius()), (int) (2 * tile * p.getRadius()), null);
+					break;
+				case LINE:
+					trans.translate(dx + tile * (p.getX() - img.width * 0.5), dy + tile * (p.getY() - img.height * 0.5));
+					trans.rotate(p.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
+					trans.scale(tile * p.getRadius() / img.image.getWidth(), tile * img.height / img.image.getHeight());
+					g.drawImage(img.image, trans, null);
+					break;
+				case SECTOR:
+					BufferedImage sec = new BufferedImage((int) (tile * p.getRadius() * 2), (int) (tile * p.getRadius() * 2), BufferedImage.TYPE_INT_ARGB);
+					Graphics2D s = sec.createGraphics();
+					s.drawImage(img.image, 0, 0, (int) (2 * tile * p.getRadius()), (int) (2 * tile * p.getRadius()), null);
+					s.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+
+					s.fillArc(0, 0, (int) (2 * tile * p.getRadius()), (int) (2 * tile * p.getRadius()), (int) Math.toDegrees(p.type.angle * 0.5 - p.getRotation()), (int) (360.0 - Math.toDegrees(p.type.angle)));
+					g.drawImage(sec, (int) (dx + tile * (p.getX() - p.getRadius())), (int) (dy + tile * (p.getY() - p.getRadius())), null);
+					break;
+				case SINGLE_TARGET:
+					trans.translate(dx + tile * (p.getX() - img.width * 0.5), dy + tile * (p.getY() - img.height * 0.5));
+					trans.rotate(p.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
+					trans.scale(tile * img.width / img.image.getWidth(), tile * img.height / img.image.getHeight());
+					g.drawImage(img.image, trans, null);
+					break;
+				default:
+					break;
 			}
-			g.setColor(Color.RED);
-			g.fillRect((int) (dx + e.getX() * tile), (int) (dy + e.getY() * tile), 3, 3);
 		}
 
-		if (logic.getState() != State.PLAYING) {
+		if (logic.getState() != State.PLAYING)
+
+		{
 			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5F));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -234,6 +289,7 @@ public class GamePanel extends JPanel {
 			g.setFont(fm.getFont());
 			g.drawString(str, 0.5F * (this.getWidth() - fm.stringWidth(str)), this.getHeight() - (0.5F * (this.getHeight() - fm.getAscent())));
 		}
+
 	}
 
 	public double getTile() {

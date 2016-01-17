@@ -2,7 +2,7 @@ package terraintd.types;
 
 import java.util.HashMap;
 
-public class EnemyType extends Type {
+public class EnemyType extends IdType {
 
 	public final HashMap<Terrain, Double> speed;
 	public final double upSpeed;

@@ -1,10 +1,10 @@
 package terraintd.types;
 
-public class Type {
+public class IdType {
 
 	public final String id;
 	
-	public Type(String id) {
+	public IdType(String id) {
 		this.id = id;
 	}
 	

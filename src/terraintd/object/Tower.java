@@ -8,7 +8,8 @@ public class Tower extends CollidableEntity implements Weapon {
 
 	public final TowerType type;
 	private double x, y;
-
+	private double rotation;
+	
 	private final Gun gun;
 
 	@Override
@@ -41,7 +42,7 @@ public class Tower extends CollidableEntity implements Weapon {
 	 *         </ul>
 	 */
 	public double getRotation() {
-		return this.gun.getRotation();
+		return this.rotation;
 	}
 
 	public Tower(TowerType type, double x, double y) {
@@ -69,6 +70,12 @@ public class Tower extends CollidableEntity implements Weapon {
 			ps[n] = new Projectile(types[n], this);
 
 		return ps;
+	}
+	
+	@Override
+	public void target(Enemy e) {
+		Weapon.super.target(e);
+		if (e != null) this.rotation = this.gun.getRotation();
 	}
 
 }

@@ -1,6 +1,6 @@
 package terraintd.object;
 
-import terraintd.types.Type;
+import terraintd.types.IdType;
 
 public abstract class Entity {
 
@@ -22,6 +22,6 @@ public abstract class Entity {
 	 */
 	public abstract double getY();
 	
-	public abstract Type getType();
+	public abstract IdType getType();
 	
 }

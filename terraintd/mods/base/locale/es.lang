@@ -55,4 +55,7 @@ rpm=DPM
 detect-range=Distancia de Visión
 range=Alcance
 
-tower-example=Ejemplo
+tower-single=Cañón
+tower-line=Cañón Láser
+tower-area=PEM
+tower-sector=Torre de Tarta

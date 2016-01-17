@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import terraintd.pathfinder.Node;
 
-public class World extends Type {
+public class World extends IdType {
 
 	public final Tile[][] tiles;
 	public final Node[] spawnpoints;

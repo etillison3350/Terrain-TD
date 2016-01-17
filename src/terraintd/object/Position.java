@@ -1,6 +1,6 @@
 package terraintd.object;
 
-import terraintd.types.Type;
+import terraintd.types.IdType;
 
 public class Position extends Entity {
 
@@ -22,7 +22,7 @@ public class Position extends Entity {
 	}
 
 	@Override
-	public Type getType() {
+	public IdType getType() {
 		return null;
 	}
 
