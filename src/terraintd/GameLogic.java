@@ -60,6 +60,8 @@ public class GameLogic implements ActionListener {
 
 	public final static Random rand = new Random();
 
+	public static final Config cfg = new Config();
+	
 	private static State state = State.PLAYING;
 
 	private static List<Entity> permanentEntities;
@@ -178,6 +180,8 @@ public class GameLogic implements ActionListener {
 			health = 0;
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
+			if (ff) Window.fastForward.doClick();
+			setFastForward(false);
 			state = State.FAILED;
 			BuyPanel.updateButtons();
 			InfoPanel.paintHealthBar();
@@ -186,6 +190,8 @@ public class GameLogic implements ActionListener {
 		} else if (enemyIndex == currentLevel.units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
+			if (ff) Window.fastForward.doClick();
+			setFastForward(false);
 			state = State.COMPLETE;
 			BuyPanel.updateButtons();
 			Window.setButtonsEnabled(false);

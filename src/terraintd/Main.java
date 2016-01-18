@@ -14,6 +14,9 @@ public class Main {
 		Window.setWindowVisible(true);
 		
 		GameLogic.reset();
+		
+		GameLogic.cfg.read();
+		GameLogic.cfg.apply();
 	}
 
 }

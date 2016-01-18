@@ -27,6 +27,7 @@ public class Window extends JFrame {
 	public static final JMenuItem saveGameAs = new JMenuItem();
 	public static final JCheckBoxMenuItem pauseGame = new JCheckBoxMenuItem();
 	public static final JCheckBoxMenuItem fastForward = new JCheckBoxMenuItem();
+	public static final JMenuItem language = new JMenuItem();
 	public static final JMenuItem exit = new JMenuItem();
 
 	public static final JMenu help = new JMenu();
@@ -67,13 +68,15 @@ public class Window extends JFrame {
 				}
 			} else if (e.getSource() == fastForward) {
 				GameLogic.setFastForward(fastForward.isSelected());
+			} else if (e.getSource() == language) {
+				Settings.setShowing(true);
 			} else if (e.getSource() == exit) {
-
+				
 			}
 		}
 	};
 
-	private static final Window window = new Window();
+	static final Window window = new Window();
 
 	private Window() {
 		super(Language.get("title"));
@@ -104,6 +107,11 @@ public class Window extends JFrame {
 
 		game.addSeparator();
 
+		language.addActionListener(menuListener);
+		game.add(language);
+		
+		game.addSeparator();
+		
 		exit.addActionListener(menuListener);
 		game.add(exit);
 
@@ -132,6 +140,7 @@ public class Window extends JFrame {
 		saveGameAs.setText(Language.get("save-as"));
 		pauseGame.setText(Language.get("pause"));
 		fastForward.setText(Language.get("fast-forward"));
+		language.setText(Language.get("language"));
 		exit.setText(Language.get("exit"));
 		help.setText(Language.get("help"));
 	}

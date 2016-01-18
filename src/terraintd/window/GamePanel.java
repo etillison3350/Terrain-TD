@@ -122,7 +122,7 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics gg) {
 		super.paintComponent(gg);
 
-		if (!(gg instanceof Graphics2D)) return;
+		if (!(gg instanceof Graphics2D) || GameLogic.getCurrentWorld() == null) return;
 
 		Graphics2D g = (Graphics2D) gg;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
