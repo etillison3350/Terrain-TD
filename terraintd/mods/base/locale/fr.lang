@@ -39,6 +39,9 @@ effect-bleed=Saigner
 health=Vie
 money=Argent
 
+kills=Chasse
+damage-dealt=Dégâts infligés
+
 area=Superficie
 tiles=carrés
 dps=Dommage par Seconde

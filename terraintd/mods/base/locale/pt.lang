@@ -39,6 +39,9 @@ effect-bleed=Sangrar
 health=Saúde
 money=Dinheiro
 
+kills=Matanças
+damage-dealt=Dano causado
+
 area=Área
 tiles=praças
 dps=Dano por segundo

@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import terraintd.GameLogic.State;
 import terraintd.types.CollidableType;
 import terraintd.types.TowerType;
 
@@ -50,7 +51,10 @@ public class BuyPanel extends JPanel {
 
 	public void updateButtons() {
 		for (BuyButton b : buttons) {
-			if (window.logic.getBuyingType() == null) {
+			if (window.logic.getState() != State.PLAYING) {
+				b.setCancel(false);
+				b.setEnabled(false);
+			} else if (window.logic.getBuyingType() == null) {
 				b.setCancel(false);
 				b.setEnabled(window.logic.getMoney());
 			} else if (window.logic.getBuyingType() == b.type) {
@@ -117,14 +121,14 @@ public class BuyPanel extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				pressed = false;
 				hovered = false;
-				if (window.logic.getBuyingType() == null) window.info.setDisplayedType(window.logic.getSelectedEntity() == null ? null : window.logic.getSelectedEntity().getType());
+				if (window.logic.getBuyingType() == null) window.info.setDisplayedObject(window.logic.getSelectedEntity() == null ? null : window.logic.getSelectedEntity());
 				repaint();
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				hovered = true;
-				window.info.setDisplayedType(type);
+				window.info.setDisplayedObject(type);
 				repaint();
 			}
 
@@ -171,15 +175,13 @@ public class BuyPanel extends JPanel {
 
 		@Override
 		protected void paintComponent(Graphics graph) {
-//			super.paintComponent(g);
-
 			if (!(graph instanceof Graphics2D)) return;
 
 			Graphics2D g = (Graphics2D) graph;
 
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-			g.setColor(this.cancel ? new Color(1.0F, 0.5F, 0.5F) : (this.isEnabled() ? new Color(0.5F, 0.5F, 1.0F) : Color.GRAY));
+			g.setColor(this.cancel ? new Color(1.0F, 0.5F, 0.5F) : (this.isEnabled() ? (this.type instanceof TowerType ? new Color(0.375F, 0.375F, 0.75F) : new Color(0.5F, 0.5F, 1.0F)) : Color.GRAY));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 			g.drawImage(this.cancel ? cancelImage : (this.isEnabled() ? image : gray), 0, 0, this.getWidth(), this.getHeight(), null);

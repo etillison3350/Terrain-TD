@@ -5,7 +5,7 @@
         "health":100,
         "money":1000,
         "enemies":[
-            ["enemy-example", 0.25, 10000]
+            ["enemy-example", 0.25, 100]
         ]
     }
 ]

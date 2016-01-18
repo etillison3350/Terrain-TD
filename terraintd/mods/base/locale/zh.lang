@@ -39,6 +39,9 @@ effect-bleed=流血
 health=健康
 money=錢
 
+kills=毀壞
+damage-dealt=造成的傷害
+
 area=區
 tiles=廣場
 dps=每秒傷害

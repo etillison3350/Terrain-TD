@@ -106,8 +106,13 @@ public class GameLogic implements ActionListener {
 	}
 
 	public void reset() {
+		if (this.window.info != null) this.window.setButtonsEnabled(true);
+
 		if (!this.isPaused()) this.window.pauseGame.doClick();
 		this.stop();
+		
+		if (this.ff) this.window.fastForward.doClick();
+		this.setFastForward(false);
 		
 		this.state = State.PLAYING;
 		
@@ -132,7 +137,10 @@ public class GameLogic implements ActionListener {
 		if (this.window.buy != null) this.window.buy.updateButtons();
 	}
 	
+	private boolean ff;
+	
 	public void setFastForward(boolean fastForward) {
+		this.ff = fastForward;
 		this.timer.setDelay((int) ((fastForward ? 500 : 1000) * FRAME_TIME));
 	}
 
@@ -181,12 +189,16 @@ public class GameLogic implements ActionListener {
 			if (!this.isPaused()) window.pauseGame.doClick();
 			this.stop();
 			this.state = State.FAILED;
+			this.window.buy.updateButtons();
 			this.window.info.paintHealthBar();
+			this.window.setButtonsEnabled(false);
 			this.panel.repaint();
 		} else if (enemyIndex == currentLevel.units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
 			if (!this.isPaused()) window.pauseGame.doClick();
 			this.stop();
 			this.state = State.COMPLETE;
+			this.window.buy.updateButtons();
+			this.window.setButtonsEnabled(false);
 			this.panel.repaint();
 		}
 		
@@ -276,8 +288,8 @@ public class GameLogic implements ActionListener {
 						if (p.getTarget().damage(p)) {
 							this.money += p.getTarget().type.reward;
 							this.window.buy.updateButtons();
-							this.window.info.refreshDisplay();
 						}
+						this.window.info.refreshDisplay();
 					}
 
 					if (p.type.explodeRadius > 0.00001) {
@@ -293,8 +305,8 @@ public class GameLogic implements ActionListener {
 								if (enemy.damage(p)) {
 									this.money += enemy.type.reward;
 									this.window.buy.updateButtons();
-									this.window.info.refreshDisplay();
 								}
+								this.window.info.refreshDisplay();
 							}
 						}
 					}
@@ -332,8 +344,8 @@ public class GameLogic implements ActionListener {
 						if (((Enemy) e).damage(p)) {
 							this.money += ((Enemy) e).type.reward;
 							this.window.buy.updateButtons();
-							this.window.info.refreshDisplay();
 						}
+						this.window.info.refreshDisplay();
 						p.hitTarget((Enemy) e);
 					}
 				}
@@ -398,7 +410,7 @@ public class GameLogic implements ActionListener {
 		this.wasPaused = !this.timer.isRunning();
 		this.stop();
 		buying = type;
-		window.info.setDisplayedType(type);
+		window.info.setDisplayedObject(type);
 		selected = null;
 	}
 
@@ -438,7 +450,7 @@ public class GameLogic implements ActionListener {
 	public void cancelBuy() {
 		buying = null;
 		if (!this.wasPaused) this.start();
-		window.info.setDisplayedType(null);
+		window.info.setDisplayedObject(null);
 	}
 
 	public Entity getSelectedEntity() {
@@ -449,9 +461,9 @@ public class GameLogic implements ActionListener {
 		this.selected = selected;
 
 		if (selected instanceof CollidableEntity) {
-			window.info.setDisplayedType(((CollidableEntity) selected).getType());
+			window.info.setDisplayedObject(selected);
 		} else if (selected == null) {
-			window.info.setDisplayedType(null);
+			window.info.setDisplayedObject(null);
 		}
 	}
 

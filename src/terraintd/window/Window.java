@@ -141,5 +141,12 @@ public class Window extends JFrame {
 
 		this.setVisible(true);
 	}
+	
+	public void setButtonsEnabled(boolean enabled) {
+		this.pauseGame.setEnabled(false);
+		this.fastForward.setEnabled(false);
+		this.info.pause.setEnabled(false);
+		this.info.fastForward.setEnabled(false);
+	}
 
 }

@@ -25,19 +25,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
+import terraintd.object.Entity;
+import terraintd.object.Weapon;
 import terraintd.types.EffectType;
+import terraintd.types.IdType;
 import terraintd.types.Language;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
-import terraintd.types.IdType;
 
 public class InfoPanel extends JPanel {
 
 	private static final long serialVersionUID = -7585731701891500747L;
 
 	private JEditorPane info;
-	private IdType displayedType;
+	private Object displayedObject;
 
 	private BufferedImage playImage, pauseImage, ffImage, rewImage;
 
@@ -111,7 +113,7 @@ public class InfoPanel extends JPanel {
 		this.fastForward.setBorderPainted(false);
 		this.fastForward.setFocusPainted(false);
 		this.fastForward.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (window.fastForward.isSelected() != fastForward.isSelected()) window.fastForward.doClick();
@@ -119,45 +121,98 @@ public class InfoPanel extends JPanel {
 		});
 		this.add(fastForward, c);
 
-		this.setDisplayedType(null);
+		this.setDisplayedObject(null);
 	}
 
 	public void paintHealthBar() {
 		this.health.repaint();
 	}
 
-	String getStringForTowerType(TowerType type) {
-		String ret = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head>" + "<body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()) + "<h2>" + Language.get(type.id) + "</h2>" + String.format(Language.getCurrentLocale(), "<p>%s: %d x %d %s</p><p>%s: %.5g</p><p>%s: %.3g %s</p>", Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles), Language.get("detect-range"), type.range, Language.get("tiles")) + "<hr /><h3>" + Language.get("projectiles") + "</h3>";
+	String getMoneyString() {
+		return String.format(Language.getCurrentLocale(), "<h2>%s: %d</h2>", Language.get("money"), window.logic.getMoney());
+	}
 
-		for (ProjectileType p : type.projectiles) {
+	static String getStringForTowerType(TowerType type) {
+		return String.format(Language.getCurrentLocale(), "<h2>%s</h2><p>%s: %d x %d %s</p><p>%s: %.5g</p><p>%s: %.3g %s</p><hr /><h3>%s</h3>%s", Language.get(type.id), Language.get("area"), type.width, type.height, Language.get("tiles"), Language.get("dps"), getDamagePerSecond(type.projectiles), Language.get("detect-range"), type.range, Language.get("tiles"), Language.get("projectiles"), getStringFromProjectiles(type.projectiles));
+	}
+
+	static String getStringFromProjectiles(ProjectileType[] projectiles) {
+		String ret = "";
+
+		for (ProjectileType p : projectiles) {
 			ret += String.format(Language.getCurrentLocale(), "<ul><li>%s: %s</li><li>%s: %.3g - %.3g</li><li>%s: %.4g %s</li><li>%s: %s</li><li style=\"font-weight: bold\">%s</li>", Language.get("delivery"), p.delivery.toString(), Language.get("damage"), p.damage, p.damage - p.falloff, Language.get("rate"), p.rate * 60, Language.get("rpm"), Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles")), Language.get("effects"));
 			if (p.effects.length == 0) {
 				ret += "<ul><li>None</li></ul>";
-			}
-			for (EffectType e : p.effects) {
-				ret += String.format(Language.getCurrentLocale(), "<ul><li>%s %s, %.3gs</li></ul>", e.type, e.amplifier, e.duration);
+			} else {
+				for (EffectType e : p.effects) {
+					ret += String.format(Language.getCurrentLocale(), "<ul><li>%s %s, %.3gs</li></ul>", e.type, e.amplifier, e.duration);
+				}
 			}
 			ret += "</ul><hr />";
 		}
 
-		ret += "</body></html>";
-
 		return ret;
 	}
 
-	String getStringForObstacleType(ObstacleType type) {
-		// TODO
-		return null;
-	}
-
-	private double getDamagePerSecond(ProjectileType[] projectiles) {
+	private static double getDamagePerSecond(ProjectileType[] projectiles) {
 		double dps = 0;
 
-		for (ProjectileType p : projectiles) {
+		for (ProjectileType p : projectiles)
 			dps += p.rate * (p.damage - (p.falloff * 0.5));
-		}
 
 		return dps;
+	}
+
+	static String getStringForObstacleType(ObstacleType type) {
+		return String.format(Language.getCurrentLocale(), "<h2>%s</h2><p>%s: %d x %d %s</p><hr />", Language.get(type.id), Language.get("area"), type.width, type.height, Language.get("tiles"));
+	}
+	
+	static String getStringForWeapon(Weapon w) {
+		return String.format("<br /><p>%s: %d</p><p>%s: %.5f</p><br />", Language.get("kills"), w.getGun().getKills(), Language.get("damage-dealt"), w.getGun().getDamageDone());
+	}
+
+	public Object getDisplayedType() {
+		return displayedObject;
+	}
+
+	public void refreshDisplay() {
+		this.setDisplayedObject(displayedObject);
+	}
+
+	protected static final String START_HTML = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body>";
+	protected static final String END_HTML = "</body></html>";
+
+	public void setDisplayedObject(Object obj) {
+		this.displayedObject = obj;
+
+		String str = START_HTML + getMoneyString();
+
+		if (obj == null) {
+			this.info.setText(str + END_HTML);
+			return;
+		}
+
+		if (obj instanceof Weapon) {
+			str += getStringForWeapon((Weapon) obj);
+		}
+		
+		IdType type = null;
+		
+		if (obj instanceof IdType) {
+			type = (IdType) obj;
+		} else if (obj instanceof Entity) {
+			type = ((Entity) obj).getType();
+		}
+		
+		if (type instanceof TowerType) {
+			str += getStringForTowerType((TowerType) type);
+		} else if (type instanceof ObstacleType) {
+			str += getStringForObstacleType((ObstacleType) type);
+		}
+		
+		str += END_HTML;
+		
+		this.info.setText(str);
 	}
 
 	private class HealthBar extends JComponent {
@@ -193,22 +248,6 @@ public class InfoPanel extends JPanel {
 			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
 		}
 
-	}
-
-	public IdType getDisplayedType() {
-		return displayedType;
-	}
-	
-	public void refreshDisplay() {
-		this.setDisplayedType(displayedType);
-	}
-	
-	public void setDisplayedType(IdType type) {
-		this.displayedType = type;
-		if (type == null)
-			this.info.setText("<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body><h2>" + Language.get("money") + String.format(Language.getCurrentLocale(), ": %d</h2>", window.logic.getMoney()));
-		else
-			this.info.setText(type instanceof TowerType ? getStringForTowerType((TowerType) type) : getStringForObstacleType((ObstacleType) type));
 	}
 
 }

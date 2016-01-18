@@ -39,6 +39,9 @@ effect-bleed=Bleed
 health=Health
 money=Money
 
+kills=Kills
+damage-dealt=Damage dealt
+
 area=Area
 tiles=tiles
 dps=Damage Per Second

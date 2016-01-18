@@ -15,6 +15,9 @@ public class Gun {
 
 	private double[] time;
 
+	private int kills;
+	private double damageDone;
+
 	public Gun(ProjectileType[] projectiles, double range, double x, double y) {
 		this.projectiles = projectiles;
 		if (this.projectiles == null || this.projectiles.length == 0) throw new IllegalArgumentException("projectiles must not be null or empty.");
@@ -96,6 +99,22 @@ public class Gun {
 		}
 
 		return firing.toArray(new ProjectileType[firing.size()]);
+	}
+
+	public int getKills() {
+		return kills;
+	}
+
+	public void registerKill() {
+		this.kills++;
+	}
+
+	public double getDamageDone() {
+		return damageDone;
+	}
+
+	public void registerDamage(double damageDone) {
+		this.damageDone += damageDone;
 	}
 
 }

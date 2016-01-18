@@ -122,7 +122,12 @@ public class Enemy extends Entity implements Weapon {
 	public boolean damage(Projectile p) {
 		this.futureDamage.remove(p);
 
-		return this.damage(p.damageForEntity(this));
+		double h = this.health;
+		boolean kill = this.damage(p.damageForEntity(this));
+		if (kill) p.shootingEntity.getGun().registerKill();
+		p.shootingEntity.getGun().registerDamage(Math.max(0, h) - Math.max(0, this.health));
+		
+		return kill;
 	}
 
 	public double getHealth() {

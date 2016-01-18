@@ -9,7 +9,7 @@ import terraintd.types.ProjectileType;
 public class Projectile {
 
 	public final ProjectileType type;
-	public final Entity shootingEntity;
+	public final Weapon shootingEntity;
 	private final double startX, startY;
 	private double x, y;
 	private double rotation;
@@ -127,22 +127,6 @@ public class Projectile {
 	public Enemy getTarget() {
 		return target;
 	}
-
-//	public double damageEntity(Entity e) {
-//		if (this.type.delivery == DeliveryType.SINGLE_TARGET) {
-//			double dx = this.x - e.getX();
-//			double dy = this.y - e.getY();
-//			this.deathTime = 0;
-//			return dx * dx + dy * dy < 1 ? this.type.damage : 0;
-//		} else {
-//
-//		}
-//
-//	}
-//
-//	private double getDamageForLocation(double x, double y) {
-//
-//	}
 
 	public ArrayList<Enemy> getHitTargets() {
 		return hitTargets;

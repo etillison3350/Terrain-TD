@@ -39,6 +39,9 @@ effect-bleed=кровоточить
 health=Здоровье
 money=Деньги
 
+kills=Убийств
+damage-dealt=Нанесенный ущерб
+
 area=Площадка
 tiles=плитка
 dps=Урон в секунду
