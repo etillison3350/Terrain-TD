@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import terraintd.GameLogic;
 import terraintd.GameLogic.State;
 import terraintd.types.CollidableType;
 import terraintd.types.TowerType;
@@ -27,13 +28,11 @@ public class BuyPanel extends JPanel {
 
 	private static final long serialVersionUID = 3040182092852784456L;
 
-	private BuyButton[] buttons;
+	public static final BuyPanel buyPanel = new BuyPanel();
 
-	private final Window window;
+	private static BuyButton[] buttons;
 
-	public BuyPanel(Window window) {
-		this.window = window;
-
+	private BuyPanel() {
 		this.setBackground(Color.BLACK);
 
 		this.setPreferredSize(new Dimension(256, 32767));
@@ -45,19 +44,17 @@ public class BuyPanel extends JPanel {
 			buttons[b] = new BuyButton(TowerType.values()[b]);
 			this.add(buttons[b]);
 		}
-
-		updateButtons();
 	}
 
-	public void updateButtons() {
+	public static void updateButtons() {
 		for (BuyButton b : buttons) {
-			if (window.logic.getState() != State.PLAYING) {
+			if (GameLogic.getState() != State.PLAYING) {
 				b.setCancel(false);
 				b.setEnabled(false);
-			} else if (window.logic.getBuyingType() == null) {
+			} else if (GameLogic.getBuyingType() == null) {
 				b.setCancel(false);
-				b.setEnabled(window.logic.getMoney());
-			} else if (window.logic.getBuyingType() == b.type) {
+				b.setEnabled(GameLogic.getMoney());
+			} else if (GameLogic.getBuyingType() == b.type) {
 				b.setCancel(true);
 				b.setEnabled(true);
 			} else {
@@ -68,19 +65,19 @@ public class BuyPanel extends JPanel {
 		}
 	}
 
-	private void cancelBuy() {
-		window.logic.cancelBuy();
+	private static void cancelBuy() {
+		GameLogic.cancelBuy();
 
 		updateButtons();
 	}
 
-	private void buy(CollidableType type) {
-		window.logic.buyObject(type);
+	private static void buy(CollidableType type) {
+		GameLogic.buyObject(type);
 
 		updateButtons();
 	}
 
-	public class BuyButton extends JComponent {
+	public static class BuyButton extends JComponent {
 
 		private static final long serialVersionUID = -307902500683318445L;
 
@@ -121,14 +118,14 @@ public class BuyPanel extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				pressed = false;
 				hovered = false;
-				if (window.logic.getBuyingType() == null) window.info.setDisplayedObject(window.logic.getSelectedEntity() == null ? null : window.logic.getSelectedEntity());
+				if (GameLogic.getBuyingType() == null) InfoPanel.setDisplayedObject(GameLogic.getSelectedEntity() == null ? null : GameLogic.getSelectedEntity());
 				repaint();
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				hovered = true;
-				window.info.setDisplayedObject(type);
+				InfoPanel.setDisplayedObject(type);
 				repaint();
 			}
 
@@ -141,7 +138,6 @@ public class BuyPanel extends JPanel {
 
 			this.addMouseListener(mouseListener);
 
-//			this.image = image;
 			this.image = new BufferedImage(63, 63, BufferedImage.TYPE_INT_ARGB);
 
 			if (this.type.icon != null) {

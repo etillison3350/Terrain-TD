@@ -21,8 +21,8 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import terraintd.GameLogic;
-import terraintd.Language;
 import terraintd.GameLogic.State;
+import terraintd.Language;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
@@ -38,26 +38,22 @@ public class GamePanel extends JPanel {
 
 	private static final long serialVersionUID = 6409717885667732875L;
 
-	private final GameLogic logic;
+	static final GamePanel panel = new GamePanel();
 
-	private final Window window;
-
-	public GamePanel(Window window) {
-		this.window = window;
-
+	private GamePanel() {
 		this.setBackground(Color.BLACK);
-
-		this.logic = new GameLogic(this, this.window);
 
 		this.addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) (logic.getCurrentWorld().getWidth() + 1), (double) getHeight() / (double) (logic.getCurrentWorld().getHeight() + 1)));
-				dx = ((double) getWidth() - (logic.getCurrentWorld().getWidth() * tile)) * 0.5;
-				dy = ((double) getHeight() - (logic.getCurrentWorld().getHeight() * tile)) * 0.5;
+				if (GameLogic.getCurrentWorld() == null) return;
 
-				logic.getCurrentWorld().recalculateImageForSize(tile);
+				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) (GameLogic.getCurrentWorld().getWidth() + 1), (double) getHeight() / (double) (GameLogic.getCurrentWorld().getHeight() + 1)));
+				dx = ((double) getWidth() - (GameLogic.getCurrentWorld().getWidth() * tile)) * 0.5;
+				dy = ((double) getHeight() - (GameLogic.getCurrentWorld().getHeight() * tile)) * 0.5;
+
+				GameLogic.getCurrentWorld().recalculateImageForSize(tile);
 
 				repaint();
 			}
@@ -71,21 +67,21 @@ public class GamePanel extends JPanel {
 				mouseX = (e.getX() - dx) / tile;
 				mouseY = (e.getY() - dy) / tile;
 
-				if (logic.getBuyingType() != null) repaint();
+				if (GameLogic.getBuyingType() != null) repaint();
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (logic.getBuyingType() != null) {
-					int x = (int) Math.round(mouseX - logic.getBuyingType().width / 2.0);
-					int y = (int) Math.round(mouseY - logic.getBuyingType().height / 2.0);
+				if (GameLogic.getBuyingType() != null) {
+					int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width * 0.5);
+					int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height * 0.5);
 
-					if (logic.canPlaceObject(logic.getBuyingType(), x, y)) {
-						logic.buyObject(x, y);
+					if (GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y)) {
+						GameLogic.buyObject(x, y);
 						repaint();
 					}
 				} else {
-					for (Entity entity : logic.getPermanentEntities()) {
+					for (Entity entity : GameLogic.getPermanentEntities()) {
 						if (!(entity instanceof CollidableEntity)) continue;
 
 						CollidableEntity ce = (CollidableEntity) entity;
@@ -93,13 +89,13 @@ public class GamePanel extends JPanel {
 						Point2D p = new Point2D.Double((e.getX() - dx) / tile, (e.getY() - dy) / tile);
 
 						if (ce.getRectangle().contains(p)) {
-							logic.setSelectedEntity(ce);
+							GameLogic.setSelectedEntity(ce);
 							repaint();
 							return;
 						}
 					}
 
-					logic.setSelectedEntity(null);
+					GameLogic.setSelectedEntity(null);
 					repaint();
 				}
 			}
@@ -110,9 +106,17 @@ public class GamePanel extends JPanel {
 		this.addMouseMotionListener(ma);
 	}
 
-	private double mouseX, mouseY;
+	private static double mouseX, mouseY;
 
-	private double tile, dx, dy;
+	private static double tile, dx, dy;
+
+	public static void repaintPanel() {
+		panel.repaint();
+	}
+
+	public static void repaintPanel(int x, int y, int width, int height) {
+		panel.repaint(x, y, width, height);
+	}
 
 	@Override
 	public void paintComponent(Graphics gg) {
@@ -123,20 +127,22 @@ public class GamePanel extends JPanel {
 		Graphics2D g = (Graphics2D) gg;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g.drawImage(logic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
+		g.drawImage(GameLogic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
 
-		g.setColor(Color.WHITE);
-		for (Node[][] nodess : logic.getNodes(EnemyType.values()[0])) {
-			for (Node[] nodes : nodess) {
-				for (Node node : nodes) {
-					if (node.getNextNode() == null) continue;
-					g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
+		try {
+			g.setColor(Color.WHITE);
+			for (Node[][] nodess : GameLogic.getNodes(EnemyType.values()[0])) {
+				for (Node[] nodes : nodess) {
+					for (Node node : nodes) {
+						if (node.getNextNode() == null) continue;
+						g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
+					}
 				}
 			}
-		}
+		} catch (Exception e) {}
 
 		g.setColor(new Color(255, 255, 192));
-		List<Node> spawnpoints = Arrays.asList(logic.getCurrentWorld().spawnpoints);
+		List<Node> spawnpoints = Arrays.asList(GameLogic.getCurrentWorld().spawnpoints);
 		for (Node spawn : spawnpoints) {
 			int w = spawn.top && spawnpoints.contains(new Node(spawn.x + 1, spawn.y, true)) ? (int) tile : 7;
 			int h = !spawn.top && spawnpoints.contains(new Node(spawn.x, spawn.y + 1, false)) ? (int) tile : 7;
@@ -145,7 +151,7 @@ public class GamePanel extends JPanel {
 
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
 		g.setStroke(new BasicStroke((float) tile / 10.0F));
-		for (Entity e : logic.getPermanentEntities()) {
+		for (Entity e : GameLogic.getPermanentEntities()) {
 			if (!(e instanceof Enemy)) continue;
 
 			Enemy en = (Enemy) e;
@@ -169,14 +175,14 @@ public class GamePanel extends JPanel {
 
 			g.setColor(Color.BLACK);
 			g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
-			if (!en.isDead()) {
+			if (en.getDead() == 0) {
 				g.setColor(Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
 				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
 			}
 		}
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		for (Entity e : logic.getPermanentEntities()) {
+		for (Entity e : GameLogic.getPermanentEntities()) {
 			if (!(e instanceof CollidableEntity)) continue;
 
 			CollidableType type = ((CollidableEntity) e).getType();
@@ -189,16 +195,16 @@ public class GamePanel extends JPanel {
 			g.drawImage(type.image.image, trans, null);
 		}
 
-		if (logic.getSelectedEntity() != null && logic.getSelectedEntity() instanceof CollidableEntity) {
-			if (logic.getSelectedEntity() instanceof Tower) {
-				TowerType tower = ((Tower) logic.getSelectedEntity()).type;
+		if (GameLogic.getSelectedEntity() != null && GameLogic.getSelectedEntity() instanceof CollidableEntity) {
+			if (GameLogic.getSelectedEntity() instanceof Tower) {
+				TowerType tower = ((Tower) GameLogic.getSelectedEntity()).type;
 
 				double r = tower.range;
 
 				g.setColor(Color.WHITE);
 				g.setStroke(new BasicStroke(3));
-				double cx = logic.getSelectedEntity().getX() + tower.width / 2.0;
-				double cy = logic.getSelectedEntity().getY() + tower.height / 2.0;
+				double cx = GameLogic.getSelectedEntity().getX() + tower.width / 2.0;
+				double cy = GameLogic.getSelectedEntity().getY() + tower.height / 2.0;
 				g.drawOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25F));
 				g.fillOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
@@ -208,19 +214,19 @@ public class GamePanel extends JPanel {
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0008F * t - 0.00000053333F * t * t));
 			g.setColor(Color.BLACK);
-			double width = ((CollidableEntity) logic.getSelectedEntity()).getWidth();
-			double height = ((CollidableEntity) logic.getSelectedEntity()).getHeight();
-			g.fillRect((int) (dx + logic.getSelectedEntity().getX() * tile), (int) (dy + logic.getSelectedEntity().getY() * tile), (int) (tile * width), (int) (tile * height));
+			double width = ((CollidableEntity) GameLogic.getSelectedEntity()).getWidth();
+			double height = ((CollidableEntity) GameLogic.getSelectedEntity()).getHeight();
+			g.fillRect((int) (dx + GameLogic.getSelectedEntity().getX() * tile), (int) (dy + GameLogic.getSelectedEntity().getY() * tile), (int) (tile * width), (int) (tile * height));
 		}
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-		if (logic.getBuyingType() != null && mouseX >= 0 && mouseX < logic.getCurrentWorld().getWidth() && mouseY >= 0 && mouseY < logic.getCurrentWorld().getHeight()) {
-			int x = (int) Math.round(mouseX - logic.getBuyingType().width / 2.0);
-			int y = (int) Math.round(mouseY - logic.getBuyingType().height / 2.0);
+		if (GameLogic.getBuyingType() != null && mouseX >= 0 && mouseX < GameLogic.getCurrentWorld().getWidth() && mouseY >= 0 && mouseY < GameLogic.getCurrentWorld().getHeight()) {
+			int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width / 2.0);
+			int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height / 2.0);
 
-			if (logic.getBuyingType() instanceof TowerType) {
-				TowerType tower = (TowerType) logic.getBuyingType();
+			if (GameLogic.getBuyingType() instanceof TowerType) {
+				TowerType tower = (TowerType) GameLogic.getBuyingType();
 
 				double r = tower.range;
 
@@ -234,14 +240,14 @@ public class GamePanel extends JPanel {
 			}
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-			g.setColor(logic.canPlaceObject(logic.getBuyingType(), x, y) ? Color.GREEN : Color.RED);
-			g.fillRect((int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * logic.getBuyingType().width), (int) (tile * logic.getBuyingType().height));
-			g.drawImage(logic.getBuyingType().image.image, (int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * logic.getBuyingType().width), (int) (tile * logic.getBuyingType().height), null);
+			g.setColor(GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y) ? Color.GREEN : Color.RED);
+			g.fillRect((int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * GameLogic.getBuyingType().width), (int) (tile * GameLogic.getBuyingType().height));
+			g.drawImage(GameLogic.getBuyingType().image.image, (int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * GameLogic.getBuyingType().width), (int) (tile * GameLogic.getBuyingType().height), null);
 		}
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-		for (Projectile p : logic.getProjectiles()) {
+		for (Projectile p : GameLogic.getProjectiles()) {
 			ImageType img = p.type.image;
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, p.type.dyingFade ? 1 - (float) (Math.max(0, p.getDeathTime()) / p.type.dyingFadeTime) : 1));
@@ -277,12 +283,12 @@ public class GamePanel extends JPanel {
 			}
 		}
 
-		if (logic.getState() != State.PLAYING) {
+		if (GameLogic.getState() != State.PLAYING) {
 			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5F));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-			String str = logic.getState().toString();
+			String str = GameLogic.getState().toString();
 
 			g.setColor(Color.WHITE);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
@@ -298,27 +304,23 @@ public class GamePanel extends JPanel {
 
 	}
 
-	public double getTile() {
+	public static double getTile() {
 		return tile;
 	}
 
-	public double getDx() {
+	public static double getDx() {
 		return dx;
 	}
 
-	public double getDy() {
+	public static double getDy() {
 		return dy;
 	}
 
-	public GameLogic getLogic() {
-		return logic;
-	}
-
-	public double getMouseX() {
+	public static double getMouseX() {
 		return mouseX;
 	}
 
-	public double getMouseY() {
+	public static double getMouseY() {
 		return mouseY;
 	}
 

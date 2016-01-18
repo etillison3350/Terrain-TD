@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
+import terraintd.GameLogic;
 import terraintd.Language;
 import terraintd.object.Entity;
 import terraintd.object.Weapon;
@@ -38,32 +39,29 @@ public class InfoPanel extends JPanel {
 
 	private static final long serialVersionUID = -7585731701891500747L;
 
-	private JEditorPane info;
-	private Object displayedObject;
+	public static final InfoPanel infoPanel = new InfoPanel();
+	
+	private static JEditorPane info;
+	private static Object displayedObject;
 
-	private BufferedImage playImage, pauseImage, ffImage, rewImage;
+	private static BufferedImage playImage, pauseImage, ffImage, rewImage;
 
-	private final HealthBar health;
-	public final JToggleButton pause, fastForward;
-	private final Window window;
+	private static HealthBar health;
+	public static JToggleButton pause, fastForward;
 
-	public InfoPanel(Window window) {
+	private InfoPanel() {
 		try {
-			this.playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/play.png").toFile());
+			playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/play.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/pause.png").toFile());
+			pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/pause.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/ff.png").toFile());
+			ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/ff.png").toFile());
 		} catch (IOException e) {}
 		try {
-			this.rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/rew.png").toFile());
+			rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/rew.png").toFile());
 		} catch (IOException e) {}
-
-		this.window = window;
-
-//		this.setBackground(Color.BLACK);
 
 		this.setLayout(new GridBagLayout());
 
@@ -74,8 +72,8 @@ public class InfoPanel extends JPanel {
 		c.weightx = 1;
 		c.gridwidth = 2;
 		c.gridy = 1;
-		this.health = new HealthBar();
-		this.add(this.health, c);
+		health = new HealthBar();
+		this.add(health, c);
 
 		c.gridy = 2;
 		c.weighty = 1;
@@ -90,46 +88,44 @@ public class InfoPanel extends JPanel {
 		c.weighty = 0;
 		c.weightx = 0.5;
 		c.gridy = 0;
-		this.pause = new JToggleButton(new ImageIcon(playImage));
-		this.pause.setSelectedIcon(new ImageIcon(pauseImage));
-		this.pause.setMargin(new Insets(0, 0, 0, 0));
-		this.pause.setBackground(new Color(184, 207, 229));
-		this.pause.setBorderPainted(false);
-		this.pause.setFocusPainted(false);
-		this.pause.addActionListener(new ActionListener() {
+		pause = new JToggleButton(new ImageIcon(playImage));
+		pause.setSelectedIcon(new ImageIcon(pauseImage));
+		pause.setMargin(new Insets(0, 0, 0, 0));
+		pause.setBackground(new Color(184, 207, 229));
+		pause.setBorderPainted(false);
+		pause.setFocusPainted(false);
+		pause.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (window.pauseGame.isSelected() == pause.isSelected()) window.pauseGame.doClick();
+				if (Window.pauseGame.isSelected() == pause.isSelected()) Window.pauseGame.doClick();
 			}
 		});
 		this.add(pause, c);
 
 		c.gridx = 1;
-		this.fastForward = new JToggleButton(new ImageIcon(ffImage));
-		this.fastForward.setSelectedIcon(new ImageIcon(rewImage));
-		this.fastForward.setMargin(new Insets(0, 0, 0, 0));
-		this.fastForward.setBackground(new Color(184, 207, 229));
-		this.fastForward.setBorderPainted(false);
-		this.fastForward.setFocusPainted(false);
-		this.fastForward.addActionListener(new ActionListener() {
+		fastForward = new JToggleButton(new ImageIcon(ffImage));
+		fastForward.setSelectedIcon(new ImageIcon(rewImage));
+		fastForward.setMargin(new Insets(0, 0, 0, 0));
+		fastForward.setBackground(new Color(184, 207, 229));
+		fastForward.setBorderPainted(false);
+		fastForward.setFocusPainted(false);
+		fastForward.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (window.fastForward.isSelected() != fastForward.isSelected()) window.fastForward.doClick();
+				if (Window.fastForward.isSelected() != fastForward.isSelected()) Window.fastForward.doClick();
 			}
 		});
 		this.add(fastForward, c);
-
-		this.setDisplayedObject(null);
 	}
 
-	public void paintHealthBar() {
-		this.health.repaint();
+	public static void paintHealthBar() {
+		health.repaint();
 	}
 
-	String getMoneyString() {
-		return String.format(Language.getCurrentLocale(), "<h2>%s: %d</h2>", Language.get("money"), window.logic.getMoney());
+	static String getMoneyString() {
+		return String.format(Language.getCurrentLocale(), "<h2>%s: %d</h2>", Language.get("money"), GameLogic.getMoney());
 	}
 
 	static String getStringForTowerType(TowerType type) {
@@ -171,24 +167,24 @@ public class InfoPanel extends JPanel {
 		return String.format("<br /><p>%s: %d</p><p>%s: %.5f</p><p>%s: %d</p><br />", Language.get("kills"), w.getGun().getKills(), Language.get("damage-dealt"), w.getGun().getDamageDone(), Language.get("projectiles-fired"), w.getGun().getProjectilesFired());
 	}
 
-	public Object getDisplayedType() {
+	public static Object getDisplayedType() {
 		return displayedObject;
 	}
 
-	public void refreshDisplay() {
-		this.setDisplayedObject(displayedObject);
+	public static void refreshDisplay() {
+		setDisplayedObject(displayedObject);
 	}
 
 	protected static final String START_HTML = "<html><head><style type=\"text/css\">body{font-family:Arial,Helvetica,sans-serif; color:white;} p {margin:0;} ul {list-style-type:none; margin:0 0 0 15px;}</style></head><body>";
 	protected static final String END_HTML = "</body></html>";
 
-	public void setDisplayedObject(Object obj) {
-		this.displayedObject = obj;
+	public static void setDisplayedObject(Object obj) {
+		displayedObject = obj;
 
 		String str = START_HTML + getMoneyString();
 
 		if (obj == null) {
-			this.info.setText(str + END_HTML);
+			info.setText(str + END_HTML);
 			return;
 		}
 
@@ -212,10 +208,10 @@ public class InfoPanel extends JPanel {
 		
 		str += END_HTML;
 		
-		this.info.setText(str);
+		info.setText(str);
 	}
 
-	private class HealthBar extends JComponent {
+	private static class HealthBar extends JComponent {
 
 		private static final long serialVersionUID = -387557069684512486L;
 
@@ -235,16 +231,16 @@ public class InfoPanel extends JPanel {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, 256, 16);
 
-			g.setColor(Color.getHSBColor((float) (window.logic.getHealth() / (window.logic.getMaxHealth() * 3)), 1.0F, 0.375F));
+			g.setColor(Color.getHSBColor((float) (GameLogic.getHealth() / (GameLogic.getMaxHealth() * 3)), 1.0F, 0.375F));
 
-			g.fillRect(0, 0, (int) (256 * window.logic.getHealth() / window.logic.getMaxHealth()), 16);
+			g.fillRect(0, 0, (int) (256 * GameLogic.getHealth() / GameLogic.getMaxHealth()), 16);
 
 			g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
 			FontMetrics fm = g.getFontMetrics();
 
 			g.setColor(Color.WHITE);
 
-			String str = String.format(Language.getCurrentLocale(), "%s: %.1f%%", Language.get("health"), Math.max(0, 100 * window.logic.getHealth() / window.logic.getMaxHealth()));
+			String str = String.format(Language.getCurrentLocale(), "%s: %.1f%%", Language.get("health"), Math.max(0, 100 * GameLogic.getHealth() / GameLogic.getMaxHealth()));
 			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
 		}
 

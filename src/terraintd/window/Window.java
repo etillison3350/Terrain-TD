@@ -18,43 +18,37 @@ public class Window extends JFrame {
 
 	private static final long serialVersionUID = -7720164204721511141L;
 
-	public final GamePanel panel;
-	public final InfoPanel info;
-	public final BuyPanel buy;
+	public static final JMenuBar menuBar = new JMenuBar();
 
-	final GameLogic logic;
+	public static final JMenu game = new JMenu();
+	public static final JMenuItem newGame = new JMenuItem();
+	public static final JMenuItem openGame = new JMenuItem();
+	public static final JMenuItem saveGame = new JMenuItem();
+	public static final JMenuItem saveGameAs = new JMenuItem();
+	public static final JCheckBoxMenuItem pauseGame = new JCheckBoxMenuItem();
+	public static final JCheckBoxMenuItem fastForward = new JCheckBoxMenuItem();
+	public static final JMenuItem exit = new JMenuItem();
 
-	public final JMenuBar menuBar;
+	public static final JMenu help = new JMenu();
 
-	public final JMenu game;
-	public final JMenuItem newGame;
-	public final JMenuItem openGame;
-	public final JMenuItem saveGame;
-	public final JMenuItem saveGameAs;
-	public final JCheckBoxMenuItem pauseGame;
-	public final JCheckBoxMenuItem fastForward;
-	public final JMenuItem exit;
-
-	public final JMenu help;
-
-	private final ActionListener menuListener = new ActionListener() {
+	private static final ActionListener menuListener = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == newGame) {
-				boolean wasPaused = logic.isPaused();
+				boolean wasPaused = GameLogic.isPaused();
 				if (!wasPaused) pauseGame.doClick();
-				logic.stop();
+				GameLogic.stop();
 
-				int i = JOptionPane.showOptionDialog(Window.this, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+				int i = JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
 
 				if (i == 0) {
 					actionPerformed(new ActionEvent(saveGame, 0, "Save"));
-					logic.reset();
+					GameLogic.reset();
 				} else if (i == 1) {
-					logic.reset();
+					GameLogic.reset();
 				} else {
-					if (!wasPaused) logic.start();
+					if (!wasPaused) GameLogic.start();
 					return;
 				}
 			} else if (e.getSource() == openGame) {
@@ -64,85 +58,73 @@ public class Window extends JFrame {
 			} else if (e.getSource() == saveGameAs) {
 
 			} else if (e.getSource() == pauseGame) {
-				info.pause.setSelected(!pauseGame.isSelected());
-				
+				InfoPanel.pause.setSelected(!pauseGame.isSelected());
+
 				if (pauseGame.isSelected()) {
-					logic.stop();
+					GameLogic.stop();
 				} else {
-					logic.start();
+					GameLogic.start();
 				}
 			} else if (e.getSource() == fastForward) {
-				logic.setFastForward(fastForward.isSelected());
+				GameLogic.setFastForward(fastForward.isSelected());
 			} else if (e.getSource() == exit) {
 
 			}
 		}
 	};
 
-	public Window() {
+	private static final Window window = new Window();
+
+	private Window() {
 		super(Language.get("title"));
 
 		this.setSize(960, 640);
 		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
-		menuBar = new JMenuBar();
-
-		game = new JMenu(Language.get("game"));
-
-		newGame = new JMenuItem(Language.get("new"));
 		newGame.addActionListener(menuListener);
 		game.add(newGame);
 
-		openGame = new JMenuItem(Language.get("open"));
 		openGame.addActionListener(menuListener);
 		game.add(openGame);
 
-		saveGame = new JMenuItem(Language.get("save"));
 		saveGame.addActionListener(menuListener);
 		game.add(saveGame);
 
-		saveGameAs = new JMenuItem(Language.get("save-as"));
 		saveGameAs.addActionListener(menuListener);
 		game.add(saveGameAs);
 
 		game.addSeparator();
 
-		pauseGame = new JCheckBoxMenuItem(Language.get("pause"), true);
 		pauseGame.addActionListener(menuListener);
+		pauseGame.setSelected(true);
 		game.add(pauseGame);
-		
-		fastForward = new JCheckBoxMenuItem(Language.get("fast-forward"), false);
+
 		fastForward.addActionListener(menuListener);
 		game.add(fastForward);
 
 		game.addSeparator();
 
-		exit = new JMenuItem(Language.get("exit"));
 		exit.addActionListener(menuListener);
 		game.add(exit);
 
 		menuBar.add(game);
 
-		help = new JMenu(Language.get("help"));
 		menuBar.add(help);
 
-		setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);
 
-		panel = new GamePanel(this);
-		this.add(panel);
+		renameButtons();
 
-		this.logic = panel.getLogic();
+		this.add(GamePanel.panel);
 
-		this.info = new InfoPanel(this);
-		this.add(this.info, BorderLayout.LINE_START);
+		this.add(InfoPanel.infoPanel, BorderLayout.LINE_START);
 
-		this.buy = new BuyPanel(this);
-		this.add(buy, BorderLayout.LINE_END);
-
-		this.setVisible(true);
+		this.add(BuyPanel.buyPanel, BorderLayout.LINE_END);
 	}
-	
-	public void renameButtons() {
+
+	public static void renameButtons() {
+		if (window != null) window.setTitle(Language.get("title"));
+
 		game.setText(Language.get("game"));
 		newGame.setText(Language.get("new"));
 		openGame.setText(Language.get("open"));
@@ -153,12 +135,24 @@ public class Window extends JFrame {
 		exit.setText(Language.get("exit"));
 		help.setText(Language.get("help"));
 	}
-	
-	public void setButtonsEnabled(boolean enabled) {
-		this.pauseGame.setEnabled(enabled);
-		this.fastForward.setEnabled(enabled);
-		this.info.pause.setEnabled(enabled);
-		this.info.fastForward.setEnabled(enabled);
+
+	public static void setButtonsEnabled(boolean enabled) {
+		pauseGame.setEnabled(enabled);
+		fastForward.setEnabled(enabled);
+		InfoPanel.pause.setEnabled(enabled);
+		InfoPanel.fastForward.setEnabled(enabled);
+	}
+
+	public static void repaintWindow() {
+		window.repaint();
+	}
+
+	public static void setWindowVisible(boolean b) {
+		window.setVisible(true);
+	}
+
+	public static void setWindowDefaultCloseOperation(int operation) {
+		window.setDefaultCloseOperation(operation);
 	}
 
 }

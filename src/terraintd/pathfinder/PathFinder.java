@@ -17,6 +17,8 @@ public class PathFinder {
 	 */
 	public static final double SQRT2D2 = .7071067811865476;
 
+	private PathFinder() {}
+	
 	static final Comparator<Node> nodeComp = new Comparator<Node>() {
 
 		@Override
@@ -26,14 +28,8 @@ public class PathFinder {
 
 	};
 
-	public final GameLogic logic;
-
-	public PathFinder(GameLogic logic) {
-		this.logic = logic;
-	}
-
-	public Node[][][] calculatePaths(EnemyType type) {
-		return calculatePaths(type, logic.getPermanentEntities(), logic.getCurrentWorld());
+	public static Node[][][] calculatePaths(EnemyType type) {
+		return calculatePaths(type, GameLogic.getPermanentEntities(), GameLogic.getCurrentWorld());
 	}
 	
 	public static Node[][][] calculatePaths(EnemyType type, Entity[] entities, World world) {
