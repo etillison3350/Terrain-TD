@@ -22,7 +22,6 @@ import terraintd.pathfinder.PathFinder;
 import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
-import terraintd.types.Language;
 import terraintd.types.Level;
 import terraintd.types.Level.Unit;
 import terraintd.types.ObstacleType;
@@ -61,7 +60,7 @@ public class GameLogic implements ActionListener {
 	private final GamePanel panel;
 
 	private State state = State.PLAYING;
-	
+
 	private List<Entity> permanentEntities;
 
 	private List<Projectile> projectiles;
@@ -110,18 +109,18 @@ public class GameLogic implements ActionListener {
 
 		if (!this.isPaused()) this.window.pauseGame.doClick();
 		this.stop();
-		
+
 		if (this.ff) this.window.fastForward.doClick();
 		this.setFastForward(false);
-		
+
 		this.state = State.PLAYING;
-		
+
 		this.currentWorld = World.values()[2];
 		this.currentLevel = Level.values()[0];
 
 		this.money = this.currentLevel.money;
 		this.health = this.maxHealth = this.currentLevel.health;
-		
+
 		this.timeToNextEnemy = currentLevel.units[0].delay;
 		this.enemyIndex = 0;
 
@@ -132,13 +131,13 @@ public class GameLogic implements ActionListener {
 			this.nodes.put(type, this.pathFinder.calculatePaths(type));
 
 		this.selected = null;
-		
+
 		this.window.repaint();
 		if (this.window.buy != null) this.window.buy.updateButtons();
 	}
-	
+
 	private boolean ff;
-	
+
 	public void setFastForward(boolean fastForward) {
 		this.ff = fastForward;
 		this.timer.setDelay((int) ((fastForward ? 500 : 1000) * FRAME_TIME));
@@ -201,7 +200,7 @@ public class GameLogic implements ActionListener {
 			this.window.setButtonsEnabled(false);
 			this.panel.repaint();
 		}
-		
+
 		timeToNextEnemy -= FRAME_TIME;
 		while (timeToNextEnemy < 0 && enemyIndex < currentLevel.units.length) {
 			EnemyType et = typeOfUnit(currentLevel.units[enemyIndex]);
@@ -312,7 +311,7 @@ public class GameLogic implements ActionListener {
 					}
 				}
 			}
-			
+
 			if (p.type.delivery != DeliveryType.SINGLE_TARGET) {
 				for (Entity e : permanents) {
 					if (!(e instanceof Enemy)) continue;
@@ -470,6 +469,8 @@ public class GameLogic implements ActionListener {
 	public boolean canPlaceObject(CollidableType type, int x, int y) {
 		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
 
+		if (currentWorld.goal.x >= x && currentWorld.goal.x - x - (currentWorld.goal.top ? 0 : 1) < type.width && currentWorld.goal.y >= y && currentWorld.goal.y - y - (currentWorld.goal.top ? 1 : 0) < type.height) return false;
+
 		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
 		for (Entity e : permanents) {
 			if (!(e instanceof CollidableEntity)) continue;
@@ -531,12 +532,12 @@ public class GameLogic implements ActionListener {
 	public boolean isPaused() {
 		return !this.timer.isRunning();
 	}
-	
+
 	public enum State {
 		PLAYING,
 		COMPLETE,
 		FAILED;
-		
+
 		public String toString() {
 			return Language.get("level-" + this.name().toLowerCase());
 		}

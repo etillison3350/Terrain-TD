@@ -34,6 +34,8 @@ public class Projectile {
 		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
 		
 		this.hitTargets = new ArrayList<>();
+		
+		this.shootingEntity.getGun().registerProjectile();
 	}
 
 	public boolean move() {

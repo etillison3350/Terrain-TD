@@ -12,6 +12,7 @@ dont-save=Don't Save
 save-as=Save As
 pause=Pause
 fast-forward=Fast Forward
+language=Language
 exit=Exit
 cancel=Cancel
 
@@ -35,12 +36,14 @@ effect-bluntness=Bluntness
 effect-frost=Frost
 effect-poison=Poison
 effect-bleed=Bleed
+none=None
 
 health=Health
 money=Money
 
 kills=Kills
 damage-dealt=Damage dealt
+projectiles-fired=Shots fired
 
 area=Area
 tiles=tiles

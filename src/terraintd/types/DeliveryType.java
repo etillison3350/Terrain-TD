@@ -1,5 +1,7 @@
 package terraintd.types;
 
+import terraintd.Language;
+
 public enum DeliveryType {
 	SINGLE_TARGET,
 	AREA,

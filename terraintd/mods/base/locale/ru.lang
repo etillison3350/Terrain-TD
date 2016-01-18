@@ -12,6 +12,7 @@ dont-save=отбрасывать
 save-as=Сохранить как
 pause=пауза
 fast-forward=перемотка вперед
+language=язык
 exit=оставлять
 cancel=отменить
 	
@@ -35,12 +36,14 @@ effect-bluntness=неотточенный
 effect-frost=Мороз
 effect-poison=яд
 effect-bleed=кровоточить
+none=Никто
 
 health=Здоровье
 money=Деньги
 
 kills=Убийств
 damage-dealt=Нанесенный ущерб
+projectiles-fired=Произведены выстрелы
 
 area=Площадка
 tiles=плитка

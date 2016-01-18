@@ -12,6 +12,7 @@ dont-save=Descartar
 save-as=Guardar como
 pause=Pausar
 fast-forward=Avanzce Rapido
+language=Idioma
 exit=Salir
 cancel=Cancelar
 
@@ -35,12 +36,14 @@ effect-bluntness=Despuntadura
 effect-frost=Escarcha
 effect-poison=Veneno
 effect-bleed=Sangre
+none=Ninguno
 
 health=Vida
 money=Dinero
 
 kills=Lote
 damage-dealt=Daño infligido
+projectiles-fired=Disparos
 
 area=Área
 tiles=cuadrados

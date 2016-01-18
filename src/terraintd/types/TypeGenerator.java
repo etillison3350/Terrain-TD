@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import terraintd.pathfinder.Node;
+import terraintd.pathfinder.PathFinder;
 import terraintd.types.Level.Unit;
 import terraintd.types.World.Tile;
 
@@ -235,6 +236,15 @@ public final class TypeGenerator {
 
 		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
 
+		Object healthBar = map.get("health-bar");
+		double hbWidth = 1, hbY = PathFinder.SQRT2D2;
+		if (healthBar instanceof Map<?, ?>) {
+			Map<?, ?> hb = (Map<?, ?>) healthBar;
+			
+			if (hb.get("width") instanceof Number) hbWidth = ((Number) hb.get("width")).doubleValue();
+			if (hb.get("offset") instanceof Number) hbY = ((Number) hb.get("offset")).doubleValue();
+		}
+		
 		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
 
 		ImageType death = map.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("death")) : null;
@@ -246,7 +256,7 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new EnemyType(id, speed, upSpeed, downSpeed, health, damage, reward, range, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		return new EnemyType(id, speed, upSpeed, downSpeed, health, damage, reward, range, hbWidth, hbY, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
 	static ObstacleType parseObstacle(Map<?, ?> map) {

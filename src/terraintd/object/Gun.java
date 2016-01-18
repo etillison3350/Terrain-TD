@@ -17,6 +17,7 @@ public class Gun {
 
 	private int kills;
 	private double damageDone;
+	private int projectilesFired;
 
 	public Gun(ProjectileType[] projectiles, double range, double x, double y) {
 		this.projectiles = projectiles;
@@ -115,6 +116,14 @@ public class Gun {
 
 	public void registerDamage(double damageDone) {
 		this.damageDone += damageDone;
+	}
+
+	public int getProjectilesFired() {
+		return projectilesFired;
+	}
+
+	public void registerProjectile() {
+		this.projectilesFired++;
 	}
 
 }

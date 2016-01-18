@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
+import terraintd.Language;
+
 public enum StatusEffectType {
 	FIRE(Color.ORANGE, "fireEffect.png"),
 	PARALYSIS(Color.LIGHT_GRAY, null),

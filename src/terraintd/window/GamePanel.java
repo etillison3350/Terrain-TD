@@ -21,6 +21,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import terraintd.GameLogic;
+import terraintd.Language;
 import terraintd.GameLogic.State;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
@@ -31,7 +32,6 @@ import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;
 import terraintd.types.ImageType;
-import terraintd.types.Language;
 import terraintd.types.TowerType;
 
 public class GamePanel extends JPanel {
@@ -47,13 +47,12 @@ public class GamePanel extends JPanel {
 
 		this.setBackground(Color.BLACK);
 
-		this.logic = new GameLogic(this, window);
+		this.logic = new GameLogic(this, this.window);
 
 		this.addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				// tile = getWidth()
 				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) (logic.getCurrentWorld().getWidth() + 1), (double) getHeight() / (double) (logic.getCurrentWorld().getHeight() + 1)));
 				dx = ((double) getWidth() - (logic.getCurrentWorld().getWidth() * tile)) * 0.5;
 				dy = ((double) getHeight() - (logic.getCurrentWorld().getHeight() * tile)) * 0.5;
@@ -145,6 +144,7 @@ public class GamePanel extends JPanel {
 		}
 
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
+		g.setStroke(new BasicStroke((float) tile / 10.0F));
 		for (Entity e : logic.getPermanentEntities()) {
 			if (!(e instanceof Enemy)) continue;
 
@@ -166,8 +166,16 @@ public class GamePanel extends JPanel {
 			trans.rotate(en.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
 			trans.scale(tile * img.width / img.image.getWidth(), tile * img.height / img.image.getHeight());
 			g.drawImage(img.image, trans, null);
+
+			g.setColor(Color.BLACK);
+			g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
+			if (!en.isDead()) {
+				g.setColor(Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
+				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
+			}
 		}
 
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 		for (Entity e : logic.getPermanentEntities()) {
 			if (!(e instanceof CollidableEntity)) continue;
 
@@ -269,9 +277,7 @@ public class GamePanel extends JPanel {
 			}
 		}
 
-		if (logic.getState() != State.PLAYING)
-
-		{
+		if (logic.getState() != State.PLAYING) {
 			g.setColor(Color.BLACK);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5F));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());

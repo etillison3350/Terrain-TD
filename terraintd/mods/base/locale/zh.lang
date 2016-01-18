@@ -12,6 +12,7 @@ dont-save=丟棄
 save-as=另存為
 pause=暂停
 fast-forward=快進
+language=文
 exit=退出
 cancel=取消
 
@@ -35,12 +36,14 @@ effect-bluntness=鈍
 effect-frost=凍結
 effect-poison=毒
 effect-bleed=流血
+none=無
 
 health=健康
 money=錢
 
 kills=毀壞
 damage-dealt=造成的傷害
+projectiles-fired=開槍
 
 area=區
 tiles=廣場

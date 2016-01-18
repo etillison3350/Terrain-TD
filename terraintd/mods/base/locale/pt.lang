@@ -12,6 +12,7 @@ dont-save=Descartar
 save-as=Guardar como
 pause=Pausar
 fast-forward=Avanço Rápido
+language=Idioma
 exit=Sair
 cancel=Cancelar
 
@@ -35,12 +36,14 @@ effect-bluntness=embotamento
 effect-frost=Geada
 effect-poison=Veneno
 effect-bleed=Sangrar
+none=Nenhum
 
 health=Saúde
 money=Dinheiro
 
 kills=Matanças
 damage-dealt=Dano causado
+projectiles-fired=Tiros disparados
 
 area=Área
 tiles=praças

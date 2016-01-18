@@ -1,4 +1,4 @@
-package terraintd.types;
+package terraintd;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

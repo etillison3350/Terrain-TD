@@ -25,11 +25,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
+import terraintd.Language;
 import terraintd.object.Entity;
 import terraintd.object.Weapon;
 import terraintd.types.EffectType;
 import terraintd.types.IdType;
-import terraintd.types.Language;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TowerType;
@@ -142,7 +142,7 @@ public class InfoPanel extends JPanel {
 		for (ProjectileType p : projectiles) {
 			ret += String.format(Language.getCurrentLocale(), "<ul><li>%s: %s</li><li>%s: %.3g - %.3g</li><li>%s: %.4g %s</li><li>%s: %s</li><li style=\"font-weight: bold\">%s</li>", Language.get("delivery"), p.delivery.toString(), Language.get("damage"), p.damage, p.damage - p.falloff, Language.get("rate"), p.rate * 60, Language.get("rpm"), Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles")), Language.get("effects"));
 			if (p.effects.length == 0) {
-				ret += "<ul><li>None</li></ul>";
+				ret += String.format("<ul><li>%s</li></ul>", Language.get("none"));
 			} else {
 				for (EffectType e : p.effects) {
 					ret += String.format(Language.getCurrentLocale(), "<ul><li>%s %s, %.3gs</li></ul>", e.type, e.amplifier, e.duration);
@@ -168,7 +168,7 @@ public class InfoPanel extends JPanel {
 	}
 	
 	static String getStringForWeapon(Weapon w) {
-		return String.format("<br /><p>%s: %d</p><p>%s: %.5f</p><br />", Language.get("kills"), w.getGun().getKills(), Language.get("damage-dealt"), w.getGun().getDamageDone());
+		return String.format("<br /><p>%s: %d</p><p>%s: %.5f</p><p>%s: %d</p><br />", Language.get("kills"), w.getGun().getKills(), Language.get("damage-dealt"), w.getGun().getDamageDone(), Language.get("projectiles-fired"), w.getGun().getProjectilesFired());
 	}
 
 	public Object getDisplayedType() {

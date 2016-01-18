@@ -12,7 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import terraintd.GameLogic;
-import terraintd.types.Language;
+import terraintd.Language;
 
 public class Window extends JFrame {
 
@@ -142,11 +142,23 @@ public class Window extends JFrame {
 		this.setVisible(true);
 	}
 	
+	public void renameButtons() {
+		game.setText(Language.get("game"));
+		newGame.setText(Language.get("new"));
+		openGame.setText(Language.get("open"));
+		saveGame.setText(Language.get("save"));
+		saveGameAs.setText(Language.get("save-as"));
+		pauseGame.setText(Language.get("pause"));
+		fastForward.setText(Language.get("fast-forward"));
+		exit.setText(Language.get("exit"));
+		help.setText(Language.get("help"));
+	}
+	
 	public void setButtonsEnabled(boolean enabled) {
-		this.pauseGame.setEnabled(false);
-		this.fastForward.setEnabled(false);
-		this.info.pause.setEnabled(false);
-		this.info.fastForward.setEnabled(false);
+		this.pauseGame.setEnabled(enabled);
+		this.fastForward.setEnabled(enabled);
+		this.info.pause.setEnabled(enabled);
+		this.info.fastForward.setEnabled(enabled);
 	}
 
 }

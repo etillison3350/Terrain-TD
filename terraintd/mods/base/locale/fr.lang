@@ -12,6 +12,7 @@ dont-save=Jeter
 save-as=Enregistrer sous
 pause=Arrêter
 fast-forward=Avance Rapide
+language=Langue
 exit=Quitter
 cancel=Annuler
 
@@ -35,12 +36,14 @@ effect-bluntness-État Émoussé
 effect-frost=Gel
 effect-poison=Poison
 effect-bleed=Saigner
+none=Aucun
 
 health=Vie
 money=Argent
 
 kills=Chasse
 damage-dealt=Dégâts infligés
+projectiles-fired=Tirs dirigés
 
 area=Superficie
 tiles=carrés

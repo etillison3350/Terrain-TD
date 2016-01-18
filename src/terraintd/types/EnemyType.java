@@ -11,11 +11,13 @@ public class EnemyType extends IdType {
 	public final double damage;
 	public final int reward;
 	public final double range;
+	public final double hbWidth;
+	public final double hbY;
 	public final ImageType image;
 	public final ImageType death;
 	public final ProjectileType[] projectiles;
 
-	EnemyType(String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, ImageType image, ImageType death, ProjectileType[] projectiles) {
+	EnemyType(String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, double hbWidth, double hbY, ImageType image, ImageType death, ProjectileType[] projectiles) {
 		super(id);
 		
 		typeIds.put(id, this);
@@ -27,6 +29,8 @@ public class EnemyType extends IdType {
 		this.damage = damage;
 		this.reward = reward;
 		this.range = range;
+		this.hbWidth = hbWidth;
+		this.hbY = hbY;
 		this.image = image;
 		this.death = death;
 		this.projectiles = projectiles;
