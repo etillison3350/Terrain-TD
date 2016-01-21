@@ -61,7 +61,7 @@ public class GameLogic implements ActionListener {
 	public final static Random rand = new Random();
 
 	public static final Config cfg = new Config();
-	
+
 	private static State state = State.PLAYING;
 
 	private static List<Entity> permanentEntities;
@@ -103,7 +103,8 @@ public class GameLogic implements ActionListener {
 		if (!isPaused()) Window.pauseGame.doClick();
 		stop();
 
-		if (ff) Window.fastForward.doClick();
+		Window.fastForward.setSelected(false);
+		InfoPanel.fastForward.setSelected(false);
 		setFastForward(false);
 
 		state = State.PLAYING;
@@ -124,15 +125,13 @@ public class GameLogic implements ActionListener {
 			nodes.put(type, PathFinder.calculatePaths(type));
 
 		selected = null;
+		buying = null;
 
 		Window.repaintWindow();
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
 
-	private static boolean ff;
-
 	public static void setFastForward(boolean fastForward) {
-		ff = fastForward;
 		timer.setDelay((int) ((fastForward ? 500 : 1000) * FRAME_TIME));
 	}
 
@@ -153,7 +152,10 @@ public class GameLogic implements ActionListener {
 			processProjectiles();
 			t2 = System.nanoTime();
 			GamePanel.repaintPanel();
+			BuyPanel.updateButtons();
+			InfoPanel.refreshDisplay();
 		}
+
 	}
 
 	/**
@@ -180,7 +182,8 @@ public class GameLogic implements ActionListener {
 			health = 0;
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
-			if (ff) Window.fastForward.doClick();
+			Window.fastForward.setSelected(false);
+			InfoPanel.fastForward.setSelected(false);
 			setFastForward(false);
 			state = State.FAILED;
 			BuyPanel.updateButtons();
@@ -190,7 +193,8 @@ public class GameLogic implements ActionListener {
 		} else if (enemyIndex == currentLevel.units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
-			if (ff) Window.fastForward.doClick();
+			Window.fastForward.setSelected(false);
+			InfoPanel.fastForward.setSelected(false);
 			setFastForward(false);
 			state = State.COMPLETE;
 			BuyPanel.updateButtons();
@@ -252,16 +256,19 @@ public class GameLogic implements ActionListener {
 
 			if (e instanceof Enemy) {
 				Enemy enemy = (Enemy) e;
-
 				if (enemy.getDead() != 0) {
 					if (enemy.die()) permanentEntities.remove(enemy);
 					continue;
 				}
 
 				if (!enemy.move()) {
-					health -= enemy.type.damage;
+					health -= enemy.getDamage();
 					enemy.damage(Float.MAX_VALUE);
 					InfoPanel.paintHealthBar();
+				}
+
+				if (enemy.damage(0)) {
+					money += enemy.type.reward;
 				}
 			}
 		}
@@ -283,9 +290,7 @@ public class GameLogic implements ActionListener {
 					if (p.type.follow) {
 						if (p.getTarget().damage(p)) {
 							money += p.getTarget().type.reward;
-							BuyPanel.updateButtons();
 						}
-						InfoPanel.refreshDisplay();
 					}
 
 					if (p.type.explodeRadius > 0.00001) {
@@ -300,9 +305,7 @@ public class GameLogic implements ActionListener {
 							if (dy * dy + dx * dx <= p.type.explodeRadius * p.type.explodeRadius) {
 								if (enemy.damage(p)) {
 									money += enemy.type.reward;
-									BuyPanel.updateButtons();
 								}
-								InfoPanel.refreshDisplay();
 							}
 						}
 					}
@@ -339,9 +342,7 @@ public class GameLogic implements ActionListener {
 					if (damage) {
 						if (((Enemy) e).damage(p)) {
 							money += ((Enemy) e).type.reward;
-							BuyPanel.updateButtons();
 						}
-						InfoPanel.refreshDisplay();
 						p.hitTarget((Enemy) e);
 					}
 				}

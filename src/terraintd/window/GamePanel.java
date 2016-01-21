@@ -33,6 +33,7 @@ import terraintd.types.CollidableType;
 import terraintd.types.EnemyType;
 import terraintd.types.ImageType;
 import terraintd.types.TowerType;
+import terraintd.window.ImageManager.Resource;
 
 public class GamePanel extends JPanel {
 
@@ -158,25 +159,22 @@ public class GamePanel extends JPanel {
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - en.getDeathTime())));
 
-			ImageType img;
 			if (en.isDead()) {
 				g.setColor(Color.GREEN);
 				g.drawString(String.format(Language.getCurrentLocale(), "+%d", en.type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
-				img = en.type.death;
-			} else {
-				img = en.type.image;
 			}
+			
+			BufferedImage img = ImageManager.get(new Resource(en));
 
 			AffineTransform trans = new AffineTransform();
-			trans.translate(dx + tile * (en.getX() - img.width * 0.5), dy + tile * (en.getY() - img.height * 0.5));
-			trans.rotate(en.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
-			trans.scale(tile * img.width / img.image.getWidth(), tile * img.height / img.image.getHeight());
-			g.drawImage(img.image, trans, null);
+			trans.translate(dx + tile * en.getX() - img.getWidth() * 0.5, dy + tile * en.getY() - img.getHeight() * 0.5);
+			trans.rotate(en.getRotation(), img.getWidth() * 0.5, img.getHeight() * 0.5);
+			g.drawImage(img, trans, null);
 
 			g.setColor(Color.BLACK);
 			g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
 			if (en.getDead() == 0) {
-				g.setColor(Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
+				g.setColor(en.getStatusEffects().length > 0 ? new Resource(en).color : Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
 				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
 			}
 		}

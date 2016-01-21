@@ -5,9 +5,11 @@ import java.util.List;
 
 import terraintd.GameLogic;
 import terraintd.pathfinder.Node;
+import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
-import terraintd.types.ProjectileType;
 import terraintd.types.IdType;
+import terraintd.types.ProjectileType;
+import terraintd.types.StatusEffectType;
 import terraintd.types.World;
 
 public class Enemy extends Entity implements Weapon {
@@ -24,6 +26,8 @@ public class Enemy extends Entity implements Weapon {
 	public final World world;
 
 	private Node nextNode, prevNode;
+
+	private List<StatusEffect> statusEffects;
 
 	@Override
 	public double getX() {
@@ -45,6 +49,8 @@ public class Enemy extends Entity implements Weapon {
 		this.health = type.health;
 		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
 
+		this.statusEffects = new ArrayList<>();
+
 		this.futureDamage = new ArrayList<>();
 	}
 
@@ -64,23 +70,64 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	public boolean move() {
-		return move(GameLogic.FRAME_TIME);
+		double speedMultiplier = 1;
+
+		StatusEffect[] effects = statusEffects.toArray(new StatusEffect[statusEffects.size()]);
+		for (StatusEffect effect : effects) {
+			if (effect.fade()) {
+				statusEffects.remove(effect);
+				continue;
+			}
+
+			switch (effect.type) {
+				case FIRE:
+					this.health -= .125 * effect.amplifier + 1.125;
+					effect.inflictor.getGun().registerDamage(.125 * effect.amplifier + 1.125);
+					break;
+				case FROST:
+					if (effect.amplifier >= 10.999) return true;
+					speedMultiplier *= ((effect.amplifier - 11) * effect.origDuration + 11 * effect.getDuration()) / ((effect.amplifier - 11) * effect.origDuration);
+					if (speedMultiplier <= 0.001) return true;
+					break;
+				case PARALYSIS:
+					return true;
+				case POISON:
+//					this.health -= .375 * effect.amplifier + .25;
+					double lastHealth = this.health;
+					this.health = this.health * (1 - effect.amplifier * 0.0021) - 0.05 * effect.amplifier;
+					effect.inflictor.getGun().registerDamage(lastHealth - this.health);
+					break;
+				case SLOWNESS:
+					speedMultiplier *= 1 - 0.09090909 * effect.amplifier;
+					break;
+				default:
+					break;
+			}
+		}
+		return move(GameLogic.FRAME_TIME, speedMultiplier);
 	}
 
-	protected boolean move(double time) {
+	protected boolean move(double time, double speedMult) {
 		int x = prevNode.x - (!prevNode.top && prevNode.x - nextNode.x == 1 ? 1 : 0);
 		int y = prevNode.y - (prevNode.top && prevNode.y - nextNode.y == 1 ? 1 : 0);
 
-		double speed = type.speed.get(world.tiles[y][x].terrain);
+		double speed = speedMult * type.speed.get(world.tiles[y][x].terrain);
 		double distance = speed * time;
 		double d = Math.hypot(this.x - nextNode.getAbsX(), this.y - nextNode.getAbsY());
 
+		for (StatusEffect effect : statusEffects) {
+			if (effect.type == StatusEffectType.BLEED) {
+				this.health -= 10 * effect.amplifier * distance;
+				effect.inflictor.getGun().registerDamage(10 * effect.amplifier * distance);
+			}
+		}
+		
 		if (distance > d) {
 			this.x = nextNode.getAbsX();
 			this.y = nextNode.getAbsY();
 			this.prevNode = nextNode;
 			this.nextNode = nextNode.getNextNode();
-			boolean ret = nextNode == null ? false : move((distance - d) / speed);
+			boolean ret = nextNode == null ? false : move((distance - d) / speed, speedMult);
 			if (!ret) dead = 2;
 			return ret;
 		}
@@ -123,9 +170,19 @@ public class Enemy extends Entity implements Weapon {
 		this.futureDamage.remove(p);
 
 		double h = this.health;
-		boolean kill = this.damage(p.damageForEntity(this));
+		double dm = 1;
+		for (StatusEffect effect : statusEffects) {
+			if (effect.type == StatusEffectType.WEAKNESS) dm *= (1 + 0.25 * effect.amplifier);
+		}
+		boolean kill = this.damage(dm * p.damageForEntity(this));
 		if (kill) p.shootingEntity.getGun().registerKill();
 		p.shootingEntity.getGun().registerDamage(Math.max(0, h) - Math.max(0, this.health));
+
+		if (p.type.effects != null) {
+			for (EffectType effect : p.type.effects) {
+				this.addStatusEffect(new StatusEffect(p.shootingEntity, effect));
+			}
+		}
 		
 		return kill;
 	}
@@ -163,7 +220,7 @@ public class Enemy extends Entity implements Weapon {
 	public boolean isDead() {
 		return dead == 1;
 	}
-	
+
 	public int getDead() {
 		return dead;
 	}
@@ -175,6 +232,22 @@ public class Enemy extends Entity implements Weapon {
 
 	public double getRotation() {
 		return nextNode == null ? 0 : Math.atan2(nextNode.getAbsY() - prevNode.getAbsY(), nextNode.getAbsX() - prevNode.getAbsX());
+	}
+
+	public void addStatusEffect(StatusEffect effect) {
+		this.statusEffects.add(effect);
+	}
+
+	public StatusEffect[] getStatusEffects() {
+		return statusEffects.toArray(new StatusEffect[statusEffects.size()]);
+	}
+
+	public double getDamage() {
+		double dm = 1;
+		for (StatusEffect effect : statusEffects) {
+			if (effect.type == StatusEffectType.BLUNTNESS) dm /= (1 + 0.25 * effect.amplifier);
+		}
+		return dm * this.type.damage;
 	}
 
 }

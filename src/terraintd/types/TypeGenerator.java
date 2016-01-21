@@ -240,11 +240,11 @@ public final class TypeGenerator {
 		double hbWidth = 1, hbY = PathFinder.SQRT2D2;
 		if (healthBar instanceof Map<?, ?>) {
 			Map<?, ?> hb = (Map<?, ?>) healthBar;
-			
+
 			if (hb.get("width") instanceof Number) hbWidth = ((Number) hb.get("width")).doubleValue();
 			if (hb.get("offset") instanceof Number) hbY = ((Number) hb.get("offset")).doubleValue();
 		}
-		
+
 		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
 
 		ImageType death = map.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("death")) : null;
@@ -396,7 +396,11 @@ public final class TypeGenerator {
 		List<EffectType> effects = new ArrayList<>();
 		if (map.get("effects") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("effects")) {
-				if (p instanceof Map<?, ?>) effects.add(parseEffect((Map<?, ?>) p));
+				if (p instanceof Map<?, ?>) {
+					try {
+						effects.add(parseEffect((Map<?, ?>) p));
+					} catch (Exception e) {}
+				}
 			}
 		}
 
@@ -409,6 +413,8 @@ public final class TypeGenerator {
 		double duration = map.get("duration") instanceof Number ? ((Number) map.get("duration")).doubleValue() : 1;
 
 		double amplifier = map.get("amplifier") instanceof Number ? ((Number) map.get("amplifier")).doubleValue() : 1;
+
+		if (amplifier <= 0) throw new IllegalArgumentException();
 
 		return new EffectType(type, duration, amplifier);
 	}

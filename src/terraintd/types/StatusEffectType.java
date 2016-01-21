@@ -14,7 +14,7 @@ public enum StatusEffectType {
 	PARALYSIS(Color.LIGHT_GRAY, null),
 	SLOWNESS(new Color(0.25F, 0.125F, 0.5F), null),
 	WEAKNESS(new Color(0.5F, 0.0F, 1.0F), null),
-	BLUNTNESS(Color.BLACK, null),
+	BLUNTNESS(Color.DARK_GRAY, null),
 	FROST(new Color(0.0F, 1.0F, 1.0F), null),
 	POISON(Color.GREEN, null),
 	BLEED(Color.RED, null);
