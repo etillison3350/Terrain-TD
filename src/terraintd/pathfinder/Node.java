@@ -18,6 +18,7 @@ public class Node {
 	private Node next;
 	private double cost;
 	private boolean closed;
+	private boolean explored;
 
 	public Node(int x, int y, boolean top) {
 		this.x = x;
@@ -52,9 +53,18 @@ public class Node {
 	boolean isClosed() {
 		return closed;
 	}
+	
+	public boolean isExplored() {
+		return explored;
+	}
 
-	void setClosed(boolean closed) {
-		this.closed = closed;
+	void close() {
+		this.closed = true;
+	}
+	
+	void explore() {
+		close();
+		this.explored = true;
 	}
 	
 	@Override

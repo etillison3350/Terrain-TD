@@ -15,9 +15,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import terraintd.GameLogic;
@@ -40,6 +43,8 @@ public class GamePanel extends JPanel {
 	private static final long serialVersionUID = 6409717885667732875L;
 
 	static final GamePanel panel = new GamePanel();
+
+	private static BufferedImage goal;
 
 	private GamePanel() {
 		this.setBackground(Color.BLACK);
@@ -105,6 +110,10 @@ public class GamePanel extends JPanel {
 
 		this.addMouseListener(ma);
 		this.addMouseMotionListener(ma);
+
+		try {
+			goal = ImageIO.read(Paths.get("terraintd/mods/base/images/goal.png").toFile());
+		} catch (IOException e1) {}
 	}
 
 	private static double mouseX, mouseY;
@@ -163,7 +172,7 @@ public class GamePanel extends JPanel {
 				g.setColor(Color.GREEN);
 				g.drawString(String.format(Language.getCurrentLocale(), "+%d", en.type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
 			}
-			
+
 			BufferedImage img = ImageManager.get(new Resource(en));
 
 			AffineTransform trans = new AffineTransform();
@@ -245,6 +254,9 @@ public class GamePanel extends JPanel {
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
+		Node goal = GameLogic.getCurrentWorld().goal;
+		g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
+		
 		for (Projectile p : GameLogic.getProjectiles()) {
 			ImageType img = p.type.image;
 

@@ -27,6 +27,8 @@ public class Enemy extends Entity implements Weapon {
 
 	private Node nextNode, prevNode;
 
+	private Node[][][] newNodeSet;
+	
 	private List<StatusEffect> statusEffects;
 
 	@Override
@@ -127,6 +129,7 @@ public class Enemy extends Entity implements Weapon {
 			this.y = nextNode.getAbsY();
 			this.prevNode = nextNode;
 			this.nextNode = nextNode.getNextNode();
+			if (newNodeSet != null) resetNodes(newNodeSet);
 			boolean ret = nextNode == null ? false : move((distance - d) / speed, speedMult);
 			if (!ret) dead = 2;
 			return ret;
@@ -142,7 +145,21 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	public void resetNodes(Node[][][] nodes) {
-		if (this.nextNode != null) this.nextNode = nodes[nextNode.y][nextNode.x][nextNode.top ? 1 : 0];
+		if (this.nextNode != null) {
+			Node newNextNode = nodes[nextNode.y][nextNode.x][nextNode.top ? 1 : 0];
+			Node newPrevNode = nodes[prevNode.y][prevNode.x][prevNode.top ? 1 : 0];
+			
+			if (newNextNode.isExplored()) {
+				this.nextNode = newNextNode;
+				this.newNodeSet = null;
+			} else if (newPrevNode.isExplored()) {
+				this.nextNode = newPrevNode.getNextNode();
+				this.x = newPrevNode.getAbsX();
+				this.y = newPrevNode.getAbsY();
+			} else {
+				this.newNodeSet = nodes;
+			}
+		}
 	}
 
 	/**

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 import terraintd.window.BuyPanel;
+import terraintd.window.GamePanel;
 import terraintd.window.InfoPanel;
 import terraintd.window.Window;
 
@@ -57,6 +58,7 @@ public class Config {
 		InfoPanel.paintHealthBar();
 		BuyPanel.updateButtons();
 		Window.renameButtons();
+		GamePanel.repaintPanel();
 	}
 
 	public void setValues() {

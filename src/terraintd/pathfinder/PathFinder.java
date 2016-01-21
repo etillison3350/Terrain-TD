@@ -51,8 +51,8 @@ public class PathFinder {
 
 			for (int y = 0; y <= c.getHeight(); y++) {
 				for (int x = 0; x <= c.getWidth(); x++) {
-					if (y < c.getHeight()) nodes[(int) (c.getY() + y)][(int) (c.getX() + x)][0].setClosed(true);
-					if (x < c.getWidth()) nodes[(int) (c.getY() + y)][(int) (c.getX() + x)][1].setClosed(true);
+					if (y < c.getHeight()) nodes[(int) (c.getY() + y)][(int) (c.getX() + x)][0].close();
+					if (x < c.getWidth()) nodes[(int) (c.getY() + y)][(int) (c.getX() + x)][1].close();
 				}
 			}
 		}
@@ -68,7 +68,7 @@ public class PathFinder {
 			nodeList.remove(node);
 			nodeSet.clear();
 			nodeSet.addAll(nodeList);
-			node.setClosed(true);
+			node.explore();
 
 			Node[] next = new Node[6];
 			if (node.top) {
