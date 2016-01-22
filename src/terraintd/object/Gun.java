@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import terraintd.GameLogic;
 import terraintd.types.ProjectileType;
+import terraintd.types.TargetType;
 
 public class Gun {
 
@@ -14,6 +15,8 @@ public class Gun {
 	private Enemy target;
 
 	private double[] time;
+
+	private TargetType targetType = TargetType.FIRST;
 
 	private int kills;
 	private double damageDone;
@@ -124,6 +127,14 @@ public class Gun {
 
 	public void registerProjectile() {
 		this.projectilesFired++;
+	}
+
+	public TargetType getTargetType() {
+		return targetType;
+	}
+
+	public void setTargetType(TargetType targetType) {
+		this.targetType = targetType;
 	}
 
 }

@@ -45,6 +45,17 @@ kills=Kills
 damage-dealt=Damage dealt
 projectiles-fired=Shots fired
 
+target=Target
+target-first=First
+target-last=Last
+target-nearest=Nearest
+target-farthest=Farthest
+target-strongest=Strongest
+target-weakest=Weakest
+target-valuablest=Most reward
+target-worthlessest=Least reward
+target-na=All
+
 area=Area
 tiles=tiles
 dps=Damage Per Second
@@ -60,6 +71,8 @@ rate=Firerate
 rpm=RPM
 detect-range=Detection Range
 range=Range
+
+sell=Sell
 
 tower-single=Cannon
 tower-line=Laser Cannon

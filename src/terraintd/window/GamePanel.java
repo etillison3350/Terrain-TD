@@ -311,7 +311,6 @@ public class GamePanel extends JPanel {
 			g.setFont(fm.getFont());
 			g.drawString(str, 0.5F * (this.getWidth() - fm.stringWidth(str)), this.getHeight() - (0.5F * (this.getHeight() - fm.getAscent())));
 		}
-
 	}
 
 	public static double getTile() {

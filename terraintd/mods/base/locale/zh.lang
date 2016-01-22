@@ -45,6 +45,17 @@ kills=毀壞
 damage-dealt=造成的傷害
 projectiles-fired=開槍
 
+target=目標
+target-first=第一
+target-last=持續
+target-nearest=最近
+target-farthest=最遠
+target-strongest=健康的
+target-weakest=最弱
+target-valuablest=最有價值
+target-worthlessest=最不值錢
+target-na=一切
+
 area=區
 tiles=廣場
 dps=每秒傷害
@@ -60,6 +71,8 @@ rate=射速
 rpm=RPM
 detect-range=檢測範圍
 range=範圍
+
+sell=賣
 
 tower-single=大砲
 tower-line=激光炮

@@ -45,6 +45,17 @@ kills=キル
 damage-dealt=被害引き起こさ
 projectiles-fired=発砲します
 
+target=ターゲット
+target-first=最初
+target-last=最終
+target-nearest=最寄り
+target-farthest=最も遠いです
+target-strongest=健康的な
+target-weakest=最も弱いです
+target-valuablest=最も価値のあります
+target-worthlessest=ほとんど価値のありません
+target-na=すべて
+
 area=エリア
 tiles=タイル
 dps=秒当たりのダメージ
@@ -60,6 +71,8 @@ rate=火災のレート
 rpm=RPM
 detect-range=検出範囲
 range=範囲
+
+sell=売る
 
 tower-single=大砲
 tower-line=レーザーキャノン

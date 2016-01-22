@@ -12,7 +12,7 @@ public abstract class CollidableEntity extends Entity {
 	
 	public abstract CollidableType getType();
 	
-	public final Rectangle2D getRectangle() {
+	public Rectangle2D getRectangle() {
 		return new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
 	}
 }

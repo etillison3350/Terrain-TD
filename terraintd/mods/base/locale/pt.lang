@@ -45,6 +45,17 @@ kills=Matanças
 damage-dealt=Dano causado
 projectiles-fired=Tiros disparados
 
+target=Alvo
+target-first=Primeiro
+target-last=Último
+target-nearest=Mais próximo
+target-farthest=Mais distante
+target-strongest=Mais são
+target-weakest=Mais fraco
+target-valuablest=Mais valioso
+target-worthlessest=Menos valioso
+target-na=Tudo
+
 area=Área
 tiles=praças
 dps=Dano por segundo
@@ -54,6 +65,8 @@ delivery-singletarget=Único
 delivery-area=Área
 delivery-line=Viga
 delivery-sector=Setor
+
+sell=Vender
 
 damage=Danificar
 rate=Cadência de tiro

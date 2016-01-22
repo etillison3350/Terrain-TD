@@ -128,6 +128,7 @@ public class GameLogic implements ActionListener {
 		buying = null;
 
 		Window.repaintWindow();
+		InfoPanel.setDisplayedObject(null);
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
 
@@ -155,7 +156,6 @@ public class GameLogic implements ActionListener {
 			BuyPanel.updateButtons();
 			InfoPanel.refreshDisplay();
 		}
-
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class GameLogic implements ActionListener {
 			if (e instanceof Weapon) {
 				Gun g = ((Weapon) e).getGun();
 				if (g != null) {
-					double minCost = Float.MAX_VALUE;
+					double min = !g.getTargetType().max ? Float.MAX_VALUE : Integer.MIN_VALUE;
 					Enemy target = null;
 
 					for (Entity entity : permanents) {
@@ -235,12 +235,61 @@ public class GameLogic implements ActionListener {
 						Enemy enemy = (Enemy) entity;
 						if (enemy.getFutureHealth() < 0) continue;
 
-						double dx = enemy.getX() - g.shooter.getX();
-						double dy = enemy.getY() - g.shooter.getY();
+						final double dx = enemy.getX() - g.shooter.getX();
+						final double dy = enemy.getY() - g.shooter.getY();
+						final double d2 = dx * dx + dy * dy;
 
-						if (dx * dx + dy * dy < g.range * g.range && enemy.getNextNode().getCost() < minCost) {
-							target = enemy;
-							minCost = enemy.getNextNode().getCost();
+						if (d2 > g.range * g.range) continue;
+
+						switch (g.getTargetType()) {
+							case FARTHEST:
+								if (d2 > min) {
+									min = d2;
+									target = enemy;
+								}
+								break;
+							case FIRST:
+								if (enemy.getNextNode().getCost() < min) {
+									min = enemy.getNextNode().getCost();
+									target = enemy;
+								}
+								break;
+							case LAST:
+								if (enemy.getNextNode().getCost() > min) {
+									min = enemy.getNextNode().getCost();
+									target = enemy;
+								}
+								break;
+							case NEAREST:
+								if (d2 < min) {
+									min = d2;
+									target = enemy;
+								}
+								break;
+							case STRONGEST:
+								if (enemy.getHealth() > min) {
+									min = enemy.getHealth();
+									target = enemy;
+								}
+								break;
+							case VALUABLEST:
+								if (enemy.type.reward > min) {
+									min = enemy.type.reward;
+									target = enemy;
+								}
+								break;
+							case WEAKEST:
+								if (enemy.getHealth() < min) {
+									min = enemy.getHealth();
+									target = enemy;
+								}
+								break;
+							case WORTHLESSEST:
+								if (enemy.type.reward < min) {
+									min = enemy.type.reward;
+									target = enemy;
+								}
+								break;
 						}
 					}
 
@@ -448,6 +497,15 @@ public class GameLogic implements ActionListener {
 		buying = null;
 		if (!wasPaused) start();
 		InfoPanel.setDisplayedObject(null);
+	}
+	
+	public static void sell(CollidableEntity entity) {
+		if (entity != null && permanentEntities.contains(entity)) {
+			permanentEntities.remove(entity);
+			money += (int) (0.75F * entity.getType().cost);
+			GamePanel.repaintPanel();
+			BuyPanel.updateButtons();
+		}
 	}
 
 	public static Entity getSelectedEntity() {

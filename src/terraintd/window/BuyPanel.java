@@ -125,7 +125,7 @@ public class BuyPanel extends JPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				hovered = true;
-				InfoPanel.setDisplayedObject(type);
+				if (GameLogic.getBuyingType() == null) InfoPanel.setDisplayedObject(type);
 				repaint();
 			}
 

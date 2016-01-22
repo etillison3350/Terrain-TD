@@ -45,6 +45,17 @@ kills=Chasse
 damage-dealt=Dégâts infligés
 projectiles-fired=Tirs dirigés
 
+target=Cible
+target-first=Premier
+target-last=Dernier
+target-nearest=Plus proche
+target-farthest=Plus éloigné
+target-strongest=Plus saine
+target-weakest=Plus faible
+target-valuablest=Plus précieux
+target-worthlessest=Moins précieuse
+target-na=Tout
+
 area=Superficie
 tiles=carrés
 dps=Dommage par Seconde
@@ -60,6 +71,8 @@ rate=Cadence de Tir
 rpm=CPM
 detect-range=Distance de Vision
 range=Portée
+
+sell=Revendre
 
 tower-single=Canon
 tower-line=Canon Laser

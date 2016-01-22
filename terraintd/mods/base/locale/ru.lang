@@ -45,6 +45,17 @@ kills=Убийств
 damage-dealt=Нанесенный ущерб
 projectiles-fired=Произведены выстрелы
 
+target=цель
+target-first=Первый
+target-last=Последний
+target-nearest=ближайший
+target-farthest=дальний
+target-strongest=здоровый
+target-weakest=слабейший
+target-valuablest=Наиболее ценный
+target-worthlessest=наименее ценны
+target-na=Все
+
 area=Площадка
 tiles=плитка
 dps=Урон в секунду
@@ -60,6 +71,8 @@ rate=Скорость стрельбы
 rpm=RPM
 detect-range=Диапазон обнаружения
 range=Ассортимент
+
+sell=продавать
 
 tower-single=пушка
 tower-line=Лазерная пушка

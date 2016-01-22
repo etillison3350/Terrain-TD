@@ -11,13 +11,13 @@ save=Guardar
 dont-save=Descartar
 save-as=Guardar como
 pause=Pausar
-fast-forward=Avanzce Rapido
+fast-forward=Avance Rapido
 language=Idioma
 exit=Salir
 cancel=Cancelar
 
-confirm-new=Guarde este juego?
-title-confirm-new=Nuevo Juego
+confirm-new=¿Guardar este juego?
+title-confirm-new=Juego Nuevo
 
 level-complete=Nivel Completado
 level-failed=Nivel Fallado
@@ -32,25 +32,36 @@ effect-fire=Fuego
 effect-paralysis=Parálisis
 effect-slowness=Lentitud
 effect-weakness=Debilidad
-effect-bluntness=Despuntadura
+effect-bluntness=Desafilado
 effect-frost=Escarcha
 effect-poison=Veneno
-effect-bleed=Sangre
+effect-bleed=Sangrar
 none=Ninguno
 
 health=Vida
 money=Dinero
 
-kills=Lote
+kills=Enemigos ejecutados
 damage-dealt=Daño infligido
-projectiles-fired=Disparos
+projectiles-fired=Disparos tirados
+
+target=Blanco
+target-first=Primero
+target-last=Último
+target-nearest=Más cercano
+target-farthest=Más lejano
+target-strongest=Más sano
+target-weakest=Más débil
+target-valuablest=Más valioso
+target-worthlessest=Menos valioso
+target-na=Todo
 
 area=Área
 tiles=cuadrados
 dps=Daño Por Segundo
 delivery=Tipo
 
-delivery-singletarget=Individual
+delivery-singletarget=Un disparo
 delivery-area=Área
 delivery-line=Linea
 delivery-sector=Sector
@@ -61,8 +72,10 @@ rpm=DPM
 detect-range=Distancia de Visión
 range=Alcance
 
+sell=Vender
+
 tower-single=Cañón
 tower-line=Cañón Láser
 tower-area=PEM
 tower-sector=Torre de Tarta
-tower-poison=Torre de Dardo Venenoso
+tower-poison=Torre de Dardos Venenosos

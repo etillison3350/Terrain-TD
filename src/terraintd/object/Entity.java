@@ -1,5 +1,7 @@
 package terraintd.object;
 
+import java.awt.geom.Rectangle2D;
+
 import terraintd.types.IdType;
 
 public abstract class Entity {
@@ -23,5 +25,9 @@ public abstract class Entity {
 	public abstract double getY();
 	
 	public abstract IdType getType();
+	
+	public Rectangle2D getRectangle() {
+		return new Rectangle2D.Double();
+	}
 	
 }
