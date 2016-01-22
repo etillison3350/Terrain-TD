@@ -74,6 +74,9 @@ range=Reichweite
 
 sell=Verkaufen
 
+reward=Belohnung
+active-effects=Aktiven Effekte
+
 tower-single=Kanone
 tower-line=Laser-Kanonen
 tower-area=Elektromagnetische Impuls

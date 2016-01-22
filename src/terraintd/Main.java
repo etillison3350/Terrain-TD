@@ -12,9 +12,9 @@ public class Main {
 
 		Window.setWindowDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Window.setWindowVisible(true);
-		
+
 		GameLogic.reset();
-		
+
 		GameLogic.cfg.read();
 		GameLogic.cfg.apply();
 	}

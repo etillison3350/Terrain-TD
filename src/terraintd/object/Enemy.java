@@ -1,7 +1,10 @@
 package terraintd.object;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import terraintd.GameLogic;
 import terraintd.pathfinder.Node;
@@ -29,7 +32,7 @@ public class Enemy extends Entity implements Weapon {
 
 	private Node[][][] newNodeSet;
 	
-	private List<StatusEffect> statusEffects;
+	private Set<StatusEffect> statusEffects;
 
 	@Override
 	public double getX() {
@@ -41,6 +44,8 @@ public class Enemy extends Entity implements Weapon {
 		return this.y;
 	}
 
+	private final double width;
+	
 	public Enemy(EnemyType type, Node location, World world) {
 		this.type = type;
 		this.x = location.getAbsX();
@@ -51,7 +56,9 @@ public class Enemy extends Entity implements Weapon {
 		this.health = type.health;
 		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
 
-		this.statusEffects = new ArrayList<>();
+		this.width = Math.hypot(type.image.width, type.image.height);
+		
+		this.statusEffects = new HashSet<>();
 
 		this.futureDamage = new ArrayList<>();
 	}
@@ -59,6 +66,11 @@ public class Enemy extends Entity implements Weapon {
 	@Override
 	public Gun getGun() {
 		return this.gun;
+	}
+	
+	@Override
+	public Rectangle2D getRectangle() {
+		return new Rectangle2D.Double(this.x + this.type.image.x - 0.5 * width, this.y + this.type.image.y - 0.5 * width, width, width);
 	}
 
 	@Override
@@ -85,6 +97,7 @@ public class Enemy extends Entity implements Weapon {
 				case FIRE:
 					this.health -= .125 * effect.amplifier + 1.125;
 					effect.inflictor.getGun().registerDamage(.125 * effect.amplifier + 1.125);
+					if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
 					break;
 				case FROST:
 					if (effect.amplifier >= 10.999) return true;
@@ -98,6 +111,7 @@ public class Enemy extends Entity implements Weapon {
 					double lastHealth = this.health;
 					this.health = this.health * (1 - effect.amplifier * 0.0021) - 0.05 * effect.amplifier;
 					effect.inflictor.getGun().registerDamage(lastHealth - this.health);
+					if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
 					break;
 				case SLOWNESS:
 					speedMultiplier *= 1 - 0.09090909 * effect.amplifier;
@@ -121,6 +135,7 @@ public class Enemy extends Entity implements Weapon {
 			if (effect.type == StatusEffectType.BLEED) {
 				this.health -= 10 * effect.amplifier * distance;
 				effect.inflictor.getGun().registerDamage(10 * effect.amplifier * distance);
+				if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
 			}
 		}
 		
@@ -252,6 +267,7 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	public void addStatusEffect(StatusEffect effect) {
+		this.statusEffects.remove(effect);
 		this.statusEffects.add(effect);
 	}
 

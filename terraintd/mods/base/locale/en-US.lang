@@ -66,6 +66,9 @@ delivery-area=Area
 delivery-line=Beam
 delivery-sector=Sector
 
+reward=Reward
+active-effects=Active Effects
+
 damage=Damage
 rate=Firerate
 rpm=RPM

@@ -9,10 +9,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import terraintd.files.JSON;
 import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
 import terraintd.types.Level.Unit;
@@ -45,7 +44,7 @@ public final class TypeGenerator {
 				Path path = iter.next();
 				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("json")) continue;
 
-				List<?> json = parseJSON(new String(Files.readAllBytes(path)));
+				List<?> json = JSON.parseJSON(new String(Files.readAllBytes(path)));
 
 				if (json.size() == 0 && json.get(0) instanceof List<?>) {
 					json = (ArrayList<?>) json.get(0);
@@ -426,8 +425,8 @@ public final class TypeGenerator {
 		double width = map.get("width") instanceof Number ? ((Number) map.get("width")).doubleValue() : 1;
 		double height = map.get("height") instanceof Number ? ((Number) map.get("height")).doubleValue() : 1;
 
-		double x = map.get("x") instanceof Number ? ((Number) map.get("x")).doubleValue() : 1;
-		double y = map.get("y") instanceof Number ? ((Number) map.get("y")).doubleValue() : 1;
+		double x = map.get("x") instanceof Number ? ((Number) map.get("x")).doubleValue() : 0;
+		double y = map.get("y") instanceof Number ? ((Number) map.get("y")).doubleValue() : 0;
 
 		return new ImageType(src, width, height, x, y);
 	}
@@ -593,102 +592,6 @@ public final class TypeGenerator {
 		if (units.size() <= 0) throw new IllegalArgumentException();
 
 		return new Level(id, units.toArray(new Unit[units.size()]), health, money);
-	}
-
-	static ArrayList<Object> parseJSON(String json) {
-		HashMap<String, Object> braceObjs = new HashMap<>();
-
-		String s = json;
-
-		int lastAddress = (int) (System.currentTimeMillis() % 32768);
-
-		Pattern quotes = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"");
-		Matcher m = quotes.matcher(s);
-		while (m.find()) {
-			String v = m.group(1);
-			String k = "@" + lastAddress++;
-
-			braceObjs.put(k, v.replaceAll("\\\\(.)", "$1").toLowerCase());
-			s = s.replace(m.group(), k);
-
-			m = quotes.matcher(s);
-		}
-
-		s = s.replaceAll("\\s+", "");
-
-		Pattern braces = Pattern.compile("\\[[^\\[\\]\\{\\}]*\\]|\\{[^\\[\\]\\{\\}]*?\\}");
-
-		m = braces.matcher(s);
-		while (m.find()) {
-			String g = m.group();
-			if (g.charAt(0) == '[') {
-				String[] terms = g.split("[\\[\\]\\,]");
-				ArrayList<Object> termList = new ArrayList<>(terms.length);
-				for (String term : terms) {
-					if (term.isEmpty()) continue;
-
-					if (term.startsWith("\"")) {
-						termList.add(term.substring(1, term.length() - 1));
-					} else if (term.startsWith("@")) {
-						termList.add(braceObjs.get(term));
-					} else if (term.equals("true")) {
-						termList.add(true);
-					} else if (term.equals("false")) {
-						termList.add(false);
-					} else {
-						try {
-							termList.add(Double.parseDouble(term));
-						} catch (NumberFormatException e) {
-							termList.add(null);
-						}
-					}
-				}
-
-				String k = "@" + lastAddress++;
-
-				s = s.replace(g, k);
-				if (s.equals(k)) return termList;
-				braceObjs.put(k, termList);
-			} else {
-				String[] terms = g.split("[\\{\\}\\,]");
-				Map<String, Object> termList = new HashMap<>();
-				for (String term : terms) {
-					if (term.isEmpty()) continue;
-
-					String[] kvs = term.split(":");
-					String k = (kvs[0].startsWith("@") ? (String) braceObjs.get(kvs[0]) : kvs[0].replace("\"", "")).toLowerCase();
-					if (kvs[1].startsWith("\"")) {
-						termList.put(k, kvs[1].substring(1, kvs[1].length() - 1));
-					} else if (kvs[1].startsWith("@")) {
-						termList.put(k, braceObjs.get(kvs[1]));
-					} else if (kvs[1].equals("true")) {
-						termList.put(k, true);
-					} else if (kvs[1].equals("false")) {
-						termList.put(k, false);
-					} else {
-						try {
-							termList.put(k, Double.parseDouble(kvs[1]));
-						} catch (NumberFormatException e) {
-							termList.put(k, null);
-						}
-					}
-				}
-
-				String k = "@" + lastAddress++;
-
-				s = s.replace(g, k);
-				if (s.equals(k)) {
-					ArrayList<Object> ret = new ArrayList<>(1);
-					ret.add(termList);
-					return ret;
-				}
-				braceObjs.put(k, termList);
-			}
-
-			m = braces.matcher(s);
-		}
-
-		return null;
 	}
 
 	static TowerType[] towers() {

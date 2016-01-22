@@ -66,6 +66,9 @@ delivery-area=Área
 delivery-line=Linea
 delivery-sector=Sector
 
+reward=Recompensa
+active-effects=Efectos Activos
+
 damage=Daño
 rate=Cadencia de Tiro
 rpm=DPM

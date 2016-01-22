@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -88,14 +89,10 @@ public class GamePanel extends JPanel {
 					}
 				} else {
 					for (Entity entity : GameLogic.getPermanentEntities()) {
-						if (!(entity instanceof CollidableEntity)) continue;
-
-						CollidableEntity ce = (CollidableEntity) entity;
-
 						Point2D p = new Point2D.Double((e.getX() - dx) / tile, (e.getY() - dy) / tile);
 
-						if (ce.getRectangle().contains(p)) {
-							GameLogic.setSelectedEntity(ce);
+						if (entity.getRectangle().contains(p)) {
+							GameLogic.setSelectedEntity(entity);
 							repaint();
 							return;
 						}
@@ -202,7 +199,7 @@ public class GamePanel extends JPanel {
 			g.drawImage(type.image.image, trans, null);
 		}
 
-		if (GameLogic.getSelectedEntity() != null && GameLogic.getSelectedEntity() instanceof CollidableEntity) {
+		if (GameLogic.getSelectedEntity() != null) {
 			if (GameLogic.getSelectedEntity() instanceof Tower) {
 				TowerType tower = ((Tower) GameLogic.getSelectedEntity()).type;
 
@@ -221,9 +218,8 @@ public class GamePanel extends JPanel {
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0008F * t - 0.00000053333F * t * t));
 			g.setColor(Color.BLACK);
-			double width = ((CollidableEntity) GameLogic.getSelectedEntity()).getWidth();
-			double height = ((CollidableEntity) GameLogic.getSelectedEntity()).getHeight();
-			g.fillRect((int) (dx + GameLogic.getSelectedEntity().getX() * tile), (int) (dy + GameLogic.getSelectedEntity().getY() * tile), (int) (tile * width), (int) (tile * height));
+			Rectangle2D rect = GameLogic.getSelectedEntity().getRectangle();
+			g.fillRect((int) (dx + rect.getX() * tile), (int) (dy + rect.getY() * tile), (int) (tile * rect.getWidth()), (int) (tile * rect.getHeight()));
 		}
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
@@ -256,7 +252,7 @@ public class GamePanel extends JPanel {
 
 		Node goal = GameLogic.getCurrentWorld().goal;
 		g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
-		
+
 		for (Projectile p : GameLogic.getProjectiles()) {
 			ImageType img = p.type.image;
 

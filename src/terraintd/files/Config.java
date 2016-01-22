@@ -1,4 +1,4 @@
-package terraintd;
+package terraintd.files;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import terraintd.Language;
 import terraintd.window.BuyPanel;
 import terraintd.window.GamePanel;
 import terraintd.window.InfoPanel;

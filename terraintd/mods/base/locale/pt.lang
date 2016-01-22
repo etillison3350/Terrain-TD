@@ -68,6 +68,9 @@ delivery-sector=Setor
 
 sell=Vender
 
+reward=Recompensa
+active-effects=Efeitos Ativos
+
 damage=Danificar
 rate=Cadência de tiro
 rpm=TPM

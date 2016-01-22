@@ -2,6 +2,8 @@ package terraintd;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import terraintd.files.Config;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
@@ -64,8 +67,9 @@ public class GameLogic implements ActionListener {
 
 	private static State state = State.PLAYING;
 
-	private static List<Entity> permanentEntities;
+	private static boolean saved = true;
 
+	private static List<Entity> permanentEntities;
 	private static List<Projectile> projectiles;
 
 	private static Level currentLevel;
@@ -109,6 +113,8 @@ public class GameLogic implements ActionListener {
 
 		state = State.PLAYING;
 
+		saved = true;
+
 		currentWorld = World.values()[2];
 		currentLevel = Level.values()[0];
 
@@ -142,11 +148,12 @@ public class GameLogic implements ActionListener {
 	@Override
 	public synchronized void actionPerformed(ActionEvent e) {
 		if (e.getSource() == pauseTimer) {
-			if (selected != null && selected instanceof CollidableEntity) {
-				CollidableType type = ((CollidableEntity) selected).getType();
-				GamePanel.repaintPanel((int) (GamePanel.getDx() + selected.getX() * GamePanel.getTile()), (int) (GamePanel.getDy() + selected.getY() * GamePanel.getTile()), (int) (GamePanel.getTile() * type.width), (int) (GamePanel.getTile() * type.height));
+			if (selected != null) {
+				Rectangle2D rect = selected.getRectangle();
+				GamePanel.repaintPanel((int) (GamePanel.getDx() + rect.getX() * GamePanel.getTile()), (int) (GamePanel.getDy() + rect.getY() * GamePanel.getTile()), (int) (GamePanel.getTile() * rect.getWidth()), (int) (GamePanel.getTile() * rect.getHeight()));
 			}
 		} else {
+			saved = false;
 			t0 = System.nanoTime();
 			processPermanents();
 			t1 = System.nanoTime();
@@ -219,6 +226,13 @@ public class GameLogic implements ActionListener {
 			permanentEntities.add(new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size())), currentWorld));
 
 			timeToNextEnemy += currentLevel.units[enemyIndex++].delay;
+		}
+
+		if (!permanentEntities.contains(selected)) {
+			setSelectedEntity(null);
+			InfoPanel.refreshDisplay();
+		} else if (selected instanceof Enemy) {
+			InfoPanel.refreshDisplay();
 		}
 
 		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
@@ -472,6 +486,8 @@ public class GameLogic implements ActionListener {
 	 *        </ul>
 	 */
 	public static void buyObject(int x, int y) {
+		saved = false;
+
 		permanentEntities.add(buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y));
 
 		for (EnemyType type : EnemyType.values())
@@ -498,7 +514,7 @@ public class GameLogic implements ActionListener {
 		if (!wasPaused) start();
 		InfoPanel.setDisplayedObject(null);
 	}
-	
+
 	public static void sell(CollidableEntity entity) {
 		if (entity != null && permanentEntities.contains(entity)) {
 			permanentEntities.remove(entity);
@@ -515,11 +531,7 @@ public class GameLogic implements ActionListener {
 	public static void setSelectedEntity(Entity selected) {
 		GameLogic.selected = selected;
 
-		if (selected instanceof CollidableEntity) {
-			InfoPanel.setDisplayedObject(selected);
-		} else if (selected == null) {
-			InfoPanel.setDisplayedObject(null);
-		}
+		InfoPanel.setDisplayedObject(selected);
 	}
 
 	public static boolean canPlaceObject(CollidableType type, int x, int y) {
@@ -601,6 +613,17 @@ public class GameLogic implements ActionListener {
 
 	public static State getState() {
 		return state;
+	}
+
+	public static boolean isSaved() {
+		return saved;
+	}
+
+	public static void save(Path path) {
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("money", money);
+		map.put("health", health);
+		// TODO
 	}
 
 }

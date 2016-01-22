@@ -66,6 +66,9 @@ delivery-area=Région
 delivery-line=Faisceau
 delivery-sector=Secteur
 
+reward=Récompense
+active-effects=Effets Actifs
+
 damage=Dommage
 rate=Cadence de Tir
 rpm=CPM
