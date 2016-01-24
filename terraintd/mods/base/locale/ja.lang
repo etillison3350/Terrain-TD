@@ -30,7 +30,7 @@ title-file-not-found=オープン
 extension-name=ゲーム (*.game)
 all-files=すべてのファイル
 file-name=ファイル名
-invalid-title=無効なファイル
+title-invalid-file=無効なファイル
 cannot-read=このファイルを読み取ることができません。
 invalid-file=これは有効なゲームファイルではありません、またはそのフォーマットが現在サポートされていません。
 

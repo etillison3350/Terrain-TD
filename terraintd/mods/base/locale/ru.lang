@@ -30,7 +30,7 @@ title-file-not-found=открытым
 extension-name=играть (*.game)
 all-files=Все файлы
 file-name=Имя файла
-invalid-title=неверный файл
+title-invalid-file=неверный файл
 cannot-read=Не можете прочитать этот файл.
 invalid-file=Это не правильный файл игры, или его формат не поддерживается.
 

@@ -717,10 +717,15 @@ public class GameLogic implements ActionListener {
 			Files.write(path, obf.getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e1) {}
 	}
-	
+
 	public static synchronized void open(Path path) throws IOException {
-		List<?> json = JSON.parseJSON(deobfuscate(new String(Files.readAllBytes(path), StandardCharsets.UTF_8)));
-		
+		List<?> json;
+		try {
+			json = JSON.parseJSON(deobfuscate(new String(Files.readAllBytes(path), StandardCharsets.UTF_8)));
+		} catch (NumberFormatException e) {
+			throw new IOException();
+		}
+		System.out.println(json);
 	}
 
 	public static String obfuscate(String string) {

@@ -30,7 +30,7 @@ title-file-name-file=Ouvrir
 extension-name=Jeu (*.game)
 all-files=Touts les Fichiers
 file-name=Nom de Fichier
-invalid-title=Fichier Invalide
+title-invalid-file=Fichier Invalide
 cannot-read=Vous ne pouvez pas lire ce fichier.
 invalid-file=Ce ne sont pas un jeu de fichier valide, ou son format est pas pris en charge actuellement.
 

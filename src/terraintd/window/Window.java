@@ -40,7 +40,7 @@ public class Window extends JFrame {
 	private static final ActionListener menuListener = new ActionListener() {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public synchronized void actionPerformed(ActionEvent e) {
 			if (e.getSource() == newGame) {
 				boolean wasPaused = GameLogic.isPaused();
 				if (!wasPaused) pauseGame.doClick();
@@ -58,54 +58,23 @@ public class Window extends JFrame {
 					return;
 				}
 			} else if (e.getSource() == openGame) {
-				Path path = FileChooser.showOpenDialog(window, GameLogic.getLastSaveLocation() != null ? GameLogic.getLastSaveLocation() : Paths.get("").toAbsolutePath());
-				try {
-					GameLogic.open(path);
-				} catch (IOException e1) {
+				Path p = GameLogic.getLastSaveLocation() != null ? GameLogic.getLastSaveLocation() : Paths.get("").toAbsolutePath();
+				while (true) {
+					Path path = FileChooser.showOpenDialog(window, p);
+					if (path != null) {
+						try {
+							GameLogic.open(path);
+						} catch (IOException exception) {
+							JOptionPane.showOptionDialog(window, String.format("<html>%s<br />%s<br />%s</html>", path.toString(), Language.get("cannot-read"), Language.get("invalid-file")), Language.get("title-invalid-file"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[] {Language.get("accept")}, null);
+							p = path;
+							continue;
+						}
+					}
+					break;
 				}
-//				fc = new JFileChooser();
-//				if (GameLogic.getLastSaveLocation() == null) {
-//					fc.setCurrentDirectory(null);
-//					fc.setSelectedFile(null);
-//				} else {
-//					fc.setCurrentDirectory(GameLogic.getLastSaveLocation().toFile());
-//					fc.setSelectedFile(GameLogic.getLastSaveLocation().toFile());
-//				}
-//				fc.setAcceptAllFileFilterUsed(false);
-//				fc.setFileFilter(new FileNameExtensionFilter(Language.get("extension-name"), "game"));
-//				if (fc.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
-//					Path path = fc.getSelectedFile().toPath();
-//					if (!path.toString().replaceAll(".+\\.", "").equals("game")) {
-//						path = Paths.get(path.toString() + ".game");
-//					}
-//
-//					try {
-//						GameLogic.open(path);
-//					} catch (IOException exception) {
-//						JOptionPane.showOptionDialog(window, String.format(Language.getCurrentLocale(), "<html>%s<br />%s<br />%s</html>", path.toString(), Language.get("cannot-read"), Language.get("invalid-file")), Language.get("invalid-title"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[] {Language.get("accept")}, 0);
-//					}
-//				}
 			} else if ((e.getSource() == saveGame && GameLogic.save()) || e.getSource() == saveGameAs) {
-//				JFileChooser.setDefaultLocale(Locale.CHINA);
-//				fc = new JFileChooser();
-//				if (GameLogic.getLastSaveLocation() == null) {
-//					fc.setCurrentDirectory(null);
-//					fc.setSelectedFile(null);
-//				} else {
-//					fc.setCurrentDirectory(GameLogic.getLastSaveLocation().toFile());
-//					fc.setSelectedFile(GameLogic.getLastSaveLocation().toFile());
-//				}
-//				fc.setAcceptAllFileFilterUsed(false);
-//				fc.setFileFilter(new FileNameExtensionFilter("Game (*.game)", "game"));
-//				if (fc.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
-//					Path path = fc.getSelectedFile().toPath();
-//					if (!path.toString().replaceAll(".+\\.", "").equals("json")) {
-//						path = Paths.get(path.toString() + ".game");
-//						System.out.println(path);
-//					}
-//
-//					GameLogic.save(path);
-//				}
+				Path path = FileChooser.showSaveDialog(window, Paths.get("").toAbsolutePath());
+				if (path != null) GameLogic.save(path);
 			} else if (e.getSource() == pauseGame) {
 				InfoPanel.pause.setSelected(!pauseGame.isSelected());
 

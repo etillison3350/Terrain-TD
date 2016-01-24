@@ -30,7 +30,7 @@ title-file-not-found=Öffnen
 entension-name=Spiel (*.game)
 all-files=Alle Dateien
 file-name=Dateiname
-invalid-file=Ungültige Datei
+title-invalid-file=Ungültige Datei
 cannot-read=Kann diese Datei nicht lesen.
 invalid-file=Dies ist kein gültiges Spiel-Datei, oder das Format wird derzeit nicht unterstützt.
 

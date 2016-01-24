@@ -22,6 +22,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +60,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import terraintd.Language;
 
-public class FileChooser extends JDialog implements ActionListener {
+public class FileChooser extends JDialog implements ActionListener, WindowListener {
 
 	private static final long serialVersionUID = -5170709290883896064L;
 
@@ -74,7 +76,6 @@ public class FileChooser extends JDialog implements ActionListener {
 	private JButton confirm, cancel;
 	private JComboBox<String> filters;
 	private JButton refresh;
-//	private AbstractButton[] navButtons;
 
 	private int selectedIndex = -1;
 
@@ -86,7 +87,8 @@ public class FileChooser extends JDialog implements ActionListener {
 		this.save = save;
 
 		this.setSize(784, 480);
-//		this.setResizable(false);
+
+		this.setModalityType(ModalityType.APPLICATION_MODAL);
 
 		this.setLayout(new BorderLayout(0, 3));
 
@@ -122,7 +124,7 @@ public class FileChooser extends JDialog implements ActionListener {
 		refresh.setFocusPainted(false);
 		refresh.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		refresh.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setCurrentPath(currentPath);
@@ -222,15 +224,9 @@ public class FileChooser extends JDialog implements ActionListener {
 		this.add(bottomPanel, BorderLayout.PAGE_END);
 
 		this.add(Box.createHorizontalGlue(), BorderLayout.LINE_END);
-	}
 
-	@Override
-	public synchronized void setVisible(boolean b) {
-		if (!b) {
-			notifyAll();
-			if (state < 0) state = 0;
-		}
-		super.setVisible(b);
+		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(this);
 	}
 
 	private static final Comparator<Path> pathComp = new Comparator<Path>() {
@@ -251,7 +247,11 @@ public class FileChooser extends JDialog implements ActionListener {
 	public void setCurrentPath(Path path) {
 		if (path == null) return;
 
-		Path newPath = Files.isDirectory(path) ? path : path.getParent();
+		Path newPath = path;
+		while (!Files.isDirectory(newPath)) {
+			newPath = newPath.getParent();
+		}
+		
 		if (currentPath != newPath) {
 			searchBar.setText("");
 		}
@@ -310,10 +310,11 @@ public class FileChooser extends JDialog implements ActionListener {
 		navButtonPanel.add(Box.createHorizontalGlue());
 		navButtonPanel.add(refresh);
 
-//		navButtons = buttons.toArray(new AbstractButton[buttons.size()]);
-
 		navButtonPanel.revalidate();
 		navButtonPanel.repaint();
+
+		this.revalidate();
+		this.repaint();
 	}
 
 	private static final ImageIcon leftArrow = new ImageIcon("terraintd/mods/base/images/icons/triangleleft.png");
@@ -567,8 +568,9 @@ public class FileChooser extends JDialog implements ActionListener {
 					fc.wait();
 				} catch (InterruptedException e) {}
 			}
+			fc.dispose();
+			return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
 		}
-		return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
 	}
 
 	public static Path showSaveDialog(Component parent, Path currentPath) {
@@ -582,8 +584,9 @@ public class FileChooser extends JDialog implements ActionListener {
 					fc.wait();
 				} catch (InterruptedException e) {}
 			}
+			fc.dispose();
+			return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
 		}
-		return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
 	}
 
 	private class PathButtonLayout implements LayoutManager {
@@ -620,10 +623,17 @@ public class FileChooser extends JDialog implements ActionListener {
 
 	}
 
+	private synchronized void close() {
+		this.setVisible(false);
+		if (state < 0) state = 0;
+		notifyAll();
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println(e);
 		if (e.getSource() == cancel) {
-			this.setVisible(false);
+			this.close();
 		} else if (e.getSource() == confirm) {
 			if (fileName.getText().isEmpty()) return;
 
@@ -634,9 +644,32 @@ public class FileChooser extends JDialog implements ActionListener {
 				return;
 			}
 
-			this.state = 0;
-			this.setVisible(false);
+			this.state = 1;
+			this.close();
 		}
 	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {}
+
+	@Override
+	public void windowClosed(WindowEvent e) {}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		this.close();
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {}
+
+	@Override
+	public void windowIconified(WindowEvent e) {}
+
+	@Override
+	public void windowOpened(WindowEvent e) {}
 
 }
