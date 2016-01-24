@@ -3,8 +3,12 @@ package terraintd;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -12,12 +16,14 @@ import java.util.Random;
 import javax.swing.Timer;
 
 import terraintd.files.Config;
+import terraintd.files.JSON;
 import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Gun;
 import terraintd.object.Obstacle;
 import terraintd.object.Projectile;
+import terraintd.object.StatusEffect;
 import terraintd.object.Tower;
 import terraintd.object.Weapon;
 import terraintd.pathfinder.Node;
@@ -68,6 +74,7 @@ public class GameLogic implements ActionListener {
 	private static State state = State.PLAYING;
 
 	private static boolean saved = true;
+	private static Path lastSaveLocation = null;
 
 	private static List<Entity> permanentEntities;
 	private static List<Projectile> projectiles;
@@ -114,6 +121,7 @@ public class GameLogic implements ActionListener {
 		state = State.PLAYING;
 
 		saved = true;
+		lastSaveLocation = null;
 
 		currentWorld = World.values()[2];
 		currentLevel = Level.values()[0];
@@ -162,6 +170,7 @@ public class GameLogic implements ActionListener {
 			GamePanel.repaintPanel();
 			BuyPanel.updateButtons();
 			InfoPanel.refreshDisplay();
+//			System.out.println(t2 - t0 > 2e9);
 		}
 	}
 
@@ -414,7 +423,7 @@ public class GameLogic implements ActionListener {
 	}
 
 	private static EnemyType typeOfUnit(Unit unit) {
-		return EnemyType.getTypeForId(unit.typeId);
+		return EnemyType.valueOf(unit.typeId);
 	}
 
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
@@ -619,11 +628,126 @@ public class GameLogic implements ActionListener {
 		return saved;
 	}
 
+	public static Path getLastSaveLocation() {
+		return lastSaveLocation;
+	}
+
+	public static boolean save() {
+		if (lastSaveLocation != null) {
+			save(lastSaveLocation);
+			return true;
+		}
+
+		return false;
+	}
+
 	public static void save(Path path) {
+		lastSaveLocation = path;
+
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("money", money);
 		map.put("health", health);
-		// TODO
+		map.put("world", currentWorld.id);
+		map.put("level", currentLevel.id);
+		map.put("enemy-index", enemyIndex);
+		map.put("time-to-next", timeToNextEnemy);
+		map.put("state", state.name().toLowerCase());
+
+		HashMap<Entity, HashMap<String, Object>> permanentMap = new HashMap<>();
+		for (Entity e : permanentEntities) {
+			HashMap<String, Object> ejson = new HashMap<>();
+			ejson.put("x", e.getX());
+			ejson.put("y", e.getY());
+			ejson.put("id", e.getType().id);
+			if (e instanceof Enemy) {
+				ejson.put("type", "enemy");
+				ejson.put("health", ((Enemy) e).getHealth());
+				ejson.put("next-node", ((Enemy) e).getNextNode());
+				List<HashMap<String, Object>> effects = new ArrayList<>();
+				for (StatusEffect effect : ((Enemy) e).getStatusEffects()) {
+					HashMap<String, Object> ef = new HashMap<>();
+					ef.put("type", effect.type.name().toLowerCase());
+					ef.put("amplifier", effect.amplifier);
+					ef.put("duration", effect.getDuration());
+					ef.put("orig-duration", effect.origDuration);
+					effects.add(ef);
+				}
+				ejson.put("effects", effects);
+			} else if (e instanceof Obstacle) {
+				ejson.put("type", "obstacle");
+			} else if (e instanceof Tower) {
+				ejson.put("type", "tower");
+			}
+
+			if (e instanceof Weapon) {
+				if (((Weapon) e).getGun() != null) {
+					Gun g = ((Weapon) e).getGun();
+					ejson.put("target-type", g.getTargetType().name().toLowerCase());
+					ejson.put("kills", g.getKills());
+					ejson.put("damage-done", g.getDamageDone());
+					ejson.put("projectiles", g.getProjectilesFired());
+				}
+				ejson.put("projectiles", new ArrayList<HashMap<String, Object>>());
+			}
+			permanentMap.put(e, ejson);
+		}
+
+		for (Projectile p : projectiles) {
+			HashMap<String, Object> pmap = new HashMap<>();
+			pmap.put("x", p.getX());
+			pmap.put("y", p.getY());
+			pmap.put("rotation", p.getRotation());
+			pmap.put("radius", p.getRadius());
+			pmap.put("death-time", p.getDeathTime());
+			pmap.put("type", Arrays.asList(p.shootingEntity.getGun().projectiles).indexOf(p.type));
+			pmap.put("target", permanentEntities.indexOf(p.getTarget()));
+			List<Integer> hitTargets = new ArrayList<>();
+			p.getHitTargets().stream().mapToInt(e -> permanentEntities.indexOf(e)).sorted().forEachOrdered(hitTargets::add);
+			pmap.put("hit-targets", hitTargets);
+			List<Object> projectiles = new ArrayList<>();
+			projectiles.addAll((List<?>) permanentMap.get(p.shootingEntity).get("projectiles"));
+			projectiles.add(pmap);
+			permanentMap.get(p.shootingEntity).put("projectiles", projectiles);
+		}
+
+		map.put("entities", permanentMap.values());
+
+		String obf = obfuscate(JSON.writeJSON(map));
+		try {
+			Files.write(path, obf.getBytes(StandardCharsets.UTF_8));
+		} catch (IOException e1) {}
+	}
+	
+	public static synchronized void open(Path path) throws IOException {
+		List<?> json = JSON.parseJSON(deobfuscate(new String(Files.readAllBytes(path), StandardCharsets.UTF_8)));
+		
+	}
+
+	public static String obfuscate(String string) {
+		long seed = System.nanoTime() % 60466176;
+		Random random = new Random(seed);
+
+		String seedStr = Long.toString(seed, 36);
+		String ret = String.format("%s%s", "00000".substring(seedStr.length()), seedStr);
+
+		for (char c : string.toCharArray()) {
+			ret += (char) (random.nextInt(256) ^ (int) c);
+		}
+
+		return ret;
+	}
+
+	public static String deobfuscate(String string) {
+		long seed = Long.parseLong(string.substring(0, 5), 36);
+		Random random = new Random(seed);
+
+		String ret = "";
+
+		for (char c : string.substring(5).toCharArray()) {
+			ret += (char) (random.nextInt(256) ^ (int) c);
+		}
+
+		return ret;
 	}
 
 }

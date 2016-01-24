@@ -1,5 +1,7 @@
 package terraintd.types;
 
+import java.util.HashMap;
+
 public class Level extends IdType {
 
 	public final Unit[] units;
@@ -8,6 +10,8 @@ public class Level extends IdType {
 
 	public Level(String id, Unit[] units, double health, int money) {
 		super(id);
+		
+		typeIds.put(id, this);
 		
 		this.units = units;
 		this.health = health;
@@ -24,6 +28,13 @@ public class Level extends IdType {
 			this.delay = delay;
 		}
 	}
+	
+	static final HashMap<String, Level> typeIds = new HashMap<>();
+	
+	public static Level valueOf(String id) {
+		return typeIds.get(id);
+	}
+
 
 	public static Level[] values() {
 		return TypeGenerator.levels();

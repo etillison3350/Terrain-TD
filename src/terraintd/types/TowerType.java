@@ -12,6 +12,8 @@ public class TowerType extends CollidableType {
 
 	TowerType(String id, int cost, int width, int height, HashMap<Terrain, Boolean> terrain, boolean onHill, double range, boolean rotate, ImageType image, ImageType icon, ProjectileType[] projectiles) {
 		super(id, width, height, cost, image, icon);
+
+		typeIds.put(id, this);
 		
 		this.terrain = terrain;
 		this.onHill = onHill;
@@ -19,7 +21,13 @@ public class TowerType extends CollidableType {
 		this.rotate = rotate;
 		this.projectiles = projectiles;
 	}
-	
+
+	static final HashMap<String, TowerType> typeIds = new HashMap<>();
+
+	public static TowerType valueOf(String id) {
+		return typeIds.get(id);
+	}
+
 	public static TowerType[] values() {
 		return TypeGenerator.towers();
 	}

@@ -38,7 +38,7 @@ public class EnemyType extends IdType {
 	
 	static final HashMap<String, EnemyType> typeIds = new HashMap<>();
 	
-	public static EnemyType getTypeForId(String id) {
+	public static EnemyType valueOf(String id) {
 		return typeIds.get(id);
 	}
 	

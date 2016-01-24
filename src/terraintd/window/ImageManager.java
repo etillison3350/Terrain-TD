@@ -50,6 +50,10 @@ public class ImageManager {
 
 		return new Color((int) (r / effects.length), (int) (g / effects.length), (int) (b / effects.length));
 	}
+	
+	public static void clear() {
+		images.clear();
+	}
 
 	public static class Resource {
 

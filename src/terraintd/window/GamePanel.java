@@ -59,7 +59,7 @@ public class GamePanel extends JPanel {
 				tile = Math.min(128, (int) Math.min((double) getWidth() / (double) (GameLogic.getCurrentWorld().getWidth() + 1), (double) getHeight() / (double) (GameLogic.getCurrentWorld().getHeight() + 1)));
 				dx = ((double) getWidth() - (GameLogic.getCurrentWorld().getWidth() * tile)) * 0.5;
 				dy = ((double) getHeight() - (GameLogic.getCurrentWorld().getHeight() * tile)) * 0.5;
-
+				ImageManager.clear();
 				GameLogic.getCurrentWorld().recalculateImageForSize(tile);
 
 				repaint();
@@ -165,11 +165,6 @@ public class GamePanel extends JPanel {
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - en.getDeathTime())));
 
-			if (en.isDead()) {
-				g.setColor(Color.GREEN);
-				g.drawString(String.format(Language.getCurrentLocale(), "+%d", en.type.reward), (float) (dx + e.getX() * tile), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
-			}
-
 			BufferedImage img = ImageManager.get(new Resource(en));
 
 			AffineTransform trans = new AffineTransform();
@@ -182,6 +177,12 @@ public class GamePanel extends JPanel {
 			if (en.getDead() == 0) {
 				g.setColor(en.getStatusEffects().length > 0 ? new Resource(en).color : Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
 				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
+			}
+			
+			if (en.isDead()) {
+				g.setColor(Color.GREEN);
+				String str = String.format(Language.getCurrentLocale(), "+%d", en.type.reward);
+				g.drawString(str, (float) (dx + e.getX() * tile) - 0.5F * g.getFontMetrics().stringWidth(str), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
 			}
 		}
 

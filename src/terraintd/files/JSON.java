@@ -1,6 +1,8 @@
 package terraintd.files;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,8 @@ import java.util.regex.Pattern;
 
 public class JSON {
 
+	public static final NumberFormat numbers = new DecimalFormat("0");
+	
 	private JSON() {}
 
 	public static ArrayList<Object> parseJSON(String json) {
@@ -116,15 +120,17 @@ public class JSON {
 	 * Writes the given object as a JSON object<br>
 	 * @param obj The object to write. Can be any type of object (including <code>null</code>) <b>except primitive array types</b> (e.g. <code>int[]</code>, <code>float[]</code>, etc).
 	 * @return The object represented in JSON as a string
-	 * 		</ul>
+	 *         </ul>
 	 */
 	public static String writeJSON(Object obj) {
+		numbers.setMaximumFractionDigits(16);
+		
 		if (obj == null) {
 			return "null";
 		}
 
 		if (obj instanceof Number) {
-			return Double.toString(((Number) obj).doubleValue());
+			return numbers.format(((Number) obj).doubleValue());
 		}
 
 		if (obj instanceof Boolean) {
@@ -132,37 +138,37 @@ public class JSON {
 		}
 
 		if (obj instanceof String) {
-			return "\"" + ((String) obj).replaceAll("[\"\\]", "$\\0") + "\"";
+			return "\"" + ((String) obj).replaceAll("[\"\\\\]", "\\$0") + "\"";
 		}
 
 		if (obj instanceof Iterable) {
 			String ret = "[";
 			for (Object o : (Iterable<?>) obj)
 				ret += writeJSON(o) + ",";
-			return ret.substring(0, ret.length() - 1) + "]";
+			return ret.replaceAll(",$", "") + "]";
 		}
 
 		if (obj.getClass().isArray()) {
 			String ret = "[";
 			for (Object o : (Object[]) obj)
 				ret += writeJSON(o) + ",";
-			return ret.substring(0, ret.length() - 1) + "]";
+			return ret.replaceAll(",$", "") + "]";
 		}
 
 		if (obj instanceof Map) {
 			String ret = "{";
 			for (Object o : ((Map<?, ?>) obj).keySet())
-				ret += String.format("\"%s:%s,\"", o, writeJSON(((Map<?, ?>) obj).get(o)));
-			return ret.substring(0, ret.length() - 1) + "}";
+				ret += String.format("\"%s\":%s,", o, writeJSON(((Map<?, ?>) obj).get(o)));
+			return ret.replaceAll(",$", "") + "}";
 		}
 
 		String ret = "{";
 		for (Field field : obj.getClass().getFields()) {
 			try {
-				ret += String.format("\"%s:%s,\"", field.getName(), field.get(obj));
+				ret += String.format("\"%s\":%s,", field.getName(), field.get(obj));
 			} catch (IllegalArgumentException | IllegalAccessException e) {}
 		}
-		return ret.substring(0, ret.length() - 1) + "}";
+		return ret.replaceAll(",$", "") + "}";
 	}
 
 }

@@ -3,6 +3,9 @@ package terraintd.window;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -32,6 +35,8 @@ public class Window extends JFrame {
 
 	public static final JMenu help = new JMenu();
 
+//	private static JFileChooser fc = new JFileChooser();
+
 	private static final ActionListener menuListener = new ActionListener() {
 
 		@Override
@@ -41,7 +46,7 @@ public class Window extends JFrame {
 				if (!wasPaused) pauseGame.doClick();
 				GameLogic.stop();
 
-				int i = JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
 
 				if (i == 0) {
 					actionPerformed(new ActionEvent(saveGame, 0, "Save"));
@@ -53,11 +58,54 @@ public class Window extends JFrame {
 					return;
 				}
 			} else if (e.getSource() == openGame) {
-
-			} else if (e.getSource() == saveGame) {
-
-			} else if (e.getSource() == saveGameAs) {
-
+				Path path = FileChooser.showOpenDialog(window, GameLogic.getLastSaveLocation() != null ? GameLogic.getLastSaveLocation() : Paths.get("").toAbsolutePath());
+				try {
+					GameLogic.open(path);
+				} catch (IOException e1) {
+				}
+//				fc = new JFileChooser();
+//				if (GameLogic.getLastSaveLocation() == null) {
+//					fc.setCurrentDirectory(null);
+//					fc.setSelectedFile(null);
+//				} else {
+//					fc.setCurrentDirectory(GameLogic.getLastSaveLocation().toFile());
+//					fc.setSelectedFile(GameLogic.getLastSaveLocation().toFile());
+//				}
+//				fc.setAcceptAllFileFilterUsed(false);
+//				fc.setFileFilter(new FileNameExtensionFilter(Language.get("extension-name"), "game"));
+//				if (fc.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
+//					Path path = fc.getSelectedFile().toPath();
+//					if (!path.toString().replaceAll(".+\\.", "").equals("game")) {
+//						path = Paths.get(path.toString() + ".game");
+//					}
+//
+//					try {
+//						GameLogic.open(path);
+//					} catch (IOException exception) {
+//						JOptionPane.showOptionDialog(window, String.format(Language.getCurrentLocale(), "<html>%s<br />%s<br />%s</html>", path.toString(), Language.get("cannot-read"), Language.get("invalid-file")), Language.get("invalid-title"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[] {Language.get("accept")}, 0);
+//					}
+//				}
+			} else if ((e.getSource() == saveGame && GameLogic.save()) || e.getSource() == saveGameAs) {
+//				JFileChooser.setDefaultLocale(Locale.CHINA);
+//				fc = new JFileChooser();
+//				if (GameLogic.getLastSaveLocation() == null) {
+//					fc.setCurrentDirectory(null);
+//					fc.setSelectedFile(null);
+//				} else {
+//					fc.setCurrentDirectory(GameLogic.getLastSaveLocation().toFile());
+//					fc.setSelectedFile(GameLogic.getLastSaveLocation().toFile());
+//				}
+//				fc.setAcceptAllFileFilterUsed(false);
+//				fc.setFileFilter(new FileNameExtensionFilter("Game (*.game)", "game"));
+//				if (fc.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
+//					Path path = fc.getSelectedFile().toPath();
+//					if (!path.toString().replaceAll(".+\\.", "").equals("json")) {
+//						path = Paths.get(path.toString() + ".game");
+//						System.out.println(path);
+//					}
+//
+//					GameLogic.save(path);
+//				}
 			} else if (e.getSource() == pauseGame) {
 				InfoPanel.pause.setSelected(!pauseGame.isSelected());
 
@@ -71,7 +119,21 @@ public class Window extends JFrame {
 			} else if (e.getSource() == language) {
 				Settings.setShowing(true);
 			} else if (e.getSource() == exit) {
-				
+				boolean wasPaused = GameLogic.isPaused();
+				if (!wasPaused) pauseGame.doClick();
+				GameLogic.stop();
+
+				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+
+				if (i == 0) {
+					actionPerformed(new ActionEvent(saveGame, 0, "Save"));
+					System.exit(0);
+				} else if (i == 1) {
+					System.exit(0);
+				} else {
+					if (!wasPaused) GameLogic.start();
+					return;
+				}
 			}
 		}
 	};
@@ -109,9 +171,9 @@ public class Window extends JFrame {
 
 		language.addActionListener(menuListener);
 		game.add(language);
-		
+
 		game.addSeparator();
-		
+
 		exit.addActionListener(menuListener);
 		game.add(exit);
 

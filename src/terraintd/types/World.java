@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import terraintd.pathfinder.Node;
 
@@ -19,10 +20,18 @@ public class World extends IdType {
 
 	World(String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
 		super(id);
+
+		typeIds.put(id, this);
 		
 		this.tiles = tiles;
 		this.goal = goal;
 		this.spawnpoints = spawnpoints;
+	}
+
+	static final HashMap<String, World> typeIds = new HashMap<>();
+
+	public static World valueOf(String id) {
+		return typeIds.get(id);
 	}
 
 	public static World[] values() {
@@ -55,21 +64,17 @@ public class World extends IdType {
 
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75F));
 
-				if (y != 0 && tiles[y][x].elev - tiles[y - 1][x].elev > 0)
-					g.drawLine((int) (size * x), (int) (size * y), (int) (size * (x + 1)), (int) (size * y));
+				if (y != 0 && tiles[y][x].elev - tiles[y - 1][x].elev > 0) g.drawLine((int) (size * x), (int) (size * y), (int) (size * (x + 1)), (int) (size * y));
 
-				if (x != 0 && tiles[y][x].elev - tiles[y][x - 1].elev > 0)
-					g.drawLine((int) (size * x), (int) (size * y), (int) (size * x), (int) (size * (y + 1)));
+				if (x != 0 && tiles[y][x].elev - tiles[y][x - 1].elev > 0) g.drawLine((int) (size * x), (int) (size * y), (int) (size * x), (int) (size * (y + 1)));
 
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.75F));
 
 				boolean b = y != getHeight() - 1 && tiles[y][x].elev - tiles[y + 1][x].elev > 0;
 
-				if (b)
-					g.fillRect((int) (size * x), (int) (size * (y + 1)), (int) size, (int) size / 3);
+				if (b) g.fillRect((int) (size * x), (int) (size * (y + 1)), (int) size, (int) size / 3);
 
-				if (x != getWidth() - 1 && tiles[y][x].elev - tiles[y][x + 1].elev > 0)
-					g.fillRect((int) (size * (x + 1)), (int) (size * y), (int) size / 5, 4 * (int) size / (b && tiles[y][x].elev - tiles[y + 1][x + 1].elev > 0 ? 3 : 4));
+				if (x != getWidth() - 1 && tiles[y][x].elev - tiles[y][x + 1].elev > 0) g.fillRect((int) (size * (x + 1)), (int) (size * y), (int) size / 5, 4 * (int) size / (b && tiles[y][x].elev - tiles[y + 1][x + 1].elev > 0 ? 3 : 4));
 			}
 		}
 
