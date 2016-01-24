@@ -1,10 +1,10 @@
 lang-name=Deutsch
-	
+
 title=Turmabwehr mit Gelände
-	
+
 game=Spiel
 help=Hilfe
-	
+
 new=Neu
 open=Öffnen
 save=Sparen
@@ -14,20 +14,35 @@ pause=Pause
 fast-forward=Fast Forward
 language=Sprache
 exit=Verlassen
+accept=Akzeptieren
+yes=Ja
 cancel=Absagen
-	
+
 confirm-new=Speichern dieses Spiel?
 title-confirm-new=Neues Spiel
-	
+already-exists=existiert bereits.
+confirm-replace=Möchten Sie es ersetzen?
+title=confirm-replace=Bestätigen Sie Speichern Als
+file-not-found=Datei nicht gefunden.
+check-file-name=Überprüfen Sie den Dateinamen und versuchen Sie es erneut.
+title-file-not-found=Öffnen
+
+entension-name=Spiel (*.game)
+all-files=Alle Dateien
+file-name=Dateiname
+invalid-file=Ungültige Datei
+cannot-read=Kann diese Datei nicht lesen.
+invalid-file=Dies ist kein gültiges Spiel-Datei, oder das Format wird derzeit nicht unterstützt.
+
 level-complete=Level geschafft
 level-failed=Level gescheitert
-	
+
 towers=Towers
 enemies=Feinde
 obstacles=Hindernisse
 projectiles=Geschosse
 effects=Auswirkungen
-	
+
 effect-fire=Feuer
 effect-paralysis=Lähmung
 effect-slowness=Langsamkeit
@@ -37,10 +52,10 @@ effect-frost=Frost
 effect-poison=Gift
 effect-bleed=Blutung
 none=Keinen
-	
+
 health=Gesundheit
 money=Geld
-	
+
 kills=Beute
 damage-dealt=Schaden ausgeteilt
 projectiles-fired=Schüsse abgefeuert
@@ -60,12 +75,12 @@ area=Bereich
 tiles=Fliesen
 dps=Schaden pro Sekunde
 delivery=Art
-	
+
 delivery-singletarget=Single
 delivery-area=Bereich
 delivery-line=Strahl
 delivery-sector=Sektor
-	
+
 damage=Schäden
 rate=Kadenz
 rpm=Schuss pro Minute
@@ -82,3 +97,5 @@ tower-line=Laser-Kanonen
 tower-area=Elektromagnetische Impuls
 tower-sector=Turm der Torte
 tower-poison=Turm des Giftpfeil
+
+enemy-example=Panzer

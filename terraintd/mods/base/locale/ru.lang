@@ -14,10 +14,25 @@ pause=пауза
 fast-forward=перемотка вперед
 language=язык
 exit=оставлять
+accept=признавать
+yes=да
 cancel=отменить
 	
 confirm-new=Сохранить в эту игру?
 title-confirm-new=Новая игра
+already-exists=уже существует.
+confirm-replace=Вы хотите заменить это?
+title-confirm-replace=Подтвердите Сохранить как
+file-not-found=Файл не найден.
+check-file-name=Проверьте имя файла и повторите попытку.
+title-file-not-found=открытым
+
+extension-name=играть (*.game)
+all-files=Все файлы
+file-name=Имя файла
+invalid-title=неверный файл
+cannot-read=Не можете прочитать этот файл.
+invalid-file=Это не правильный файл игры, или его формат не поддерживается.
 
 level-complete=Уровень пройден
 level-failed=Уровень провален
@@ -82,3 +97,5 @@ tower-line=Лазерная пушка
 tower-area=ЭМИ
 tower-sector=Пирог вышка
 tower-poison=Яд дротик башня
+
+enemy-example=танк

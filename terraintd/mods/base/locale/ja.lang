@@ -14,10 +14,25 @@ pause=一時停止
 fast-forward=早送り
 language=言語
 exit=出口
+accept=アクセプト
+yes=はい
 cancel=キャンセル
 
 confirm-new=このゲームを保存しますか？
 title-confirm-new=新しいゲーム
+already-exists=は既に存在します。
+confirm-replace=あなたはそれを交換しますか？
+title-confirm-replace=名前を付けて保存を確認
+file-not-found=ファイルが見つかりません。
+check-file-name=ファイル名を確認して再試行してください。
+title-file-not-found=オープン
+
+extension-name=ゲーム (*.game)
+all-files=すべてのファイル
+file-name=ファイル名
+invalid-title=無効なファイル
+cannot-read=このファイルを読み取ることができません。
+invalid-file=これは有効なゲームファイルではありません、またはそのフォーマットが現在サポートされていません。
 
 level-complete=レベルが終了
 level-failed=レベルは失敗しました
@@ -82,3 +97,5 @@ tower-line=レーザーキャノン
 tower-area=EMP
 tower-sector=パイの塔
 tower-poison=毒ダーツタワー
+
+enemy-example=戦車

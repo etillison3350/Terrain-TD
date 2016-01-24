@@ -14,10 +14,25 @@ pause=Arrêter
 fast-forward=Avance Rapide
 language=Langue
 exit=Quitter
+accept=Accepter
+yes=Oui
 cancel=Annuler
 
 confirm-new=Enregistrer ce jeu?
 title-confirm-new=Nouveau Jeu
+already-exists=existe déjà.
+confirm-replace=Voulez-vous le remplacer?
+title-confirm-replace=Confirmez Enregistrer Sous
+file-not-found=Fichier introuvable.
+check-file-name=Vérifiez le nom du fichier et essayez à nouveau.
+title-file-name-file=Ouvrir
+
+extension-name=Jeu (*.game)
+all-files=Touts les Fichiers
+file-name=Nom de Fichier
+invalid-title=Fichier Invalide
+cannot-read=Vous ne pouvez pas lire ce fichier.
+invalid-file=Ce ne sont pas un jeu de fichier valide, ou son format est pas pris en charge actuellement.
 
 level-complete=Niveau Complet
 level-failed=Niveau Échoué
@@ -82,3 +97,5 @@ tower-line=Canon Laser
 tower-area=IEM
 tower-sector=Tour de Gâteau
 tower-poison=Tour de Dard de Poison
+
+enemy-example=Char d'assaut

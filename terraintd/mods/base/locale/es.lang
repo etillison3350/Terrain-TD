@@ -14,10 +14,25 @@ pause=Pausar
 fast-forward=Avance Rapido
 language=Idioma
 exit=Salir
+accept=Aceptar
+yes=Sí
 cancel=Cancelar
 
 confirm-new=¿Guardar este juego?
 title-confirm-new=Juego Nuevo
+already-exists=ya existe.
+confirm-replace=¿Quiere reemplazarlo?
+title-confirm-replace=Confirmar Guardar como
+file-not-found=File not found.
+check-file-name=Check the filename and try again.
+title-file-not-found=Abrir
+
+extension-name=Juego (*.game)
+all-files=Todos los Tipos
+file-name=Nombre del Archivo
+invalid-title=Archivo Inválido
+cannot-read=No se puede leer este archivo.
+invalid-file=Esto no es un archivo de juego válido o su formato no es compatible actualmente.
 
 level-complete=Nivel Completado
 level-failed=Nivel Fallado
@@ -82,3 +97,5 @@ tower-line=Cañón Láser
 tower-area=PEM
 tower-sector=Torre de Tarta
 tower-poison=Torre de Dardos Venenosos
+
+enemy-example=Tanque

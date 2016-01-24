@@ -14,10 +14,25 @@ pause=暂停
 fast-forward=快進
 language=文
 exit=退出
+accept=承認
+yes=是
 cancel=取消
 
 confirm-new=保存這個遊戲？
 title-confirm-new=新遊戲
+already-exists=已經存在。
+confirm-replace=是否要替換它？
+title-confirm-replace=確認另存為
+file-not-found=文件未找到。
+check-file-name=檢查文件名，然後重試。
+title-file-not-found=打開
+
+extension-name=遊戲 (*.game)
+all-files=全部文件
+file-name=文件名
+invalid-title=無效文件
+cannot-read=無法讀取該文件。
+invalid-file=這不是一個有效的遊戲文件，或目前不支持其格式。
 
 level-complete=級別完成
 level-failed=級別失敗
@@ -82,3 +97,5 @@ tower-line=激光炮
 tower-area=電磁脈衝
 tower-sector=馅饼塔
 tower-poison=毒鏢塔
+
+enemy-example=坦克

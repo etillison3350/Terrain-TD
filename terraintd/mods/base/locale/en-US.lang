@@ -14,10 +14,25 @@ pause=Pause
 fast-forward=Fast Forward
 language=Language
 exit=Exit
+accept=OK
+yes=Yes
 cancel=Cancel
 
 confirm-new=Save this game?
 title-confirm-new=New Game
+already-exists=already exists.
+confirm-replace=Do you want to replace it?
+title-confirm-replace=Confirm Save As
+file-not-found=File not found.
+check-file-name=Check the file name and try again.
+title-file-not-found=Open
+
+extension-name=Game (*.game)
+all-files=All Files
+file-name=File Name
+invalid-title=Invalid File
+cannot-read=Cannot read this file.
+invalid-file=This is not a valid game file, or its format is not currently supported.
 
 level-complete=Level Complete
 level-failed=Level Failed
@@ -82,3 +97,5 @@ tower-line=Laser Cannon
 tower-area=EMP
 tower-sector=Pie Tower
 tower-poison=Poison Dart Tower
+
+enemy-example=Tank

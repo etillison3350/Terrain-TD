@@ -14,10 +14,25 @@ pause=Pausar
 fast-forward=Avanço Rápido
 language=Idioma
 exit=Sair
+accept=Aceitar
+yes=Sim
 cancel=Cancelar
 
 confirm-new=Guardar este jogo?
 title-confirm-new=Novo Jogo
+already-exists=já existe.
+confirm-replace=Quer substituir?
+title-confirm-replace=Confirme Guardar Como
+file-not-found=Arquivo não encontrado.
+check-file-name=Verifique o nome do arquivo e tente novamente.
+title-file-not-found=Abrir
+
+extension-name=Jogo (*.game)
+all-files=Todos Arquivos
+file-name=Nome do Arquivo
+invalid-title=Arquivo Inválido
+cannot-read=Não é possível ler este arquivo.
+invalid-file=Este não é um arquivo do jogo válido ou seu formato não é suportado.
 
 level-complete=Nível Completado
 level-failed=Nível Falhado
@@ -82,3 +97,5 @@ tower-line=Canhão Laser
 tower-area=PEM
 tower-sector=Torre de Torta
 tower-poison=Torre do Dardo do Veneno
+
+enemy-example=Tanque
