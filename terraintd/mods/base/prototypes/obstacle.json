@@ -1,0 +1,21 @@
+[
+    {
+        "type":"obstacle",
+        "id":"obstacle-example",
+        "cost":25,
+        "collision":[
+            3,
+            2
+        ],
+        "remove-cost":0,
+        "spawn-rate":0,
+        "image":{
+            "src":"terraintd\\mods\\base\\images\\stone.png",
+            "width":3,
+            "height":2
+        },
+        "icon":{
+            "src":"terraintd\\mods\\base\\images\\stone.png"
+        }
+    }
+]
