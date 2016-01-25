@@ -1,7 +1,9 @@
 package terraintd.object;
 
+import terraintd.GameLogic;
 import terraintd.types.CollidableType;
 import terraintd.types.ProjectileType;
+import terraintd.types.TargetType;
 import terraintd.types.TowerType;
 
 public class Tower extends CollidableEntity implements Weapon {
@@ -50,6 +52,16 @@ public class Tower extends CollidableEntity implements Weapon {
 		this.x = x;
 		this.y = y;
 		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height);
+	}
+	
+	/**
+	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
+	 */
+	public Tower(TowerType type, double x, double y, TargetType targetType, int kills, double damageDone, int projectilesFired) {
+		this.type = type;
+		this.x = x;
+		this.y = y;
+		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height, targetType, kills, damageDone, projectilesFired);
 	}
 
 	@Override

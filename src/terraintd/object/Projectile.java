@@ -1,6 +1,7 @@
 package terraintd.object;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import terraintd.GameLogic;
 import terraintd.types.DeliveryType;
@@ -10,15 +11,15 @@ public class Projectile {
 
 	public final ProjectileType type;
 	public final Weapon shootingEntity;
-	private final double startX, startY;
+	public final double startX, startY;
 	private double x, y;
 	private double rotation;
 	private double radius;
 	private double deathTime;
 
 	private final Enemy target;
-	private final double targetX, targetY;
-	private final ArrayList<Enemy> hitTargets;
+	public final double targetX, targetY;
+	private final List<Enemy> hitTargets;
 
 	public <E extends Entity & Weapon> Projectile(ProjectileType type, E shootingEntity) {
 		this.type = type;
@@ -31,11 +32,30 @@ public class Projectile {
 
 		this.target = shootingEntity.getGun().getTarget();
 		targetX = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
-		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
-		
+		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getY() : 0;
+
 		this.hitTargets = new ArrayList<>();
-		
+
 		this.shootingEntity.getGun().registerProjectile();
+	}
+
+	/**
+	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
+	 */
+	public Projectile(Weapon shootingEntity, ProjectileType type, double x, double y, double startX, double startY, double targetX, double targetY, double rotation, double deathTime, double radius, Enemy target, List<Enemy> hitTargets) {
+		this.shootingEntity = shootingEntity;
+		this.type = type;
+		this.x = x;
+		this.y = y;
+		this.startX = startX;
+		this.startY = startY;
+		this.targetX = targetX;
+		this.targetY = targetY;
+		this.rotation = rotation;
+		this.deathTime = deathTime;
+		this.radius = radius;
+		this.target = target;
+		this.hitTargets = new ArrayList<Enemy>(hitTargets);
 	}
 
 	public boolean move() {
@@ -130,7 +150,7 @@ public class Projectile {
 		return target;
 	}
 
-	public ArrayList<Enemy> getHitTargets() {
+	public List<Enemy> getHitTargets() {
 		return hitTargets;
 	}
 

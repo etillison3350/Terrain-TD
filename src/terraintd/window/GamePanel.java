@@ -159,45 +159,42 @@ public class GamePanel extends JPanel {
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
 		g.setStroke(new BasicStroke((float) tile / 10.0F));
 		for (Entity e : GameLogic.getPermanentEntities()) {
-			if (!(e instanceof Enemy)) continue;
+			if (e instanceof Enemy) {
+				Enemy en = (Enemy) e;
 
-			Enemy en = (Enemy) e;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - en.getDeathTime())));
 
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (1 - en.getDeathTime())));
+				BufferedImage img = ImageManager.get(new Resource(en));
 
-			BufferedImage img = ImageManager.get(new Resource(en));
+				AffineTransform trans = new AffineTransform();
+				trans.translate(dx + tile * en.getX() - img.getWidth() * 0.5, dy + tile * en.getY() - img.getHeight() * 0.5);
+				trans.rotate(en.getRotation(), img.getWidth() * 0.5, img.getHeight() * 0.5);
+				g.drawImage(img, trans, null);
 
-			AffineTransform trans = new AffineTransform();
-			trans.translate(dx + tile * en.getX() - img.getWidth() * 0.5, dy + tile * en.getY() - img.getHeight() * 0.5);
-			trans.rotate(en.getRotation(), img.getWidth() * 0.5, img.getHeight() * 0.5);
-			g.drawImage(img, trans, null);
+				g.setColor(Color.BLACK);
+				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
+				if (en.getDead() == 0) {
+					g.setColor(en.getStatusEffects().length > 0 ? new Resource(en).color : Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
+					g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
+				}
 
-			g.setColor(Color.BLACK);
-			g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
-			if (en.getDead() == 0) {
-				g.setColor(en.getStatusEffects().length > 0 ? new Resource(en).color : Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
-				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
+				if (en.isDead()) {
+					g.setColor(Color.GREEN);
+					String str = String.format(Language.getCurrentLocale(), "+%d", en.type.reward);
+					g.drawString(str, (float) (dx + e.getX() * tile) - 0.5F * g.getFontMetrics().stringWidth(str), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
+				}
+			} else if (e instanceof CollidableEntity) {
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+				
+				CollidableType type = ((CollidableEntity) e).getType();
+
+				AffineTransform trans = new AffineTransform();
+				trans.translate(dx + tile * (e.getX() - 0.5 * (type.image.width - type.width)), dy + tile * (e.getY() - 0.5 * (type.image.height - type.height)));
+				if (e instanceof Tower) trans.rotate(((Tower) e).getRotation(), 0.5 * type.image.width * tile, 0.5 * type.image.height * tile);
+				trans.scale(type.image.width * tile / (double) type.image.image.getWidth(), type.image.height * tile / (double) type.image.image.getHeight());
+
+				g.drawImage(type.image.image, trans, null);
 			}
-			
-			if (en.isDead()) {
-				g.setColor(Color.GREEN);
-				String str = String.format(Language.getCurrentLocale(), "+%d", en.type.reward);
-				g.drawString(str, (float) (dx + e.getX() * tile) - 0.5F * g.getFontMetrics().stringWidth(str), (float) (dy + (e.getY() - en.getDeathTime()) * tile));
-			}
-		}
-
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		for (Entity e : GameLogic.getPermanentEntities()) {
-			if (!(e instanceof CollidableEntity)) continue;
-
-			CollidableType type = ((CollidableEntity) e).getType();
-
-			AffineTransform trans = new AffineTransform();
-			trans.translate(dx + tile * (e.getX() - 0.5 * (type.image.width - type.width)), dy + tile * (e.getY() - 0.5 * (type.image.height - type.height)));
-			if (e instanceof Tower) trans.rotate(((Tower) e).getRotation(), 0.5 * type.image.width * tile, 0.5 * type.image.height * tile);
-			trans.scale(type.image.width * tile / (double) type.image.image.getWidth(), type.image.height * tile / (double) type.image.image.getHeight());
-
-			g.drawImage(type.image.image, trans, null);
 		}
 
 		if (GameLogic.getSelectedEntity() != null) {

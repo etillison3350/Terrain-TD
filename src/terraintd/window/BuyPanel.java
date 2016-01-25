@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import terraintd.GameLogic;
 import terraintd.GameLogic.State;
 import terraintd.types.CollidableType;
+import terraintd.types.ObstacleType;
 import terraintd.types.TowerType;
 
 public class BuyPanel extends JPanel {
@@ -38,11 +39,16 @@ public class BuyPanel extends JPanel {
 		this.setPreferredSize(new Dimension(256, 32767));
 		this.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 1));
 
-		buttons = new BuyButton[TowerType.values().length];
+		buttons = new BuyButton[TowerType.values().length + ObstacleType.values().length];
 
-		for (int b = 0; b < buttons.length; b++) {
-			buttons[b] = new BuyButton(TowerType.values()[b]);
-			this.add(buttons[b]);
+		for (int t = 0; t < TowerType.values().length; t++) {
+			buttons[t] = new BuyButton(TowerType.values()[t]);
+			this.add(buttons[t]);
+		}
+		for (int o = 0; o < ObstacleType.values().length; o++) {
+			int n = TowerType.values().length + o;
+			buttons[n] = new BuyButton(ObstacleType.values()[o]);
+			this.add(buttons[n]);
 		}
 	}
 

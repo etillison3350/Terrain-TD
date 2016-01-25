@@ -13,7 +13,6 @@ import terraintd.types.EnemyType;
 import terraintd.types.IdType;
 import terraintd.types.ProjectileType;
 import terraintd.types.StatusEffectType;
-import terraintd.types.World;
 
 public class Enemy extends Entity implements Weapon {
 
@@ -26,12 +25,10 @@ public class Enemy extends Entity implements Weapon {
 	private int dead;
 	public List<Projectile> futureDamage;
 
-	public final World world;
-
 	private Node nextNode, prevNode;
 
 	private Node[][][] newNodeSet;
-	
+
 	private Set<StatusEffect> statusEffects;
 
 	@Override
@@ -45,19 +42,40 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	private final double width;
-	
-	public Enemy(EnemyType type, Node location, World world) {
+
+	public Enemy(EnemyType type, Node location) {
 		this.type = type;
 		this.x = location.getAbsX();
 		this.y = location.getAbsY();
 		this.prevNode = location;
 		this.nextNode = location.getNextNode();
-		this.world = world;
 		this.health = type.health;
 		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
 
 		this.width = Math.hypot(type.image.width, type.image.height);
-		
+
+		this.statusEffects = new HashSet<>();
+
+		this.futureDamage = new ArrayList<>();
+	}
+
+	/**
+	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
+	 */
+	public Enemy(EnemyType type, Node prevNode, Node nextNode, double x, double y, double deathTime, double health) {
+		this.type = type;
+		this.prevNode = prevNode;
+		this.nextNode = nextNode;
+		this.x = x;
+		this.y = y;
+		this.deathTime = deathTime;
+		this.health = health;
+		this.dead = health < 0.00001 ? (nextNode == null ? 2 : 1) : 0;
+
+		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
+
+		this.width = Math.hypot(type.image.width, type.image.height);
+
 		this.statusEffects = new HashSet<>();
 
 		this.futureDamage = new ArrayList<>();
@@ -67,7 +85,7 @@ public class Enemy extends Entity implements Weapon {
 	public Gun getGun() {
 		return this.gun;
 	}
-	
+
 	@Override
 	public Rectangle2D getRectangle() {
 		return new Rectangle2D.Double(this.x + this.type.image.x - 0.5 * width, this.y + this.type.image.y - 0.5 * width, width, width);
@@ -127,7 +145,7 @@ public class Enemy extends Entity implements Weapon {
 		int x = prevNode.x - (!prevNode.top && prevNode.x - nextNode.x == 1 ? 1 : 0);
 		int y = prevNode.y - (prevNode.top && prevNode.y - nextNode.y == 1 ? 1 : 0);
 
-		double speed = speedMult * type.speed.get(world.tiles[y][x].terrain);
+		double speed = speedMult * type.speed.get(GameLogic.getCurrentWorld().tiles[y][x].terrain);
 		double distance = speed * time;
 		double d = Math.hypot(this.x - nextNode.getAbsX(), this.y - nextNode.getAbsY());
 
@@ -138,7 +156,7 @@ public class Enemy extends Entity implements Weapon {
 				if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
 			}
 		}
-		
+
 		if (distance > d) {
 			this.x = nextNode.getAbsX();
 			this.y = nextNode.getAbsY();
@@ -163,7 +181,7 @@ public class Enemy extends Entity implements Weapon {
 		if (this.nextNode != null) {
 			Node newNextNode = nodes[nextNode.y][nextNode.x][nextNode.top ? 1 : 0];
 			Node newPrevNode = nodes[prevNode.y][prevNode.x][prevNode.top ? 1 : 0];
-			
+
 			if (newNextNode.isExplored()) {
 				this.nextNode = newNextNode;
 				this.newNodeSet = null;
@@ -215,7 +233,7 @@ public class Enemy extends Entity implements Weapon {
 				this.addStatusEffect(new StatusEffect(p.shootingEntity, effect));
 			}
 		}
-		
+
 		return kill;
 	}
 
@@ -236,6 +254,10 @@ public class Enemy extends Entity implements Weapon {
 		return ret;
 	}
 
+	public Node getPrevNode() {
+		return this.prevNode;
+	}
+	
 	public Node getNextNode() {
 		return nextNode;
 	}
@@ -267,7 +289,7 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	public void addStatusEffect(StatusEffect effect) {
-		this.statusEffects.remove(effect);
+		System.out.println(this.statusEffects.remove(effect));
 		this.statusEffects.add(effect);
 	}
 

@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -41,6 +42,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -49,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingConstants;
@@ -198,6 +201,17 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 
 		cancel = new JButton(Language.get("cancel"));
 		cancel.addActionListener(this);
+		cancel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "name");
+		cancel.getActionMap().put("name", new AbstractAction() {
+
+			private static final long serialVersionUID = 2646758765996702622L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cancel.doClick();
+			}
+
+		});
 		buttonPanel.add(cancel);
 
 		this.bottomPanel.add(buttonPanel, c);
@@ -219,6 +233,7 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 		c.gridx = 1;
 		c.weightx = 1;
 		fileName = new JTextField(20);
+		fileName.addActionListener(this);
 		this.bottomPanel.add(fileName, c);
 
 		this.add(bottomPanel, BorderLayout.PAGE_END);
@@ -251,7 +266,7 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 		while (!Files.isDirectory(newPath)) {
 			newPath = newPath.getParent();
 		}
-		
+
 		if (currentPath != newPath) {
 			searchBar.setText("");
 		}
@@ -476,7 +491,7 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 			this.setSelected(true);
 			this.requestFocus();
 
-			fileName.setText(this.path.getFileName().toString());
+			if (!Files.isDirectory(this.path)) fileName.setText(this.path.getFileName().toString());
 
 			fileButtonPanel.scrollRectToVisible(getParent().getBounds());
 
@@ -568,8 +583,9 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 					fc.wait();
 				} catch (InterruptedException e) {}
 			}
+			Path path = Paths.get(currentPath.toString() + "/" + fc.fileName.getText());
 			fc.dispose();
-			return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
+			return fc.state > 0 ? path : null;
 		}
 	}
 
@@ -584,8 +600,9 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 					fc.wait();
 				} catch (InterruptedException e) {}
 			}
+			Path path = Paths.get(currentPath.toString() + "/" + fc.fileName.getText());
 			fc.dispose();
-			return fc.state > 0 ? Paths.get(currentPath.toString() + "/" + fc.fileName.getText()) : null;
+			return fc.state > 0 ? path : null;
 		}
 	}
 
@@ -631,16 +648,15 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e);
 		if (e.getSource() == cancel) {
 			this.close();
-		} else if (e.getSource() == confirm) {
+		} else if (e.getSource() == confirm || e.getSource() == fileName) {
 			if (fileName.getText().isEmpty()) return;
 
 			if (save && Files.exists(Paths.get(currentPath.toString() + "/" + fileName.getText())) && JOptionPane.showOptionDialog(this, String.format("<html>%s %s<br />%s</html>", fileName.getText(), Language.get("already-exists"), Language.get("confirm-replace")), Language.get("title-confirm-replace"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[] {Language.get("yes"), Language.get("cancel")}, Language.get("cancel")) != 0) return;
 
 			if (!save && !Files.exists(Paths.get(currentPath.toString() + "/" + fileName.getText()))) {
-				JOptionPane.showOptionDialog(this, String.format("<html>%s<br />%s<br />%s</html>", fileName.getText(), Language.get("file-not-found"), Language.get("check-file-name")), Language.get("title-file-not-found"), JOptionPane.WARNING_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new String[] {Language.get("accept")}, null);
+				JOptionPane.showOptionDialog(this, String.format("<html>%s<br />%s<br />%s</html>", fileName.getText(), Language.get("file-not-found"), Language.get("check-file-name")), Language.get("title-file-not-found"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[] {Language.get("accept")}, null);
 				return;
 			}
 

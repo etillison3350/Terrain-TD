@@ -8,7 +8,7 @@ public class ObstacleType extends CollidableType {
 	public final HashMap<Terrain, Double> spawnRates;
 
 	ObstacleType(String id, int width, int height, int cost, int removeCost, HashMap<Terrain, Double> spawnRates, ImageType image, ImageType icon) {
-		super(id, width, height, removeCost, image, icon);
+		super(id, width, height, cost, image, icon);
 		
 		typeIds.put(id, this);
 		

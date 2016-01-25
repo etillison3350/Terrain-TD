@@ -31,6 +31,22 @@ public class Gun {
 	}
 
 	/**
+	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
+	 */
+	public Gun(ProjectileType[] projectiles, double range, double x, double y, TargetType targetType, int kills, double damageDone, int projectilesFired) {
+		this.projectiles = projectiles;
+		if (this.projectiles == null || this.projectiles.length == 0) throw new IllegalArgumentException("projectiles must not be null or empty.");
+		this.range = range;
+		this.time = new double[projectiles.length];
+		this.shooter = new Position(x, y);
+		
+		this.targetType = targetType;
+		this.kills = kills;
+		this.damageDone = damageDone;
+		this.projectilesFired = projectilesFired;
+	}
+
+	/**
 	 * <ul>
 	 * <li><b><i>Gun</i></b><br>
 	 * <br>

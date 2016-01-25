@@ -72,7 +72,7 @@ public class Window extends JFrame {
 					}
 					break;
 				}
-			} else if ((e.getSource() == saveGame && GameLogic.save()) || e.getSource() == saveGameAs) {
+			} else if ((e.getSource() == saveGame && !GameLogic.isSaved() && !GameLogic.save()) || e.getSource() == saveGameAs) {
 				Path path = FileChooser.showSaveDialog(window, Paths.get("").toAbsolutePath());
 				if (path != null) GameLogic.save(path);
 			} else if (e.getSource() == pauseGame) {
