@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import terraintd.pathfinder.Node;
 
-public class World extends IdType {
+public class World extends ModdedType {
 
 	public final Tile[][] tiles;
 	public final Node[] spawnpoints;
@@ -18,8 +18,8 @@ public class World extends IdType {
 
 	static World[] values;
 
-	World(String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
-		super(id);
+	World(Mod mod, String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
+		super(mod, id);
 
 		typeIds.put(id, this);
 		

@@ -30,8 +30,6 @@ public class Settings extends JDialog {
 		panel.add(languages);
 		
 		this.add(panel, BorderLayout.NORTH);
-		
-		this.setModal(true);
 	}
 
 	@Override

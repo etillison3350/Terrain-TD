@@ -125,7 +125,6 @@ public class Enemy extends Entity implements Weapon {
 				case PARALYSIS:
 					return true;
 				case POISON:
-//					this.health -= .375 * effect.amplifier + .25;
 					double lastHealth = this.health;
 					this.health = this.health * (1 - effect.amplifier * 0.0021) - 0.05 * effect.amplifier;
 					effect.inflictor.getGun().registerDamage(lastHealth - this.health);
@@ -289,7 +288,7 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	public void addStatusEffect(StatusEffect effect) {
-		System.out.println(this.statusEffects.remove(effect));
+		this.statusEffects.remove(effect);
 		this.statusEffects.add(effect);
 	}
 

@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,7 @@ public class JSON {
 	
 	private JSON() {}
 
-	public static ArrayList<Object> parseJSON(String json) {
+	public static List<Object> parseJSON(String json) {
 		HashMap<String, Object> braceObjs = new HashMap<>();
 
 		String s = json;

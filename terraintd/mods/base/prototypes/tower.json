@@ -50,7 +50,7 @@
     {
         "type":"tower",
         "id":"tower-line",
-        "cost":100,
+        "cost":300,
         "collision":[
             2,
             2
@@ -97,7 +97,7 @@
     {
         "type":"tower",
         "id":"tower-area",
-        "cost":100,
+        "cost":500,
         "collision":[
             2,
             2
@@ -143,7 +143,7 @@
     {
         "type":"tower",
         "id":"tower-sector",
-        "cost":100,
+        "cost":300,
         "collision":[
             2,
             2
@@ -190,7 +190,7 @@
     {
         "type":"tower",
         "id":"tower-poison",
-        "cost":100,
+        "cost":150,
         "collision":[
             2,
             2

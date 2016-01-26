@@ -175,7 +175,6 @@ public class GameLogic implements ActionListener {
 			GamePanel.repaintPanel();
 			BuyPanel.updateButtons();
 			InfoPanel.refreshDisplay();
-//			System.out.println(t2 - t0 > 2e9);
 		}
 	}
 

@@ -6,12 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import terraintd.files.JSON;
+import terraintd.files.ModListReader;
 import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
 import terraintd.types.Level.Unit;
@@ -19,8 +19,12 @@ import terraintd.types.World.Tile;
 
 public final class TypeGenerator {
 
+	private static final Path MODS_PATH = Paths.get("terraintd/mods");
+
 	private TypeGenerator() {}
 
+	private static Mod[] mods;
+	
 	private static TowerType[] towers;
 	private static EnemyType[] enemies;
 	private static ObstacleType[] obstacles;
@@ -29,55 +33,95 @@ public final class TypeGenerator {
 
 	public static void generateValues() {
 		try {
-			Files.createDirectories(Paths.get("terraintd/mods"));
+			Files.createDirectories(MODS_PATH);
 		} catch (IOException e) {}
 
-		ArrayList<TowerType> newTowers = new ArrayList<>();
-		ArrayList<EnemyType> newEnemies = new ArrayList<>();
-		ArrayList<ObstacleType> newObstacles = new ArrayList<>();
-		ArrayList<World> newWorlds = new ArrayList<>();
-		ArrayList<Level> newLevels = new ArrayList<>();
+		ModListReader.read();
+		
+		List<Mod> mods = new ArrayList<>();
 
-		try (Stream<Path> files = Files.walk(Paths.get("terraintd/mods"))) {
-			Iterator<Path> iter = files.iterator();
-			while (iter.hasNext()) {
-				Path path = iter.next();
-				if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("json")) continue;
+		try {
+			Files.walk(MODS_PATH, 1).filter(Files::isDirectory).forEach(p -> {
+				try {
+					Path path = p.resolve("info.json");
 
-				List<?> json = JSON.parseJSON(new String(Files.readAllBytes(path)));
+					List<?> json = JSON.parseJSON(new String(Files.readAllBytes(path)));
 
-				if (json.size() == 0 && json.get(0) instanceof List<?>) {
-					json = (ArrayList<?>) json.get(0);
-				}
+					if (!(json.get(0) instanceof Map<?, ?>)) return;
 
-				for (Object o : json) {
-					if (!(o instanceof Map<?, ?>)) continue;
+					Map<?, ?> mod = (Map<?, ?>) json.get(0);
 
-					Map<?, ?> obj = (Map<?, ?>) o;
+					String id = (String) mod.get("id");
+					if (id == null || id.isEmpty()) return;
 
-					if (obj.get("type") == null || !(obj.get("type") instanceof String)) continue;
+					String version = String.format("%s", mod.get("version"));
 
+					List<String> authors = new ArrayList<>();
+					if (mod.get("authors") instanceof List<?>) ((List<?>) mod.get("authors")).stream().forEach(o -> authors.add(String.format("%s", 0)));
+
+					List<String> contacts = new ArrayList<>();
+					if (mod.get("contacts") instanceof List<?>) ((List<?>) mod.get("contacts")).stream().forEach(o -> contacts.add(String.format("%s", 0)));
+
+					String homepage = String.format("%s", mod.get("homepage"));
+
+					String description = String.format("%s", mod.get("description"));
+
+					mods.add(new Mod(id, p, version, authors.toArray(new String[authors.size()]), contacts.toArray(new String[contacts.size()]), homepage, description));
+				} catch (Exception e) {}
+			});
+		} catch (IOException e) {}
+
+		List<TowerType> newTowers = new ArrayList<>();
+		List<EnemyType> newEnemies = new ArrayList<>();
+		List<ObstacleType> newObstacles = new ArrayList<>();
+		List<World> newWorlds = new ArrayList<>();
+		List<Level> newLevels = new ArrayList<>();
+
+		for (Mod mod : mods) {
+			if (!ModListReader.isEnabled(mod.id)) continue;
+			
+			try (Stream<Path> files = Files.walk(mod.path)) {
+				files.forEach(path -> {
+					if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("json") || path.getFileName().toString().equals("info.json")) return;
+
+					List<?> json;
 					try {
-						if (obj.get("type").equals("tower")) {
-							newTowers.add(parseTower(obj));
-						} else if (obj.get("type").equals("enemy")) {
-							newEnemies.add(parseEnemy(obj));
-						} else if (obj.get("type").equals("obstacle")) {
-							newObstacles.add(parseObstacle(obj));
-						} else if (obj.get("type").equals("world")) {
-							newWorlds.add(parseWorld(obj));
-						} else if (obj.get("type").equals("level")) {
-							newLevels.add(parseLevel(obj));
-						}
+						json = JSON.parseJSON(new String(Files.readAllBytes(path)));
 					} catch (Exception e) {
-						e.printStackTrace();
+						return;
 					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+
+					if (json.size() == 1 && json.get(0) instanceof List<?>) json = (ArrayList<?>) json.get(0);
+
+					for (Object o : json) {
+						if (!(o instanceof Map<?, ?>)) continue;
+
+						Map<?, ?> obj = (Map<?, ?>) o;
+
+						if (obj.get("type") == null || !(obj.get("type") instanceof String)) continue;
+
+						try {
+							if (obj.get("type").equals("tower")) {
+								newTowers.add(parseTower(obj, mod));
+							} else if (obj.get("type").equals("enemy")) {
+								newEnemies.add(parseEnemy(obj, mod));
+							} else if (obj.get("type").equals("obstacle")) {
+								newObstacles.add(parseObstacle(obj, mod));
+							} else if (obj.get("type").equals("world")) {
+								newWorlds.add(parseWorld(obj, mod));
+							} else if (obj.get("type").equals("level")) {
+								newLevels.add(parseLevel(obj, mod));
+							}
+						} catch (Exception e) {}
+					}
+				});
+			} catch (IOException e) {}
 		}
 
+		ModListReader.write();
+		
+		TypeGenerator.mods = mods.toArray(new Mod[mods.size()]);
+		
 		towers = newTowers.toArray(new TowerType[newTowers.size()]);
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
@@ -85,7 +129,7 @@ public final class TypeGenerator {
 		levels = newLevels.toArray(new Level[newLevels.size()]);
 	}
 
-	static TowerType parseTower(Map<?, ?> map) {
+	static TowerType parseTower(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
@@ -151,10 +195,10 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new TowerType(id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		return new TowerType(mod, id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
-	static EnemyType parseEnemy(Map<?, ?> map) {
+	static EnemyType parseEnemy(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
@@ -255,10 +299,10 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new EnemyType(id, speed, upSpeed, downSpeed, health, damage, reward, range, hbWidth, hbY, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		return new EnemyType(mod, id, speed, upSpeed, downSpeed, health, damage, reward, range, hbWidth, hbY, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
-	static ObstacleType parseObstacle(Map<?, ?> map) {
+	static ObstacleType parseObstacle(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
@@ -342,7 +386,7 @@ public final class TypeGenerator {
 
 		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon")) : null;
 
-		return new ObstacleType(id, width, height, cost, removeCost, spawnRates, image, icon);
+		return new ObstacleType(mod, id, width, height, cost, removeCost, spawnRates, image, icon);
 
 	}
 
@@ -431,7 +475,7 @@ public final class TypeGenerator {
 		return new ImageType(src, width, height, x, y);
 	}
 
-	static World parseWorld(Map<?, ?> map) {
+	static World parseWorld(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null || !(map.get("terrain") instanceof List<?>)) throw new IllegalArgumentException();
 
@@ -547,10 +591,10 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new World(id, tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
+		return new World(mod, id, tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
 	}
 
-	static Level parseLevel(Map<?, ?> map) {
+	static Level parseLevel(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
@@ -591,9 +635,15 @@ public final class TypeGenerator {
 
 		if (units.size() <= 0) throw new IllegalArgumentException();
 
-		return new Level(id, units.toArray(new Unit[units.size()]), health, money);
+		return new Level(mod, id, units.toArray(new Unit[units.size()]), health, money);
 	}
 
+	static Mod[] mods() {
+		if (mods == null) generateValues();
+		
+		return mods;
+	}
+	
 	static TowerType[] towers() {
 		if (towers == null) generateValues();
 

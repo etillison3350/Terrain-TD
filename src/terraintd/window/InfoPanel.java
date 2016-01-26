@@ -45,6 +45,7 @@ import terraintd.types.DeliveryType;
 import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
 import terraintd.types.IdType;
+import terraintd.types.ModdedType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
@@ -225,8 +226,12 @@ public class InfoPanel extends JPanel {
 			type = (IdType) obj;
 		}
 
-		if (type != null) panel.add(createLabel("%s", 3, 0, Language.get(type.id)));
-
+		if (type != null) {
+			panel.add(createLabel("%s", 3, 0, Language.get(type.id)));
+			if (type instanceof ModdedType)
+				panel.add(createLabel("%s", 0, 0, Language.get(((ModdedType) type).mod.id))).setForeground(new Color(255, 255, 128));
+		}
+		
 		if (obj instanceof Weapon) {
 			Gun gun = ((Weapon) obj).getGun();
 			if (gun != null) {

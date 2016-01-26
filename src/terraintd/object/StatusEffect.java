@@ -26,7 +26,6 @@ public class StatusEffect {
 	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
 	 */
 	public StatusEffect(Weapon inflictor, StatusEffectType type, double amplifier, double duration, double origDuration) {
-		System.out.println(inflictor);
 		this.inflictor = inflictor;
 		this.type = type;
 		this.amplifier = amplifier;

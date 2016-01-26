@@ -96,10 +96,6 @@ public class Projectile {
 
 		if (this.type.maxDist - this.radius < 0.01) {
 			this.radius = this.type.maxDist;
-//			if (!this.type.follow) {
-//				this.x = this.startX + this.radius * Math.cos(this.rotation);
-//				this.y = this.startY + this.radius * Math.sin(this.rotation);
-//			}
 			return false;
 		}
 

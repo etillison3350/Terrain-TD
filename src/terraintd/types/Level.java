@@ -2,14 +2,14 @@ package terraintd.types;
 
 import java.util.HashMap;
 
-public class Level extends IdType {
+public class Level extends ModdedType {
 
 	public final Unit[] units;
 	public final double health;
 	public final int money;
 
-	public Level(String id, Unit[] units, double health, int money) {
-		super(id);
+	public Level(Mod mod, String id, Unit[] units, double health, int money) {
+		super(mod, id);
 		
 		typeIds.put(id, this);
 		

@@ -2,7 +2,7 @@ package terraintd.types;
 
 import java.util.HashMap;
 
-public class EnemyType extends IdType {
+public class EnemyType extends ModdedType {
 
 	public final HashMap<Terrain, Double> speed;
 	public final double upSpeed;
@@ -17,8 +17,8 @@ public class EnemyType extends IdType {
 	public final ImageType death;
 	public final ProjectileType[] projectiles;
 
-	EnemyType(String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, double hbWidth, double hbY, ImageType image, ImageType death, ProjectileType[] projectiles) {
-		super(id);
+	EnemyType(Mod mod, String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, double hbWidth, double hbY, ImageType image, ImageType death, ProjectileType[] projectiles) {
+		super(mod, id);
 		
 		typeIds.put(id, this);
 		
