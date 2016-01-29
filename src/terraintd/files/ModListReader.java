@@ -13,18 +13,17 @@ public class ModListReader {
 
 	private static HashMap<String, Boolean> mods;
 
-	public static void read() {
+	public synchronized static void read() {
 		mods = new HashMap<>();
 
 		List<?> json;
 		try {
-			Files.createFile(Paths.get("terraintd/mods/mod-list.json"));
 			json = JSON.parseJSON(new String(Files.readAllBytes(Paths.get("terraintd/mods/mod-list.json"))));
 		} catch (IOException e) {
 			return;
 		}
-
-		if (!(json.get(0) instanceof Map<?, ?>)) return;
+		
+		if (json.size() < 1 || !(json.get(0) instanceof Map<?, ?>)) return;
 
 		Map<?, ?> map = ((Map<?, ?>) json.get(0));
 		for (Object key : map.keySet()) {
@@ -33,19 +32,19 @@ public class ModListReader {
 		}
 	}
 
-	public static void write() {
+	public synchronized static void write() {
 		try {
 			Files.write(Paths.get("terraintd/mods/mod-list.json"), JSON.writeJSON(mods).getBytes());
 		} catch (IOException e) {}
 	}
 
-	public static boolean isEnabled(String modId) {
+	public synchronized static boolean isEnabled(String modId) {
 		if (!mods.containsKey(modId)) mods.put(modId, true);
-		
+
 		return mods.get(modId);
 	}
 
-	public static void setEnabled(String modId, boolean enabled) {
+	public synchronized static void setEnabled(String modId, boolean enabled) {
 		mods.put(modId, enabled);
 	}
 

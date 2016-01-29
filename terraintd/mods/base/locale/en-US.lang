@@ -1,5 +1,14 @@
 lang-name=English (United States)
 
+mods=Mods
+version=Version
+base-description=Contains all of the resources for the base game.
+authors=Authors
+ricky3350=ricky3350
+contact=Contact
+homepage=Homepage
+enable=Enable
+disable=Disable
 base=Base
 
 title=Terrain TD
@@ -22,6 +31,8 @@ cancel=Cancel
 
 confirm-new=Save this game?
 title-confirm-new=New Game
+confirm-exit=Save this game?
+title-confirm-exit=Exit
 already-exists=already exists.
 confirm-replace=Do you want to replace it?
 title-confirm-replace=Confirm Save As

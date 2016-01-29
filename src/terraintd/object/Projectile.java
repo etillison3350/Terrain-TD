@@ -23,11 +23,15 @@ public class Projectile {
 
 	public <E extends Entity & Weapon> Projectile(ProjectileType type, E shootingEntity) {
 		this.type = type;
-		this.x = this.startX = shootingEntity.getGun().shooter.getX();
-		this.y = this.startY = shootingEntity.getGun().shooter.getY();
+		this.startX = shootingEntity.getGun().shooter.getX();
+		this.startY = shootingEntity.getGun().shooter.getY();
 		this.rotation = type.rotation + ((!type.absRotation && shootingEntity instanceof Tower) ? ((Tower) shootingEntity).getRotation() : 0);
+		
+		this.x = startX + type.offset * Math.cos(this.rotation);
+		this.y = startY + type.offset * Math.sin(this.rotation);
+		
 		this.shootingEntity = shootingEntity;
-
+		
 		this.deathTime = -1;
 
 		this.target = shootingEntity.getGun().getTarget();

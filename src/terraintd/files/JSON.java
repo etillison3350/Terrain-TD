@@ -29,7 +29,7 @@ public class JSON {
 			String v = m.group(1);
 			String k = "@" + lastAddress++;
 
-			braceObjs.put(k, v.replaceAll("\\\\(.)", "$1").toLowerCase());
+			braceObjs.put(k, v.replaceAll("\\\\(.)", "$1"));
 			s = s.replace(m.group(), k);
 
 			m = quotes.matcher(s);

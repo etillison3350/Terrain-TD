@@ -1,5 +1,14 @@
 lang-name=Français
 
+mods=Mods
+version=Version
+base-descriptionContient toutes les ressources pour le jeu de base.
+authors=Auteurs
+ricky3350=ricky3350
+contact=Contactez
+homepage=Site Internet
+enable=Activer
+disable=Désactiver
 base=Base
 
 title=Défense des Tours Avec Terrain
@@ -22,6 +31,8 @@ cancel=Annuler
 
 confirm-new=Enregistrer ce jeu?
 title-confirm-new=Nouveau Jeu
+confirm-exit=Enregistrer ce jeu?
+title-confirm-exit=Quitter
 already-exists=existe déjà.
 confirm-replace=Voulez-vous le remplacer?
 title-confirm-replace=Confirmez Enregistrer Sous

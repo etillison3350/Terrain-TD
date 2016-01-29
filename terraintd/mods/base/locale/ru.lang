@@ -1,5 +1,14 @@
 lang-name=русский язык
 
+mods=Моды
+version=Версия
+base-description=Содержит все ресурсы для базовой игры.
+authors=Авторы
+ricky3350=ricky3350
+contact=контакт
+homepage=Веб-сайт
+enable=включить
+disable=Отключить
 base=база
 
 title=Обороны башни на территория
@@ -22,6 +31,8 @@ cancel=отменить
 	
 confirm-new=Сохранить в эту игру?
 title-confirm-new=Новая игра
+confirm-exit=Сохранить в эту игру?
+title-confirm-exit=оставлять
 already-exists=уже существует.
 confirm-replace=Вы хотите заменить это?
 title-confirm-replace=Подтвердите Сохранить как

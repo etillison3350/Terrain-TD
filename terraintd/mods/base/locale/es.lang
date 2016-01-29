@@ -1,5 +1,14 @@
 lang-name=Español
 
+mods=Mods
+version=Versión
+base-description=Contiene todos los recursos para el juego base.
+authors=Autores
+ricky3350=ricky3350
+contact=Contacto
+homepage=Sitio web
+enable=Activar
+disable=Desactivar
 base=Base
 
 title=Defensa de Torres Con Terreno
@@ -22,6 +31,8 @@ cancel=Cancelar
 
 confirm-new=¿Guardar este juego?
 title-confirm-new=Juego Nuevo
+confirm-exit=¿Guardar este juego?
+title-confirm-exit=Salir
 already-exists=ya existe.
 confirm-replace=¿Quiere reemplazarlo?
 title-confirm-replace=Confirmar Guardar como

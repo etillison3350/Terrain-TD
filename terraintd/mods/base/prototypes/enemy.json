@@ -20,10 +20,10 @@
         "damage":10,
         "reward":20,
         "image":{
-            "src":"terraintd\\mods\\base\\images\\tank.png"
+            "src":"images/tank.png"
         },
         "death":{
-            "src":"terraintd\\mods\\base\\images\\explosion.png"
+            "src":"images/explosion.png"
         },
         "projectiles":null
     },

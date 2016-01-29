@@ -401,7 +401,6 @@ public class FileChooser extends JDialog implements ActionListener, WindowListen
 				Path path = (Path) value;
 				label.setIcon(FileSystemView.getFileSystemView().getSystemIcon(path.toFile()));
 				label.setText(path.getFileName().toString() + "  ");
-//				label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 				if (!currentPath.startsWith(path)) label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 				return label;
 			}

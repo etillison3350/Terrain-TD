@@ -31,11 +31,10 @@ public class Window extends JFrame {
 	public static final JCheckBoxMenuItem pauseGame = new JCheckBoxMenuItem();
 	public static final JCheckBoxMenuItem fastForward = new JCheckBoxMenuItem();
 	public static final JMenuItem language = new JMenuItem();
+	public static final JMenuItem modList = new JMenuItem();
 	public static final JMenuItem exit = new JMenuItem();
 
 	public static final JMenu help = new JMenu();
-
-//	private static JFileChooser fc = new JFileChooser();
 
 	private static final ActionListener menuListener = new ActionListener() {
 
@@ -87,12 +86,14 @@ public class Window extends JFrame {
 				GameLogic.setFastForward(fastForward.isSelected());
 			} else if (e.getSource() == language) {
 				Settings.setShowing(true);
+			} else if (e.getSource() == modList) {
+				ModList.showDialog(window);
 			} else if (e.getSource() == exit) {
 				boolean wasPaused = GameLogic.isPaused();
 				if (!wasPaused) pauseGame.doClick();
 				GameLogic.stop();
 
-				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-exit"), Language.get("title-confirm-exit"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
 
 				if (i == 0) {
 					actionPerformed(new ActionEvent(saveGame, 0, "Save"));
@@ -140,6 +141,9 @@ public class Window extends JFrame {
 
 		language.addActionListener(menuListener);
 		game.add(language);
+		
+		modList.addActionListener(menuListener);
+		game.add(modList);
 
 		game.addSeparator();
 
@@ -172,6 +176,7 @@ public class Window extends JFrame {
 		pauseGame.setText(Language.get("pause"));
 		fastForward.setText(Language.get("fast-forward"));
 		language.setText(Language.get("language"));
+		modList.setText(Language.get("mods"));
 		exit.setText(Language.get("exit"));
 		help.setText(Language.get("help"));
 	}

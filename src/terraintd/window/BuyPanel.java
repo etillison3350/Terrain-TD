@@ -39,6 +39,12 @@ public class BuyPanel extends JPanel {
 		this.setPreferredSize(new Dimension(256, 32767));
 		this.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 1));
 
+		this.createButtons();
+	}
+	
+	private void createButtons() {
+		this.removeAll();
+		
 		buttons = new BuyButton[TowerType.values().length + ObstacleType.values().length];
 
 		for (int t = 0; t < TowerType.values().length; t++) {
@@ -50,6 +56,10 @@ public class BuyPanel extends JPanel {
 			buttons[n] = new BuyButton(ObstacleType.values()[o]);
 			this.add(buttons[n]);
 		}
+	}
+	
+	public static void recreateButtons() {
+		buyPanel.createButtons();
 	}
 
 	public static void updateButtons() {

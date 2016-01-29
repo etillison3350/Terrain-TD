@@ -531,7 +531,19 @@ public class GameLogic implements ActionListener {
 	public static void sell(CollidableEntity entity) {
 		if (entity != null && permanentEntities.contains(entity)) {
 			permanentEntities.remove(entity);
-			money += (int) (0.75F * entity.getType().cost);
+			money += entity.getType().sellCost;
+			if (entity == selected) setSelectedEntity(null);
+
+			for (EnemyType type : EnemyType.values())
+				nodes.put(type, PathFinder.calculatePaths(type));
+
+			Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
+			for (Entity e : permanents) {
+				if (!(e instanceof Enemy)) continue;
+
+				((Enemy) e).resetNodes(nodes.get(((Enemy) e).type));
+			}
+
 			GamePanel.repaintPanel();
 			BuyPanel.updateButtons();
 		}
@@ -804,11 +816,11 @@ public class GameLogic implements ActionListener {
 
 							double px = proj.get("x") instanceof Number ? ((Number) proj.get("x")).doubleValue() : 0;
 							double py = proj.get("y") instanceof Number ? ((Number) proj.get("y")).doubleValue() : 0;
-							double sx = proj.get("start-x") instanceof Number ? ((Number) proj.get("start-x")).doubleValue() : 0;
-							double sy = proj.get("start-y") instanceof Number ? ((Number) proj.get("start-y")).doubleValue() : 0;
-							double tx = proj.get("target-x") instanceof Number ? ((Number) proj.get("target-x")).doubleValue() : 0;
-							double ty = proj.get("target-y") instanceof Number ? ((Number) proj.get("target-y")).doubleValue() : 0;
-							double rot = proj.get("rotation") instanceof Number ? ((Number) proj.get("rotation")).doubleValue() : 0;
+							double startX = proj.get("start-x") instanceof Number ? ((Number) proj.get("start-x")).doubleValue() : px;
+							double startY = proj.get("start-y") instanceof Number ? ((Number) proj.get("start-y")).doubleValue() : py;
+							double targetX = proj.get("target-x") instanceof Number ? ((Number) proj.get("target-x")).doubleValue() : 0;
+							double targetY = proj.get("target-y") instanceof Number ? ((Number) proj.get("target-y")).doubleValue() : 0;
+							double rotation = proj.get("rotation") instanceof Number ? ((Number) proj.get("rotation")).doubleValue() : 0;
 							double deathTime = proj.get("death-time") instanceof Number ? ((Number) proj.get("death-time")).doubleValue() : -1;
 							double radius = proj.get("radius") instanceof Number ? ((Number) proj.get("radius")).doubleValue() : 0;
 							int target = proj.get("target") instanceof Number ? ((Number) proj.get("target")).intValue() : -1;
@@ -820,7 +832,7 @@ public class GameLogic implements ActionListener {
 							for (int h = 0; h < hits.length; h++) {
 								hits[h] = hitTargets.get(h);
 							}
-							savedProjectiles.add(new SavedProjectile(i, ptype, px, py, sx, sy, tx, ty, rot, deathTime, radius, target, hits));
+							savedProjectiles.add(new SavedProjectile(i, ptype, px, py, startX, startY, targetX, targetY, rotation, deathTime, radius, target, hits));
 						}
 					}
 				} else if (typeStr.equals("enemy")) {
@@ -903,7 +915,7 @@ public class GameLogic implements ActionListener {
 					if (permanents.get(i) instanceof Enemy) hitTargets.add((Enemy) permanents.get(i));
 				});
 				Enemy target = (Enemy) permanents.get(p.target);
-				Projectile proj = new Projectile((Weapon) permanents.get(p.shootingIndex), p.ptype, p.px, p.py, p.sx, p.sy, p.tx, p.ty, p.rot, p.deathTime, p.radius, target, hitTargets);
+				Projectile proj = new Projectile((Weapon) permanents.get(p.shootingIndex), p.ptype, p.x, p.y, p.startX, p.startY, p.targetX, p.targetY, p.rotation, p.deathTime, p.radius, target, hitTargets);
 				projectiles.add(proj);
 				if (p.deathTime < 0) target.damageFuture(proj);
 			}
@@ -963,28 +975,22 @@ public class GameLogic implements ActionListener {
 
 		final int shootingIndex;
 		final ProjectileType ptype;
-		final double px;
-		final double py;
-		final double sx;
-		final double sy;
-		final double tx;
-		final double ty;
-		final double rot;
+		final double x, y, startX, startY, targetX, targetY, rotation;
 		final double deathTime;
 		final double radius;
 		final int target;
 		final int[] hitTargets;
 
-		public SavedProjectile(int shootingIndex, ProjectileType ptype, double px, double py, double sx, double sy, double tx, double ty, double rot, double deathTime, double radius, int target, int[] hitTargets) {
+		public SavedProjectile(int shootingIndex, ProjectileType ptype, double x, double y, double startX, double startY, double targetX, double targetY, double rotation, double deathTime, double radius, int target, int[] hitTargets) {
 			this.shootingIndex = shootingIndex;
 			this.ptype = ptype;
-			this.px = px;
-			this.py = py;
-			this.sx = sx;
-			this.sy = sy;
-			this.tx = tx;
-			this.ty = ty;
-			this.rot = rot;
+			this.x = x;
+			this.y = y;
+			this.startX = startX;
+			this.startY = startY;
+			this.targetX = targetX;
+			this.targetY = targetY;
+			this.rotation = rotation;
 			this.deathTime = deathTime;
 			this.radius = radius;
 			this.target = target;

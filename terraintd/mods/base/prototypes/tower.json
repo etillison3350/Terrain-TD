@@ -15,10 +15,10 @@
         "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\bullet.png"
+            "src":"images/bullet.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
@@ -34,13 +34,14 @@
                 "rate":10,
                 "follow":true,
                 "max-dist":10,
+                "offset":1.5,
                 "rotation":0,
                 "abs-rotation":false,
                 "dying-fade-time":0.1,
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
-                    "src":"terraintd\\mods\\base\\images\\bullet.png",
+                    "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
                 }
@@ -63,10 +64,10 @@
         "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\beam.png"
+            "src":"images/beam.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
@@ -82,13 +83,14 @@
                 "rate":2,
                 "follow":true,
                 "max-dist":10,
+                "offset":1.5,
                 "rotation":0,
                 "abs-rotation":false,
                 "dying-fade-time":0.1,
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
-                    "src":"terraintd\\mods\\base\\images\\beam.png",
+                    "src":"images/beam.png",
                     "height":0.5
                 }
             }
@@ -110,10 +112,10 @@
         "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\electricity.png"
+            "src":"images/electricity.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
@@ -135,7 +137,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
-                    "src":"terraintd\\mods\\base\\images\\electricity.png",
+                    "src":"images/electricity.png",
                 }
             }
         ]
@@ -156,10 +158,10 @@
         "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\electricity.png"
+            "src":"images/electricity.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
@@ -182,7 +184,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
-                    "src":"terraintd\\mods\\base\\images\\electricity.png",
+                    "src":"images/electricity.png",
                 }
             }
         ]
@@ -203,10 +205,10 @@
         "range":8,
         "rotate":true,
         "icon":{
-            "src":"terraintd\\mods\\base\\images\\bullet.png"
+            "src":"images/bullet.png"
         },
         "image":{
-            "src":"terraintd\\mods\\base\\images\\lasercannon.png",
+            "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
@@ -222,13 +224,14 @@
                 "rate":5,
                 "follow":true,
                 "max-dist":10,
+                "offset":1.5,
                 "rotation":0,
                 "abs-rotation":false,
                 "dying-fade-time":0.1,
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
-                    "src":"terraintd\\mods\\base\\images\\bullet.png",
+                    "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
                 },

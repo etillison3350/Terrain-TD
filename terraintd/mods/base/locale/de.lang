@@ -1,5 +1,14 @@
 lang-name=Deutsch
 
+Mods=Mods
+version=Version
+base-description=Enthält alle Ressourcen für das Basisspiel.
+authors=Autoren
+ricky3350=ricky3350
+contact=Kontakt
+homepage=Webseite
+enable=Aktivieren
+disable=Deaktivieren
 base=Basis
 
 title=Turmabwehr mit Gelände
@@ -22,6 +31,8 @@ cancel=Absagen
 
 confirm-new=Speichern dieses Spiel?
 title-confirm-new=Neues Spiel
+confirm-exit=Speichern dieses Spiel?
+title-confirm-exit=Verlassen
 already-exists=existiert bereits.
 confirm-replace=Möchten Sie es ersetzen?
 title=confirm-replace=Bestätigen Sie Speichern Als

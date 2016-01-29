@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,20 +58,36 @@ public final class TypeGenerator {
 					String version = String.format("%s", mod.get("version"));
 
 					List<String> authors = new ArrayList<>();
-					if (mod.get("authors") instanceof List<?>) ((List<?>) mod.get("authors")).stream().forEach(o -> authors.add(String.format("%s", 0)));
+					if (mod.get("authors") instanceof List<?>) ((List<?>) mod.get("authors")).stream().forEach(o -> authors.add(String.format("%s", o)));
 
-					List<String> contacts = new ArrayList<>();
-					if (mod.get("contacts") instanceof List<?>) ((List<?>) mod.get("contacts")).stream().forEach(o -> contacts.add(String.format("%s", 0)));
+					String contact = String.format("%s", mod.get("contact"));
 
 					String homepage = String.format("%s", mod.get("homepage"));
 
 					String description = String.format("%s", mod.get("description"));
 
-					mods.add(new Mod(id, p, version, authors.toArray(new String[authors.size()]), contacts.toArray(new String[contacts.size()]), homepage, description));
+					String icon = String.format("%s", mod.get("icon"));
+					
+					mods.add(new Mod(id, p, version, authors.toArray(new String[authors.size()]), contact, homepage, description, icon));
 				} catch (Exception e) {}
 			});
 		} catch (IOException e) {}
 
+		mods.sort(new Comparator<Mod>() {
+
+			@Override
+			public int compare(Mod o1, Mod o2) {
+				if (o1.id.equals("base")) {
+					return -1;
+				} else if (o2.id.equals("base")) {
+					return 1;
+				} else {
+					return o1.id.compareTo(o2.id);
+				}
+			}
+			
+		});
+		
 		List<TowerType> newTowers = new ArrayList<>();
 		List<EnemyType> newEnemies = new ArrayList<>();
 		List<ObstacleType> newObstacles = new ArrayList<>();
@@ -134,6 +151,8 @@ public final class TypeGenerator {
 		if (id == null) throw new IllegalArgumentException();
 
 		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
+		
+		int sellCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
 
 		Object collision = map.get("collision");
 		int width = 1;
@@ -184,18 +203,18 @@ public final class TypeGenerator {
 
 		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
 
-		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
-		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon")) : null;
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon"), mod) : null;
 
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p));
+				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p, mod));
 			}
 		}
 
-		return new TowerType(mod, id, cost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		return new TowerType(mod, id, cost, sellCost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
 	static EnemyType parseEnemy(Map<?, ?> map, Mod mod) {
@@ -288,14 +307,14 @@ public final class TypeGenerator {
 			if (hb.get("offset") instanceof Number) hbY = ((Number) hb.get("offset")).doubleValue();
 		}
 
-		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
-		ImageType death = map.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("death")) : null;
+		ImageType death = map.get("death") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("death"), mod) : null;
 
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p));
+				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p, mod));
 			}
 		}
 
@@ -319,7 +338,7 @@ public final class TypeGenerator {
 
 		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
 
-		int removeCost = map.get("remove-cost") instanceof Number ? ((Number) map.get("remove-cost")).intValue() : 1;
+		int removeCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
 
 		Object spr = map.get("spawn-rate");
 		HashMap<Terrain, Double> spawnRates = new HashMap<>();
@@ -382,15 +401,15 @@ public final class TypeGenerator {
 			}
 		}
 
-		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
-		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon")) : null;
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon"), mod) : null;
 
 		return new ObstacleType(mod, id, width, height, cost, removeCost, spawnRates, image, icon);
 
 	}
 
-	static ProjectileType parseProjectile(Map<?, ?> map) {
+	static ProjectileType parseProjectile(Map<?, ?> map, Mod mod) {
 		DeliveryType delivery = DeliveryType.SINGLE_TARGET;
 		try {
 			delivery = DeliveryType.valueOf(((String) map.get("delivery")).toUpperCase());
@@ -420,6 +439,8 @@ public final class TypeGenerator {
 		Object md = map.get("max-dist");
 		double maxDist = md instanceof Number ? ((Number) md).doubleValue() : (md instanceof String && ((String) md).matches("^inf(?:init[ey])?$") ? 1e300 : 1);
 
+		double offset = map.get("offset") instanceof Number ? ((Number) map.get("offset")).doubleValue() : 0;
+		
 		double angle = map.get("angle") instanceof Number ? ((Number) map.get("angle")).doubleValue() : 0;
 
 		double rotation = map.get("rotation") instanceof Number ? ((Number) map.get("rotation")).doubleValue() : 0;
@@ -432,9 +453,9 @@ public final class TypeGenerator {
 
 		boolean damageFade = map.get("damage-fade") instanceof Boolean ? (Boolean) map.get("damage-fade") : true;
 
-		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image")) : null;
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
-		ImageType explosion = map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion")) : null;
+		ImageType explosion = map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : null;
 
 		List<EffectType> effects = new ArrayList<>();
 		if (map.get("effects") instanceof List<?>) {
@@ -447,7 +468,7 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()]));
+		return new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, offset, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()]));
 	}
 
 	static EffectType parseEffect(Map<?, ?> map) {
@@ -462,7 +483,7 @@ public final class TypeGenerator {
 		return new EffectType(type, duration, amplifier);
 	}
 
-	static ImageType parseImage(Map<?, ?> map) {
+	static ImageType parseImage(Map<?, ?> map, Mod mod) {
 		String src = (String) map.get("src");
 		if (src == null) return null;
 
@@ -472,7 +493,7 @@ public final class TypeGenerator {
 		double x = map.get("x") instanceof Number ? ((Number) map.get("x")).doubleValue() : 0;
 		double y = map.get("y") instanceof Number ? ((Number) map.get("y")).doubleValue() : 0;
 
-		return new ImageType(src, width, height, x, y);
+		return new ImageType(mod.path.resolve(src), width, height, x, y);
 	}
 
 	static World parseWorld(Map<?, ?> map, Mod mod) {

@@ -266,7 +266,7 @@ public class GamePanel extends JPanel {
 				case LINE:
 					trans.translate(dx + tile * (p.getX() - img.width * 0.5), dy + tile * (p.getY() - img.height * 0.5));
 					trans.rotate(p.getRotation(), tile * img.width * 0.5, tile * img.height * 0.5);
-					trans.scale(tile * p.getRadius() / img.image.getWidth(), tile * img.height / img.image.getHeight());
+					trans.scale(tile * (p.getRadius() - p.type.offset) / img.image.getWidth(), tile * img.height / img.image.getHeight());
 					g.drawImage(img.image, trans, null);
 					break;
 				case SECTOR:

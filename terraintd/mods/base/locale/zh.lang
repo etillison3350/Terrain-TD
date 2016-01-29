@@ -1,5 +1,14 @@
 lang-name=中文
 
+mods=遊戲模組
+version=版
+base-description=包含所有的基本遊戲資源。
+authors=作者
+ricky3350=ricky3350
+contact=聯繫
+homepage=網站
+enable=啟用
+disable=關閉
 base=基礎
 
 title=塔防與地形
@@ -22,6 +31,8 @@ cancel=取消
 
 confirm-new=保存這個遊戲？
 title-confirm-new=新遊戲
+confirm-exit=保存這個遊戲？
+title-confirm-exit=退出
 already-exists=已經存在。
 confirm-replace=是否要替換它？
 title-confirm-replace=確認另存為

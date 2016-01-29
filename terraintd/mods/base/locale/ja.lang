@@ -1,5 +1,14 @@
 lang-name=日本語
 
+mods=改造マニア
+version=バージョン
+base-description=ベースゲームのすべてのリソースが含まれています。
+authors=著者
+ricky3350=ricky3350
+contact=接触
+homepage=ウェブサイト
+enable=有効
+disable=無効にします
 base=ベース
 
 title=地形でタワーの防衛
@@ -22,6 +31,8 @@ cancel=キャンセル
 
 confirm-new=このゲームを保存しますか？
 title-confirm-new=新しいゲーム
+confirm-exit=このゲームを保存しますか？
+title-confirm-exit=出口
 already-exists=は既に存在します。
 confirm-replace=あなたはそれを交換しますか？
 title-confirm-replace=名前を付けて保存を確認
