@@ -6,7 +6,7 @@ public class EffectType {
 	public final double duration;
 	public final double amplifier;
 
-	EffectType(StatusEffectType type, double duration, double amplifier) {
+	protected EffectType(StatusEffectType type, double duration, double amplifier) {
 		this.type = type;
 		this.duration = duration;
 		this.amplifier = amplifier;

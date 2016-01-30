@@ -18,7 +18,7 @@ public class World extends ModdedType {
 
 	static World[] values;
 
-	World(Mod mod, String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
+	protected World(Mod mod, String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
 		super(mod, id);
 
 		typeIds.put(id, this);

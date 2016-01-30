@@ -17,7 +17,7 @@ public class EnemyType extends ModdedType {
 	public final ImageType death;
 	public final ProjectileType[] projectiles;
 
-	EnemyType(Mod mod, String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, double hbWidth, double hbY, ImageType image, ImageType death, ProjectileType[] projectiles) {
+	protected EnemyType(Mod mod, String id, HashMap<Terrain, Double> speed, double upSpeed, double downSpeed, double health, double damage, int reward, double range, double hbWidth, double hbY, ImageType image, ImageType death, ProjectileType[] projectiles) {
 		super(mod, id);
 		
 		typeIds.put(id, this);

@@ -25,12 +25,12 @@ public final class TypeGenerator {
 	private TypeGenerator() {}
 
 	private static Mod[] mods;
-	
+
 	private static TowerType[] towers;
 	private static EnemyType[] enemies;
 	private static ObstacleType[] obstacles;
 	private static World[] worlds;
-	private static Level[] levels;
+	private static LevelSet[] levelSets;
 
 	public static void generateValues() {
 		try {
@@ -38,7 +38,7 @@ public final class TypeGenerator {
 		} catch (IOException e) {}
 
 		ModListReader.read();
-		
+
 		List<Mod> mods = new ArrayList<>();
 
 		try {
@@ -67,7 +67,7 @@ public final class TypeGenerator {
 					String description = String.format("%s", mod.get("description"));
 
 					String icon = String.format("%s", mod.get("icon"));
-					
+
 					mods.add(new Mod(id, p, version, authors.toArray(new String[authors.size()]), contact, homepage, description, icon));
 				} catch (Exception e) {}
 			});
@@ -85,18 +85,18 @@ public final class TypeGenerator {
 					return o1.id.compareTo(o2.id);
 				}
 			}
-			
+
 		});
-		
+
 		List<TowerType> newTowers = new ArrayList<>();
 		List<EnemyType> newEnemies = new ArrayList<>();
 		List<ObstacleType> newObstacles = new ArrayList<>();
 		List<World> newWorlds = new ArrayList<>();
-		List<Level> newLevels = new ArrayList<>();
+		List<LevelSet> newLevels = new ArrayList<>();
 
 		for (Mod mod : mods) {
 			if (!ModListReader.isEnabled(mod.id)) continue;
-			
+
 			try (Stream<Path> files = Files.walk(mod.path)) {
 				files.forEach(path -> {
 					if (Files.isDirectory(path) || !path.toString().replaceAll(".+\\.", "").equals("json") || path.getFileName().toString().equals("info.json")) return;
@@ -127,7 +127,7 @@ public final class TypeGenerator {
 							} else if (obj.get("type").equals("world")) {
 								newWorlds.add(parseWorld(obj, mod));
 							} else if (obj.get("type").equals("level")) {
-								newLevels.add(parseLevel(obj, mod));
+								newLevels.add(parseLevelSet(obj, mod));
 							}
 						} catch (Exception e) {}
 					}
@@ -136,14 +136,14 @@ public final class TypeGenerator {
 		}
 
 		ModListReader.write();
-		
+
 		TypeGenerator.mods = mods.toArray(new Mod[mods.size()]);
-		
+
 		towers = newTowers.toArray(new TowerType[newTowers.size()]);
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
 		worlds = newWorlds.toArray(new World[newWorlds.size()]);
-		levels = newLevels.toArray(new Level[newLevels.size()]);
+		levelSets = newLevels.toArray(new LevelSet[newLevels.size()]);
 	}
 
 	static TowerType parseTower(Map<?, ?> map, Mod mod) {
@@ -151,7 +151,7 @@ public final class TypeGenerator {
 		if (id == null) throw new IllegalArgumentException();
 
 		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
-		
+
 		int sellCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
 
 		Object collision = map.get("collision");
@@ -440,7 +440,7 @@ public final class TypeGenerator {
 		double maxDist = md instanceof Number ? ((Number) md).doubleValue() : (md instanceof String && ((String) md).matches("^inf(?:init[ey])?$") ? 1e300 : 1);
 
 		double offset = map.get("offset") instanceof Number ? ((Number) map.get("offset")).doubleValue() : 0;
-		
+
 		double angle = map.get("angle") instanceof Number ? ((Number) map.get("angle")).doubleValue() : 0;
 
 		double rotation = map.get("rotation") instanceof Number ? ((Number) map.get("rotation")).doubleValue() : 0;
@@ -615,11 +615,32 @@ public final class TypeGenerator {
 		return new World(mod, id, tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
 	}
 
-	static Level parseLevel(Map<?, ?> map, Mod mod) {
+	static LevelSet parseLevelSet(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
 
 		double health = map.get("health") instanceof Number ? ((Number) map.get("health")).doubleValue() : 1000;
+
+		Object o = map.get("levels");
+		if (o == null || !(o instanceof List<?>)) throw new IllegalArgumentException();
+
+		List<?> levels = (List<?>) o;
+
+		List<Level> levelList = new ArrayList<>();
+		int i = 0;
+		for (Object obj : levels) {
+			if (!(obj instanceof Map<?, ?>)) continue;
+
+			try {
+				levelList.add(parseLevel((Map<?, ?>) obj, i));
+				i++;
+			} catch (Exception e) {}
+		}
+
+		return new LevelSet(mod, id, levelList.toArray(new Level[levelList.size()]), health);
+	}
+
+	static Level parseLevel(Map<?, ?> map, int index) {
 		int money = map.get("money") instanceof Number ? ((Number) map.get("money")).intValue() : 1000;
 
 		ArrayList<Unit> units = new ArrayList<>();
@@ -656,15 +677,15 @@ public final class TypeGenerator {
 
 		if (units.size() <= 0) throw new IllegalArgumentException();
 
-		return new Level(mod, id, units.toArray(new Unit[units.size()]), health, money);
+		return new Level(index, units.toArray(new Unit[units.size()]), money);
 	}
 
 	static Mod[] mods() {
 		if (mods == null) generateValues();
-		
+
 		return mods;
 	}
-	
+
 	static TowerType[] towers() {
 		if (towers == null) generateValues();
 
@@ -689,10 +710,10 @@ public final class TypeGenerator {
 		return worlds;
 	}
 
-	static Level[] levels() {
-		if (levels == null) generateValues();
+	static LevelSet[] levelSets() {
+		if (levelSets == null) generateValues();
 
-		return levels;
+		return levelSets;
 	}
 
 }

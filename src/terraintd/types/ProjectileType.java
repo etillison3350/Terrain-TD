@@ -22,7 +22,7 @@ public class ProjectileType {
 	public final ImageType explosion;
 	public final EffectType[] effects;
 
-	ProjectileType(DeliveryType delivery, double explodeRadius, double speed, double damage, double falloff, double rate, boolean follow, double maxDist, double offset, double angle, double rotation, boolean absRotation, double dyingFadeTime, boolean dyingFade, boolean damageFade, ImageType image, ImageType explosion, EffectType[] effects) {
+	protected ProjectileType(DeliveryType delivery, double explodeRadius, double speed, double damage, double falloff, double rate, boolean follow, double maxDist, double offset, double angle, double rotation, boolean absRotation, double dyingFadeTime, boolean dyingFade, boolean damageFade, ImageType image, ImageType explosion, EffectType[] effects) {
 		this.delivery = delivery;
 		this.explodeRadius = explodeRadius;
 		this.speed = speed;

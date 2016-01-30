@@ -22,7 +22,7 @@ public class Mod extends IdType {
 	public final Icon icon;
 	public final Icon gray;
 
-	public Mod(String id, Path path, String version, String[] authors, String contact, String homepage, String description, String icon) {
+	protected Mod(String id, Path path, String version, String[] authors, String contact, String homepage, String description, String icon) {
 		super(id);
 
 		this.path = path;
@@ -31,22 +31,22 @@ public class Mod extends IdType {
 		this.contact = contact;
 		this.homepage = homepage;
 		this.description = description;
-		
+
 		Image image;
 		try {
 			image = ImageIO.read(path.resolve(icon).toFile()).getScaledInstance(32, 32, 0);
 		} catch (Exception e) {
 			image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
 		}
-		
+
 		this.icon = new ImageIcon(image);
-		
+
 		BufferedImage img = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D ig = img.createGraphics();
 		ig.drawImage(image, 0, 0, null);
 		ig.dispose();
-		
+
 		this.gray = new ImageIcon(new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null).filter(img, null));
 	}
 

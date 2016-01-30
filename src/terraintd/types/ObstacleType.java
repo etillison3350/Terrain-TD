@@ -6,7 +6,7 @@ public class ObstacleType extends CollidableType {
 
 	public final HashMap<Terrain, Double> spawnRates;
 
-	ObstacleType(Mod mod, String id, int width, int height, int cost, int sellCost, HashMap<Terrain, Double> spawnRates, ImageType image, ImageType icon) {
+	protected ObstacleType(Mod mod, String id, int width, int height, int cost, int sellCost, HashMap<Terrain, Double> spawnRates, ImageType image, ImageType icon) {
 		super(mod, id, width, height, cost, sellCost, image, icon);
 		
 		typeIds.put(id, this);

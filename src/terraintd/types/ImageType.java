@@ -16,7 +16,7 @@ public class ImageType {
 	public final double y;
 //	public final boolean clip;
 
-	ImageType(Path src, double width, double height, double x, double y) {
+	protected ImageType(Path src, double width, double height, double x, double y) {
 		this.src = src;
 		this.width = width;
 		this.height = height;

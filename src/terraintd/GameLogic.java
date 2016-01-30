@@ -34,7 +34,7 @@ import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
 import terraintd.types.Level;
-import terraintd.types.Level.Unit;
+import terraintd.types.LevelSet;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
 import terraintd.types.StatusEffectType;
@@ -84,7 +84,8 @@ public class GameLogic implements ActionListener {
 	private static List<Entity> permanentEntities;
 	private static List<Projectile> projectiles;
 
-	private static Level currentLevel;
+	private static LevelSet currentLevelSet;
+	private static int levelIndex;
 	private static World currentWorld;
 	private static HashMap<EnemyType, Node[][][]> nodes = new HashMap<>(EnemyType.values().length);
 
@@ -129,12 +130,13 @@ public class GameLogic implements ActionListener {
 		lastSaveLocation = null;
 
 		currentWorld = World.values()[2];
-		currentLevel = Level.values()[0];
+		levelIndex = 0;
+		currentLevelSet = LevelSet.values()[0];
 
-		money = currentLevel.money;
-		health = maxHealth = currentLevel.health;
+		money = currentLevelSet.levels[levelIndex].money;
+		health = maxHealth = currentLevelSet.health;
 
-		timeToNextEnemy = currentLevel.units[0].delay;
+		timeToNextEnemy = currentLevelSet.levels[levelIndex].units[0].delay;
 		enemyIndex = 0;
 
 		permanentEntities = new ArrayList<>();
@@ -210,7 +212,7 @@ public class GameLogic implements ActionListener {
 			InfoPanel.paintHealthBar();
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();
-		} else if (enemyIndex == currentLevel.units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
+		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
 			Window.fastForward.setSelected(false);
@@ -223,9 +225,9 @@ public class GameLogic implements ActionListener {
 		}
 
 		timeToNextEnemy -= FRAME_TIME;
-		while (timeToNextEnemy < 0 && enemyIndex < currentLevel.units.length) {
-			EnemyType et = typeOfUnit(currentLevel.units[enemyIndex]);
-			if (et == null || enemyIndex == currentLevel.units.length) continue;
+		while (timeToNextEnemy < 0 && enemyIndex < currentLevelSet.levels[levelIndex].units.length) {
+			EnemyType et = EnemyType.valueOf(currentLevelSet.levels[levelIndex].units[enemyIndex].typeId);
+			if (et == null || enemyIndex == currentLevelSet.levels[levelIndex].units.length) continue;
 
 			ArrayList<Node> spawnPoints = new ArrayList<>();
 			Node[][][] nodes = GameLogic.nodes.get(et);
@@ -238,7 +240,7 @@ public class GameLogic implements ActionListener {
 
 			permanentEntities.add(new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size()))));
 
-			timeToNextEnemy += currentLevel.units[enemyIndex++].delay;
+			timeToNextEnemy += currentLevelSet.levels[levelIndex].units[enemyIndex++].delay;
 		}
 
 		if (!permanentEntities.contains(selected)) {
@@ -426,10 +428,6 @@ public class GameLogic implements ActionListener {
 		}
 	}
 
-	private static EnemyType typeOfUnit(Unit unit) {
-		return EnemyType.valueOf(unit.typeId);
-	}
-
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
 		double cx1, cx2, cy1, cy2, pta = p.getRotation();
 		if (pta % Math.PI < Math.PI / 2) {
@@ -587,7 +585,11 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static Level getCurrentLevel() {
-		return currentLevel;
+		return currentLevelSet.levels[levelIndex];
+	}
+	
+	public static LevelSet getCurrentLevelSet() {
+		return currentLevelSet;
 	}
 
 	public static World getCurrentWorld() {
@@ -664,7 +666,7 @@ public class GameLogic implements ActionListener {
 		map.put("money", money);
 		map.put("health", health);
 		map.put("world", currentWorld.id);
-		map.put("level", currentLevel.id);
+		map.put("level", currentLevelSet.id);
 		map.put("enemy-index", enemyIndex);
 		map.put("time-to-next", timeToNextEnemy);
 		map.put("state", state.name().toLowerCase());
@@ -753,14 +755,14 @@ public class GameLogic implements ActionListener {
 
 		Map<?, ?> game = (Map<?, ?>) json.get(0);
 
-		Level level = Level.valueOf(String.format("%s", game.get("level")));
-		if (level == null) level = Level.values()[0];
+		LevelSet levelSet = LevelSet.valueOf(String.format("%s", game.get("level")));
+		if (levelSet == null) levelSet = LevelSet.values()[0];
 
 		World world = World.valueOf(String.format("%s", game.get("world")));
 		if (world == null) world = World.values()[0];
 
-		int money = game.get("money") instanceof Number ? ((Number) game.get("money")).intValue() : level.money;
-		double gameHealth = game.get("health") instanceof Number ? ((Number) game.get("health")).doubleValue() : level.health;
+		int money = game.get("money") instanceof Number ? ((Number) game.get("money")).intValue() : levelSet.levels[0].money;
+		double gameHealth = game.get("health") instanceof Number ? ((Number) game.get("health")).doubleValue() : levelSet.health;
 		int enemyIndex = game.get("enemy-index") instanceof Number ? ((Number) game.get("enemy-index")).intValue() : 0;
 		double timeToNextEnemy = game.get("time-to-next") instanceof Number ? ((Number) game.get("time-to-next")).doubleValue() : 0;
 		State state;
@@ -926,12 +928,12 @@ public class GameLogic implements ActionListener {
 		}
 
 		GameLogic.reset();
-		GameLogic.currentLevel = level;
+		GameLogic.currentLevelSet = levelSet;
 		GameLogic.currentWorld = world;
 		GameLogic.enemyIndex = enemyIndex;
 		GameLogic.money = money;
 		GameLogic.health = gameHealth;
-		GameLogic.maxHealth = level.health;
+		GameLogic.maxHealth = levelSet.health;
 		GameLogic.timeToNextEnemy = timeToNextEnemy;
 		GameLogic.state = state;
 		GameLogic.permanentEntities = new ArrayList<>(permanents);

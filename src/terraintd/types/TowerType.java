@@ -10,7 +10,7 @@ public class TowerType extends CollidableType {
 	public final boolean rotate;
 	public final ProjectileType[] projectiles;
 
-	TowerType(Mod mod, String id, int cost, int sellCost, int width, int height, HashMap<Terrain, Boolean> terrain, boolean onHill, double range, boolean rotate, ImageType image, ImageType icon, ProjectileType[] projectiles) {
+	protected TowerType(Mod mod, String id, int cost, int sellCost, int width, int height, HashMap<Terrain, Boolean> terrain, boolean onHill, double range, boolean rotate, ImageType image, ImageType icon, ProjectileType[] projectiles) {
 		super(mod, id, width, height, cost, sellCost, image, icon);
 
 		typeIds.put(id, this);

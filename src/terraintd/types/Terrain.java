@@ -22,7 +22,6 @@ public enum Terrain {
 	
 	private Terrain(String imgSrc) {
 		try {
-			// TODO
 			image = ImageIO.read(Paths.get("terraintd/mods/base/images/" + imgSrc).toFile());
 		} catch (IOException e) {}
 	}
@@ -33,7 +32,7 @@ public enum Terrain {
 		Graphics2D g = image.createGraphics();
 		
 		g.setColor(color);
-		g.fillRect(0, 0, 8, 8);
+		g.fillRect(0, 0, 1, 1);
 		g.dispose();
 	}
 	

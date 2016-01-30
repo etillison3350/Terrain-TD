@@ -3,9 +3,13 @@
         "type":"level",
         "id":"level-example",
         "health":100,
-        "money":1000,
-        "enemies":[
-            ["enemy-example", 0.25, 100]
+        "levels":[
+            {
+                "money":1000,
+                "enemies":[
+                    ["enemy-example", 0.25, 100]
+                ]
+            }
         ]
     }
 ]

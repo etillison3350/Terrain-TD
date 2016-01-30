@@ -9,7 +9,7 @@ public abstract class CollidableType extends ModdedType {
 	public final ImageType image;
 	public final ImageType icon;
 
-	public CollidableType(Mod mod, String id, int width, int height, int cost, int sellCost, ImageType image, ImageType icon) {
+	protected CollidableType(Mod mod, String id, int width, int height, int cost, int sellCost, ImageType image, ImageType icon) {
 		super(mod, id);
 
 		this.width = width;
