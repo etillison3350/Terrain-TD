@@ -115,7 +115,7 @@ public class ModList extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ModListReader.setEnabled(mods.getSelectedValue().id, !ModListReader.isEnabled(mods.getSelectedValue().id));
+				enabled.put(mods.getSelectedValue().id, !ModListReader.isEnabled(mods.getSelectedValue().id));
 				refresh();
 				repaint();
 			}
