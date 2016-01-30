@@ -9,6 +9,7 @@ contact=聯繫
 homepage=網站
 enable=啟用
 disable=關閉
+warning-mod-change=警告：更改國防部配置需要重新啟動當前的遊戲。
 base=基礎
 
 title=塔防與地形
@@ -101,6 +102,7 @@ detect-range=檢測範圍
 range=範圍
 
 sell=賣
+remove=破壞
 
 reward=獎勵
 active-effects=活動效果

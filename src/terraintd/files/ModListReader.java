@@ -22,7 +22,7 @@ public class ModListReader {
 		} catch (IOException e) {
 			return;
 		}
-		
+
 		if (json.size() < 1 || !(json.get(0) instanceof Map<?, ?>)) return;
 
 		Map<?, ?> map = ((Map<?, ?>) json.get(0));
@@ -46,6 +46,14 @@ public class ModListReader {
 
 	public synchronized static void setEnabled(String modId, boolean enabled) {
 		mods.put(modId, enabled);
+	}
+
+	public static HashMap<String, Boolean> getMap() {
+		return new HashMap<>(mods);
+	}
+
+	public static void setAll(HashMap<String, Boolean> enabled) {
+		mods.putAll(enabled);
 	}
 
 }

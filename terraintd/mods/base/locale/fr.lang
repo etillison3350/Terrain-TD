@@ -9,6 +9,7 @@ contact=Contactez
 homepage=Site Internet
 enable=Activer
 disable=Désactiver
+warning-mod-change=Attention: Modification de la configuration mod nécessite le redémarrage du jeu en cours.
 base=Base
 
 title=Défense des Tours Avec Terrain
@@ -104,6 +105,7 @@ detect-range=Distance de Vision
 range=Portée
 
 sell=Revendre
+remove=Détruire
 
 tower-single=Canon
 tower-line=Canon Laser

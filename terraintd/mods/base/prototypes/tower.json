@@ -2,7 +2,8 @@
     {
         "type":"tower",
         "id":"tower-single",
-        "cost":100,
+        "cost":150,
+        "sell-cost":100,
         "collision":[
             2,
             2
@@ -51,7 +52,8 @@
     {
         "type":"tower",
         "id":"tower-line",
-        "cost":300,
+        "cost":425,
+        "sell-cost":350,
         "collision":[
             2,
             2
@@ -99,14 +101,14 @@
     {
         "type":"tower",
         "id":"tower-area",
-        "cost":500,
+        "cost":750,
+        "sell-cost":500,
         "collision":[
             2,
             2
         ],
         "terrain":[
             "land",
-            "frozen_water"
         ],
         "on-hill":true,
         "range":8,
@@ -128,7 +130,7 @@
                     25,
                     22.5
                 ],
-                "rate":4,
+                "rate":3.333333,
                 "follow":true,
                 "max-dist":10,
                 "rotation":0,
@@ -145,7 +147,8 @@
     {
         "type":"tower",
         "id":"tower-sector",
-        "cost":300,
+        "cost":475,
+        "sell-cost":375,
         "collision":[
             2,
             2
@@ -192,7 +195,8 @@
     {
         "type":"tower",
         "id":"tower-poison",
-        "cost":150,
+        "cost":225,
+        "sell-cost":150,
         "collision":[
             2,
             2

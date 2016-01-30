@@ -2,12 +2,12 @@
     {
         "type":"obstacle",
         "id":"obstacle-example",
-        "cost":25,
+        "cost":75,
         "collision":[
             3,
             2
         ],
-        "remove-cost":0,
+        "sell-cost":40,
         "spawn-rate":0,
         "image":{
             "src":"images/stone.png",

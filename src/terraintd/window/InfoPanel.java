@@ -162,7 +162,7 @@ public class InfoPanel extends JPanel {
 	}
 
 	private static JButton createSellButton(CollidableEntity entity) {
-		JButton button = new JButton(String.format(Language.getCurrentLocale(), "%s     %d", Language.get("sell"), entity.getType().sellCost));
+		JButton button = new JButton(String.format(Language.getCurrentLocale(), "%s     %s%d", Language.get(entity.getType().sellCost < 0 ? "remove" : "sell"), entity.getType().sellCost > 0 ? "+" : "", entity.getType().sellCost));
 
 		button.setMaximumSize(new Dimension(256, button.getPreferredSize().height * 3 / 2));
 		button.setMinimumSize(new Dimension(256, button.getPreferredSize().height * 3 / 2));

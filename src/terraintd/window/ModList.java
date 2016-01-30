@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -21,6 +23,7 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -50,9 +53,17 @@ public class ModList extends JDialog {
 	private JEditorPane info;
 	private JButton disable;
 
+	private HashMap<String, Boolean> enabled;
+
 	private ModList() {
 		this.setTitle(Language.get("mods"));
-		
+
+		if (!GameLogic.isSaved()) {
+			JLabel warning = new JLabel(Language.get("warning-mod-change"));
+			warning.setForeground(Color.RED);
+			this.add(warning, BorderLayout.PAGE_START);
+		}
+
 		Vector<Mod> modList = new Vector<>();
 		Arrays.stream(Mod.values()).sorted(new Comparator<Mod>() {
 
@@ -127,19 +138,51 @@ public class ModList extends JDialog {
 
 		JPanel buttonPanel = new JPanel(new BorderLayout());
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
+
+		JPanel buttons = new JPanel(new GridLayout(1, 2, 5, 5));
+
 		JButton accept = new JButton(Language.get("accept"));
 		accept.addActionListener(new ActionListener() {
-			
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(Window.window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
+
+				if (i == 0) {
+					Window.saveGame.doClick();
+				} else if (i != 1) {
+					return;
+				}
+
+				ModListReader.setAll(enabled);
+				ModListReader.write();
+				TypeGenerator.generateValues();
+				Language.clear();
+				GameLogic.reset();
+				GameLogic.getCurrentWorld().recalculateImageForSize(GamePanel.getTile());
+				Window.repaintWindow();
+				BuyPanel.recreateButtons();
+
+				setVisible(false);
+			}
+		});
+		buttons.add(accept);
+
+		JButton cancel = new JButton(Language.get("cancel"));
+		cancel.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 			}
 		});
-		
-		buttonPanel.add(accept, BorderLayout.LINE_END);
-		
+		buttons.add(cancel);
+
+		buttonPanel.add(buttons, BorderLayout.LINE_END);
+
 		this.add(buttonPanel, BorderLayout.PAGE_END);
+
+		enabled = ModListReader.getMap();
 
 		this.setSize(600, 400);
 
@@ -168,12 +211,12 @@ public class ModList extends JDialog {
 
 			if (!mod.homepage.equals("null")) str += String.format("<p>%2$s: <a href=\"%1$s\">%1$s</a></p>", mod.homepage, Language.get("homepage"));
 
-			disable.setText(ModListReader.isEnabled(mod.id) ? Language.get("disable") : Language.get("enable"));
+			disable.setText(enabled.get(mod.id) ? Language.get("disable") : Language.get("enable"));
 		}
 		info.setText(str);
 	}
 
-	private static class ModCellRenderer extends DefaultListCellRenderer {
+	private class ModCellRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 15921663840946983L;
 
@@ -185,12 +228,14 @@ public class ModList extends JDialog {
 
 			JLabel label = (JLabel) c;
 
-			label.setText(Language.get(((Mod) value).id));
-			if (ModListReader.isEnabled(((Mod) value).id)) {
-				label.setIcon(((Mod) value).icon);
+			Mod mod = (Mod) value;
+
+			label.setText(Language.get(mod.id));
+			if (enabled.get(mod.id)) {
+				label.setIcon(mod.icon);
 			} else {
 				label.setForeground(Color.GRAY);
-				label.setIcon(((Mod) value).gray);
+				label.setIcon(mod.gray);
 			}
 
 			return label;
@@ -237,20 +282,4 @@ public class ModList extends JDialog {
 		ml.setLocationRelativeTo(parent);
 		ml.setVisible(true);
 	}
-	
-	@Override
-	public void setVisible(boolean b) {
-		if (!b) {
-			ModListReader.write();
-			TypeGenerator.generateValues();
-			Language.clear();
-			GameLogic.reset();
-			GameLogic.getCurrentWorld().recalculateImageForSize(GamePanel.getTile());
-			Window.repaintWindow();
-			BuyPanel.recreateButtons();
-		}
-		
-		super.setVisible(b);
-	}
-
 }

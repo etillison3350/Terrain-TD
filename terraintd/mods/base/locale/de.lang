@@ -1,6 +1,6 @@
 lang-name=Deutsch
 
-Mods=Mods
+mods=Mods
 version=Version
 base-description=Enthält alle Ressourcen für das Basisspiel.
 authors=Autoren
@@ -9,6 +9,7 @@ contact=Kontakt
 homepage=Webseite
 enable=Aktivieren
 disable=Deaktivieren
+warning-mod-change=Warnung: Ändern der Mod-Konfiguration erfordert das aktuelle Spiel neu zu starten.
 base=Basis
 
 title=Turmabwehr mit Gelände
@@ -101,6 +102,7 @@ detect-range=Erfassungsbereich
 range=Reichweite
 
 sell=Verkaufen
+remove=Zerstören
 
 reward=Belohnung
 active-effects=Aktiven Effekte

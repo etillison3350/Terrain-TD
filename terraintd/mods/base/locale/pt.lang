@@ -9,6 +9,7 @@ contact=Contato
 homepage=Site
 enable=Ativar
 disable=Desativar
+warning-mod-change=Aviso: A alteração da configuração mod requer reiniciar o jogo actual.
 base=Base
 
 title=Defesa de Torres com Terreno
@@ -95,6 +96,7 @@ delivery-line=Viga
 delivery-sector=Setor
 
 sell=Vender
+remove=Destruir
 
 reward=Recompensa
 active-effects=Efeitos Ativos

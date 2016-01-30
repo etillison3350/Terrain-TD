@@ -9,6 +9,7 @@ contact=Contact
 homepage=Homepage
 enable=Enable
 disable=Disable
+warning-mod-change=Warning: Changing the mod configuration requires restarting the current game.
 base=Base
 
 title=Terrain TD
@@ -104,6 +105,7 @@ detect-range=Detection Range
 range=Range
 
 sell=Sell
+remove=Destroy
 
 tower-single=Cannon
 tower-line=Laser Cannon

@@ -9,6 +9,7 @@ contact=Contacto
 homepage=Sitio web
 enable=Activar
 disable=Desactivar
+warning-mod-change=Advertencia: Al cambiar la configuración mod requiere reiniciar el juego actual.
 base=Base
 
 title=Defensa de Torres Con Terreno
@@ -104,6 +105,7 @@ detect-range=Distancia de Visión
 range=Alcance
 
 sell=Vender
+remove=Destruir
 
 tower-single=Cañón
 tower-line=Cañón Láser

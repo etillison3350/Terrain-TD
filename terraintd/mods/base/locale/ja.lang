@@ -9,6 +9,7 @@ contact=接触
 homepage=ウェブサイト
 enable=有効
 disable=無効にします
+warning-mod-change=警告：変更の設定を変更すると、現在のゲームを再起動する必要があります。
 base=ベース
 
 title=地形でタワーの防衛
@@ -101,6 +102,7 @@ detect-range=検出範囲
 range=範囲
 
 sell=売る
+remove=破壊します
 
 reward=褒賞
 active-effects=アクティブ効果

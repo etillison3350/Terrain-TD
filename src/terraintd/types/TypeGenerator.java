@@ -338,7 +338,7 @@ public final class TypeGenerator {
 
 		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
 
-		int removeCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
+		int sellCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
 
 		Object spr = map.get("spawn-rate");
 		HashMap<Terrain, Double> spawnRates = new HashMap<>();
@@ -405,7 +405,7 @@ public final class TypeGenerator {
 
 		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon"), mod) : null;
 
-		return new ObstacleType(mod, id, width, height, cost, removeCost, spawnRates, image, icon);
+		return new ObstacleType(mod, id, width, height, cost, sellCost, spawnRates, image, icon);
 
 	}
 

@@ -85,8 +85,14 @@ public class Window extends JFrame {
 			} else if (e.getSource() == fastForward) {
 				GameLogic.setFastForward(fastForward.isSelected());
 			} else if (e.getSource() == language) {
+				if (!GameLogic.isPaused()) pauseGame.doClick();
+				GameLogic.stop();
+				
 				Settings.setShowing(true);
 			} else if (e.getSource() == modList) {
+				if (!GameLogic.isPaused()) pauseGame.doClick();
+				GameLogic.stop();
+				
 				ModList.showDialog(window);
 			} else if (e.getSource() == exit) {
 				boolean wasPaused = GameLogic.isPaused();
