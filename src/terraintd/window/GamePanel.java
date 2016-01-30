@@ -12,6 +12,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -47,6 +48,11 @@ public class GamePanel extends JPanel {
 
 	private static BufferedImage goal;
 
+	private static double startX, startY, sox, soy;
+	private static double mouseX, mouseY;
+
+	private static double tile, dx, dy, scale, ox, oy;
+
 	private GamePanel() {
 		this.setBackground(Color.BLACK);
 
@@ -67,55 +73,121 @@ public class GamePanel extends JPanel {
 
 		});
 
+		scale = 1;
+
 		MouseAdapter ma = new MouseAdapter() {
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				mouseX = (e.getX() - dx) / tile;
-				mouseY = (e.getY() - dy) / tile;
+				mouseX = (e.getX() - getOriginX()) / getTileSize();
+				mouseY = (e.getY() - getOriginY()) / getTileSize();
+
+				if (GameLogic.getBuyingType() != null || true) repaint();
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				double mouseX = e.getX() / getTileSize();
+				double mouseY = e.getY() / getTileSize();
+
+				double dx = startX - mouseX;
+				double dy = startY - mouseY;
+				if (dx * dx + dy * dy > 0.25) {
+					ox = sox - dx;
+					oy = soy - dy;
+					repaint();
+				} else if (GameLogic.getBuyingType() != null) {
+					repaint();
+				}
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				mouseX = Short.MIN_VALUE;
+				mouseY = Short.MIN_VALUE;
 
 				if (GameLogic.getBuyingType() != null) repaint();
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (GameLogic.getBuyingType() != null) {
-					int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width * 0.5);
-					int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height * 0.5);
+			public void mousePressed(MouseEvent e) {
+				startX = e.getX() / getTileSize();
+				startY = e.getY() / getTileSize();
+				sox = ox;
+				soy = oy;
+			}
 
-					if (GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y)) {
-						GameLogic.buyObject(x, y);
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				double mx = e.getX() / getTileSize();
+				double my = e.getY() / getTileSize();
+				double dx = startX - mx;
+				double dy = startY - my;
+				if (dx * dx + dy * dy < 0.25) {
+					if (GameLogic.getBuyingType() != null) {
+						int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width * 0.5);
+						int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height * 0.5);
+
+						if (GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y)) {
+							GameLogic.buyObject(x, y);
+							repaint();
+						}
+					} else {
+						for (Entity entity : GameLogic.getPermanentEntities()) {
+							Point2D p = new Point2D.Double((e.getX() - getOriginX()) / getTileSize(), (e.getY() - getOriginY()) / getTileSize());
+
+							if (entity.getRectangle().contains(p)) {
+								GameLogic.setSelectedEntity(entity);
+								repaint();
+								return;
+							}
+						}
+
+						GameLogic.setSelectedEntity(null);
 						repaint();
 					}
-				} else {
-					for (Entity entity : GameLogic.getPermanentEntities()) {
-						Point2D p = new Point2D.Double((e.getX() - dx) / tile, (e.getY() - dy) / tile);
-
-						if (entity.getRectangle().contains(p)) {
-							GameLogic.setSelectedEntity(entity);
-							repaint();
-							return;
-						}
-					}
-
-					GameLogic.setSelectedEntity(null);
-					repaint();
 				}
+			}
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				double mx = (e.getX() - getOriginX()) / getTileSize();
+				double my = (e.getY() - getOriginY()) / getTileSize();
+
+				if (e.getWheelRotation() < 0) {
+					if (scale < 16) scale *= 1.5;
+				} else if (scale > 1) {
+					scale /= 1.5;
+				}
+
+				if (scale < 1.00001) {
+					scale = 1;
+					ox = 0;
+					oy = 0;
+				} else {
+					double nmx = (e.getX() - getOriginX()) / getTileSize();
+					double nmy = (e.getY() - getOriginY()) / getTileSize();
+
+					ox += nmx - mx;
+					oy += nmy - my;
+				}
+
+				mouseMoved(new MouseEvent(e.getComponent(), MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, e.getX(), e.getY(), 1, false));
+
+				ImageManager.clear();
+				repaint();
 			}
 
 		};
 
 		this.addMouseListener(ma);
 		this.addMouseMotionListener(ma);
+		this.addMouseWheelListener(ma);
 
 		try {
 			goal = ImageIO.read(Paths.get("terraintd/mods/base/images/goal.png").toFile());
 		} catch (IOException e1) {}
 	}
-
-	private static double mouseX, mouseY;
-
-	private static double tile, dx, dy;
 
 	public static void repaintPanel() {
 		panel.repaint();
@@ -134,7 +206,11 @@ public class GamePanel extends JPanel {
 		Graphics2D g = (Graphics2D) gg;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g.drawImage(GameLogic.getCurrentWorld().getImage(), (int) dx, (int) dy, null);
+		double tile = getTileSize();
+		double dx = getOriginX();
+		double dy = getOriginY();
+
+		g.drawImage(GameLogic.getCurrentWorld().getImage(), (int) dx, (int) dy, (int) (GameLogic.getCurrentWorld().getWidth() * tile), (int) (GameLogic.getCurrentWorld().getHeight() * tile), null);
 
 		try {
 			g.setColor(Color.WHITE);
@@ -185,7 +261,7 @@ public class GamePanel extends JPanel {
 				}
 			} else if (e instanceof CollidableEntity) {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-				
+
 				CollidableType type = ((CollidableEntity) e).getType();
 
 				AffineTransform trans = new AffineTransform();
@@ -309,12 +385,33 @@ public class GamePanel extends JPanel {
 		}
 	}
 
+	/**
+	 * <ul>
+	 * <li><b><i>getTileSize</i></b><br>
+	 * <br>
+	 * {@code double getTileSize()}<br>
+	 * <br>
+	 * @return The scaled tile size
+	 *         </ul>
+	 */
+	public static double getTileSize() {
+		return tile * scale;
+	}
+
 	public static double getTile() {
 		return tile;
 	}
 
+	public static double getOriginX() {
+		return dx + getTileSize() * ox;
+	}
+
 	public static double getDx() {
 		return dx;
+	}
+
+	public static double getOriginY() {
+		return dy + getTileSize() * oy;
 	}
 
 	public static double getDy() {

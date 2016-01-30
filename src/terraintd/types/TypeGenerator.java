@@ -108,7 +108,7 @@ public final class TypeGenerator {
 						return;
 					}
 
-					if (json.size() == 1 && json.get(0) instanceof List<?>) json = (ArrayList<?>) json.get(0);
+					if (json.size() == 1 && json.get(0) instanceof List<?>) json = (List<?>) json.get(0);
 
 					for (Object o : json) {
 						if (!(o instanceof Map<?, ?>)) continue;

@@ -516,7 +516,6 @@ public class GameLogic implements ActionListener {
 		money -= buying.cost;
 
 		cancelBuy();
-		GamePanel.repaintPanel();
 		BuyPanel.updateButtons();
 
 		setSelectedEntity(permanentEntities.get(permanentEntities.size() - 1));
@@ -526,6 +525,7 @@ public class GameLogic implements ActionListener {
 		buying = null;
 		if (!wasPaused) start();
 		InfoPanel.setDisplayedObject(null);
+		GamePanel.repaintPanel();
 	}
 
 	public static void sell(CollidableEntity entity) {

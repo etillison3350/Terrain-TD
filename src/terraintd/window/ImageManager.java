@@ -25,7 +25,7 @@ public class ImageManager {
 
 		ImageType img = resource.dead ? resource.type.death : resource.type.image;
 
-		ret = new BufferedImage((int) (GamePanel.getTile() * img.width), (int) (GamePanel.getTile() * img.height), BufferedImage.TYPE_INT_ARGB);
+		ret = new BufferedImage((int) (GamePanel.getTileSize() * img.width), (int) (GamePanel.getTileSize() * img.height), BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g = ret.createGraphics();
 		g.drawImage(img.image, 0, 0, ret.getWidth(), ret.getHeight(), null);
