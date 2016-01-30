@@ -2,7 +2,7 @@
     {
         "type":"tower",
         "id":"test-mod-tower-single",
-        "cost":200,
+        "cost":300,
         "collision":[
             4,
             4
