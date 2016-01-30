@@ -17,25 +17,25 @@ public enum Terrain {
 	FROZEN_WATER(new Color(0.75F, 0.75F, 1.0F)),
 	SHALLOW_WATER(new Color(0.0F, 0.5F, 1.0F)),
 	DEEP_WATER(new Color(0.0F, 0.0F, 0.75F));
-	
+
 	private BufferedImage image;
-	
+
 	private Terrain(String imgSrc) {
 		try {
 			image = ImageIO.read(Paths.get("terraintd/mods/base/images/" + imgSrc).toFile());
 		} catch (IOException e) {}
 	}
-	
+
 	private Terrain(Color color) {
 		image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		
+
 		Graphics2D g = image.createGraphics();
-		
+
 		g.setColor(color);
 		g.fillRect(0, 0, 1, 1);
 		g.dispose();
 	}
-	
+
 	public BufferedImage getImage() {
 		return image;
 	}

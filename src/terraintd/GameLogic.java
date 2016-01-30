@@ -148,6 +148,26 @@ public class GameLogic implements ActionListener {
 		selected = null;
 		buying = null;
 
+		GamePanel.resetView();
+		Window.repaintWindow();
+		InfoPanel.setDisplayedObject(null);
+		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
+	}
+
+	protected static void nextLevel() {
+		levelIndex++;
+
+		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
+
+		state = State.PLAYING;
+
+		money += currentLevelSet.levels[levelIndex].money;
+
+		timeToNextEnemy = currentLevelSet.levels[levelIndex].units[0].delay;
+		enemyIndex = 0;
+
+		projectiles = new ArrayList<>();
+
 		Window.repaintWindow();
 		InfoPanel.setDisplayedObject(null);
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
@@ -199,6 +219,17 @@ public class GameLogic implements ActionListener {
 		return new long[] {t2 - t0, t1 - t0, t2 - t1};
 	}
 
+	private static final Runnable nextLevel = new Runnable() {
+
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(2500);
+			} catch (InterruptedException e) {}
+			nextLevel();
+		}
+	};
+
 	private static void processPermanents() {
 		if (health <= 0) {
 			health = 0;
@@ -212,6 +243,7 @@ public class GameLogic implements ActionListener {
 			InfoPanel.paintHealthBar();
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();
+			return;
 		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
 			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
@@ -222,6 +254,12 @@ public class GameLogic implements ActionListener {
 			BuyPanel.updateButtons();
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();
+			if (currentLevelSet.levels.length - 1 == levelIndex) {
+				// TODO win
+			} else {
+				new Thread(nextLevel).start();
+			}
+			return;
 		}
 
 		timeToNextEnemy -= FRAME_TIME;
@@ -587,7 +625,7 @@ public class GameLogic implements ActionListener {
 	public static Level getCurrentLevel() {
 		return currentLevelSet.levels[levelIndex];
 	}
-	
+
 	public static LevelSet getCurrentLevelSet() {
 		return currentLevelSet;
 	}

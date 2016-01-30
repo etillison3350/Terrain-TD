@@ -101,7 +101,7 @@
     {
         "type":"tower",
         "id":"tower-area",
-        "cost":750,
+        "cost":900,
         "sell-cost":500,
         "collision":[
             2,
