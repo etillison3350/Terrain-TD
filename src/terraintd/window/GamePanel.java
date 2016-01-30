@@ -418,6 +418,12 @@ public class GamePanel extends JPanel {
 		return dy;
 	}
 
+	public static void resetView() {
+		scale = 1;
+		ox = oy = 0;
+		panel.repaint();
+	}
+
 	public static double getMouseX() {
 		return mouseX;
 	}

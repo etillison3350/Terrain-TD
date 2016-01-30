@@ -154,9 +154,15 @@ public class InfoPanel extends JPanel {
 
 	private static JLabel createLabel(String format, int header, int indent, Object... args) {
 		JLabel label = new JLabel(String.format(Language.getCurrentLocale(), format, args));
-		label.setFont(new Font(Font.SANS_SERIF, header > 0 ? Font.BOLD : Font.PLAIN, header > 0 ? (26 - 2 * header) : 14));
-		label.setForeground(Color.WHITE);
 		label.setBorder(BorderFactory.createEmptyBorder(2, 2 + indent * 10, 2, 2));
+		label.setForeground(Color.WHITE);
+
+		int fsize = header > 0 ? (26 - 2 * header) : 14;
+		FontMetrics fm;
+		do {
+			fm = label.getFontMetrics(new Font(Font.SANS_SERIF, header > 0 ? Font.BOLD : Font.PLAIN, fsize--));
+		} while (fm.stringWidth(label.getText()) >= 250 - indent * 10);
+		label.setFont(fm.getFont());
 
 		return label;
 	}
@@ -226,11 +232,10 @@ public class InfoPanel extends JPanel {
 		}
 
 		if (type != null) {
-			panel.add(createLabel("%s", 3, 0, Language.get(type.id)));
-			if (type instanceof ModdedType)
-				panel.add(createLabel("%s", 0, 0, Language.get(((ModdedType) type).mod.id))).setForeground(new Color(255, 255, 128));
+			panel.add(createLabel("%s", 2, 0, Language.get(type.id)));
+			if (type instanceof ModdedType) panel.add(createLabel("%s", 0, 0, Language.get(((ModdedType) type).mod.id))).setForeground(new Color(255, 255, 128));
 		}
-		
+
 		if (obj instanceof Weapon) {
 			Gun gun = ((Weapon) obj).getGun();
 			if (gun != null) {
@@ -274,7 +279,7 @@ public class InfoPanel extends JPanel {
 				}
 			}
 		}
-		
+
 		panel.add(new JSeparator()).setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 		if (projectiles != null) {
 			panel.add(createLabel("%s", 5, 0, Language.get("projectiles")));
@@ -364,7 +369,7 @@ public class InfoPanel extends JPanel {
 		public Dimension getPreferredSize() {
 			return new Dimension(256, 16);
 		}
-		
+
 		@Override
 		public Dimension getMinimumSize() {
 			return new Dimension(128, 16);

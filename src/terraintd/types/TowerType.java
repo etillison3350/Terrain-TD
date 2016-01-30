@@ -14,7 +14,7 @@ public class TowerType extends CollidableType {
 		super(mod, id, width, height, cost, sellCost, image, icon);
 
 		typeIds.put(id, this);
-		
+
 		this.terrain = terrain;
 		this.onHill = onHill;
 		this.range = range;
