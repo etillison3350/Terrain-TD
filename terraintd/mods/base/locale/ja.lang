@@ -113,6 +113,7 @@ tower-area=EMP
 tower-sector=パイの塔
 tower-poison=毒ダーツタワー
 
-enemy-example=戦車
+enemy-a=戦車
+enemy-b=車両
 
 obstacle-example=石

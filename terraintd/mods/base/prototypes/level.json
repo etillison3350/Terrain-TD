@@ -2,18 +2,32 @@
     {
         "type":"level",
         "id":"level-example",
-        "health":250,
+        "health":300,
         "levels":[
             {
-                "money":750,
+                "money":1750,
                 "enemies":[
-                    ["enemy-example", 0.25, 50]
+                    ["enemy-a", 0.25, 50]
                 ]
             },
             {
-                "money":300,
+                "money":650,
                 "enemies":[
-                    ["enemy-example", 0.2, 100]
+                    ["enemy-a", 0.2, 100]
+                ]
+            },
+            {
+                "money":800,
+                "enemies":[
+                    ["enemy-a", 0.2, 50],
+                    ["enemy-b", 0.375, 25]
+                ]
+            },
+            {
+                "money":900,
+                "enemies":[
+                    ["enemy-b", 0.2, 50],
+                    ["enemy-a", 0.175, 65]
                 ]
             }
         ]

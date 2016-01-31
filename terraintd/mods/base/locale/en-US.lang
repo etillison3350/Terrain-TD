@@ -113,6 +113,7 @@ tower-area=EMP
 tower-sector=Pie Tower
 tower-poison=Poison Dart Tower
 
-enemy-example=Tank
+enemy-a=Tank
+enemy-b=Vehicle
 
 obstacle-example=Stone

@@ -113,6 +113,7 @@ tower-area=Elektromagnetische Impuls
 tower-sector=Turm der Torte
 tower-poison=Turm des Giftpfeil
 
-enemy-example=Panzer
+enemy-a=Panzer
+enemy-b=Fahrzeug
 
 obstacle-example=Stein

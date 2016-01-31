@@ -2,8 +2,8 @@
     {
         "type":"tower",
         "id":"tower-single",
-        "cost":150,
-        "sell-cost":100,
+        "cost":350,
+        "sell-cost":225,
         "collision":[
             2,
             2
@@ -52,8 +52,8 @@
     {
         "type":"tower",
         "id":"tower-line",
-        "cost":425,
-        "sell-cost":350,
+        "cost":975,
+        "sell-cost":800,
         "collision":[
             2,
             2
@@ -101,8 +101,8 @@
     {
         "type":"tower",
         "id":"tower-area",
-        "cost":900,
-        "sell-cost":500,
+        "cost":2000,
+        "sell-cost":1250,
         "collision":[
             2,
             2
@@ -147,8 +147,8 @@
     {
         "type":"tower",
         "id":"tower-sector",
-        "cost":475,
-        "sell-cost":375,
+        "cost":1050,
+        "sell-cost":825,
         "collision":[
             2,
             2
@@ -195,8 +195,8 @@
     {
         "type":"tower",
         "id":"tower-poison",
-        "cost":225,
-        "sell-cost":150,
+        "cost":525,
+        "sell-cost":350,
         "collision":[
             2,
             2

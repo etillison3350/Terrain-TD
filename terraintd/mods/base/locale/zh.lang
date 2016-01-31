@@ -113,6 +113,7 @@ tower-area=電磁脈衝
 tower-sector=馅饼塔
 tower-poison=毒鏢塔
 
-enemy-example=坦克
+enemy-a=坦克
+enemy-b=車輛
 
 obstacle-example=石

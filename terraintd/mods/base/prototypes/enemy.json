@@ -1,10 +1,10 @@
 [
     {
         "type":"enemy",
-        "id":"enemy-example",
+        "id":"enemy-a",
         "speed":[
             5,
-            3,
+            4,
             5,
             2,
             5,
@@ -29,24 +29,30 @@
     },
     {
         "type":"enemy",
-        "id":"enemy-dukw",
+        "id":"enemy-b",
         "speed":[
-            0.01,
-            0.01,
-            0.01,
-            0.03,
-            0.01,
-            0.5,
-            5,
-            6
+            3.5,
+            5.5,
+            4.5,
+            2.75,
+            5.25,
+            0.4,
+            0,
+            0
         ],
         "vertical-speed":{
             "up":0.25,
-            "down":1.1
+            "down":1.111111111
         },
-        "health":200,
+        "health":350,
         "damage":20,
-        "reward":45,
+        "reward":20,
+        "image":{
+            "src":"images/vehicle.png"
+        },
+        "death":{
+            "src":"images/explosion.png"
+        },
         "projectiles":null
     }
 ]

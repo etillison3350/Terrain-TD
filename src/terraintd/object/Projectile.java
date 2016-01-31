@@ -94,7 +94,9 @@ public class Projectile {
 			this.radius += this.type.speed * GameLogic.FRAME_TIME;
 
 			if (this.type.follow && this.target != null) {
-				this.rotation = Math.atan2(this.target.getY() - this.y, this.target.getX() - this.x);
+				this.rotation = Math.atan2(this.target.getY() - this.startY, this.target.getX() - this.startX);
+				this.x = startX + type.offset * Math.cos(this.rotation);
+				this.y = startY + type.offset * Math.sin(this.rotation);
 			}
 		}
 

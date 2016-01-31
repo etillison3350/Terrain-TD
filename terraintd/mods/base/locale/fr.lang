@@ -113,6 +113,7 @@ tower-area=IEM
 tower-sector=Tour de Gâteau
 tower-poison=Tour de Dard de Poison
 
-enemy-example=Char d'assaut
+enemy-a=Char d'assaut
+enemy-b=Véhicule
 
 obstacle-example=Pierre

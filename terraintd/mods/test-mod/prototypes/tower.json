@@ -2,7 +2,7 @@
     {
         "type":"tower",
         "id":"test-mod-tower-single",
-        "cost":300,
+        "cost":700,
         "collision":[
             4,
             4
@@ -12,7 +12,7 @@
             "snow"
         ],
         "on-hill":true,
-        "range":12,
+        "range":12.5,
         "rotate":true,
         "icon":{
             "src":"images/bullet.png"

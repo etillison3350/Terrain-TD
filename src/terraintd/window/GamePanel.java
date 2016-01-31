@@ -212,18 +212,6 @@ public class GamePanel extends JPanel {
 
 		g.drawImage(GameLogic.getCurrentWorld().getImage(), (int) dx, (int) dy, (int) (GameLogic.getCurrentWorld().getWidth() * tile), (int) (GameLogic.getCurrentWorld().getHeight() * tile), null);
 
-		try {
-			g.setColor(Color.WHITE);
-			for (Node[][] nodess : GameLogic.getNodes(EnemyType.values()[0])) {
-				for (Node[] nodes : nodess) {
-					for (Node node : nodes) {
-						if (node.getNextNode() == null) continue;
-						g.drawLine((int) (dx + node.getAbsX() * tile), (int) (dy + node.getAbsY() * tile), (int) (dx + node.getNextNode().getAbsX() * tile), (int) (dy + node.getNextNode().getAbsY() * tile));
-					}
-				}
-			}
-		} catch (Exception e) {}
-
 		g.setColor(new Color(255, 255, 192));
 		List<Node> spawnpoints = Arrays.asList(GameLogic.getCurrentWorld().spawnpoints);
 		for (Node spawn : spawnpoints) {

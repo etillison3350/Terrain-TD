@@ -113,6 +113,7 @@ tower-area=ЭМИ
 tower-sector=Пирог вышка
 tower-poison=Яд дротик башня
 
-enemy-example=танк
+enemy-a=танк
+enemy-b=автомобиль
 
 obstacle-example=Камень

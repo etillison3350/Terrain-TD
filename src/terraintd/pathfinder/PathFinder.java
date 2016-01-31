@@ -62,7 +62,7 @@ public class PathFinder {
 		nodeSet.add(nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0]);
 
 		while (nodeSet.size() > 0) {
-			Node node = nodeSet.iterator().next();
+			Node node = nodeSet.first();
 
 			ArrayList<Node> nodeList = new ArrayList<>(nodeSet);
 			nodeList.remove(node);

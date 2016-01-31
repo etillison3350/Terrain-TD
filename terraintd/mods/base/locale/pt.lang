@@ -113,6 +113,7 @@ tower-area=PEM
 tower-sector=Torre de Torta
 tower-poison=Torre do Dardo do Veneno
 
-enemy-example=Tanque
+enemy-a=Tanque
+enemy-b=Veículo
 
 obstacle-example=Pedra
