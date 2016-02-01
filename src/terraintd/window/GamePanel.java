@@ -35,7 +35,6 @@ import terraintd.object.Projectile;
 import terraintd.object.Tower;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
-import terraintd.types.EnemyType;
 import terraintd.types.ImageType;
 import terraintd.types.TowerType;
 import terraintd.window.ImageManager.Resource;
@@ -314,8 +313,8 @@ public class GamePanel extends JPanel {
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-		Node goal = GameLogic.getCurrentWorld().goal;
-		g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
+		for (Node goal : GameLogic.getCurrentWorld().goals)
+			g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
 
 		for (Projectile p : GameLogic.getProjectiles()) {
 			ImageType img = p.type.image;

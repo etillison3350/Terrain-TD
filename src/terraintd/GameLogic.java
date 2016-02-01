@@ -129,7 +129,7 @@ public class GameLogic implements ActionListener {
 		saved = true;
 		lastSaveLocation = null;
 
-		currentWorld = World.values()[2];
+		currentWorld = World.values()[5];
 		levelIndex = 0;
 		currentLevelSet = LevelSet.values()[0];
 
@@ -598,7 +598,8 @@ public class GameLogic implements ActionListener {
 	public static boolean canPlaceObject(CollidableType type, int x, int y) {
 		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
 
-		if (currentWorld.goal.x >= x && currentWorld.goal.x - x - (currentWorld.goal.top ? 0 : 1) < type.width && currentWorld.goal.y >= y && currentWorld.goal.y - y - (currentWorld.goal.top ? 1 : 0) < type.height) return false;
+		for (Node goal : currentWorld.goals)
+			if (goal.x >= x && goal.x - x - (goal.top ? 0 : 1) < type.width && goal.y >= y && goal.y - y - (goal.top ? 1 : 0) < type.height) return false;
 
 		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
 		for (Entity e : permanents) {

@@ -12,19 +12,19 @@ public class World extends ModdedType {
 
 	public final Tile[][] tiles;
 	public final Node[] spawnpoints;
-	public final Node goal;
+	public final Node[] goals;
 
 	private BufferedImage image;
 
 	static World[] values;
 
-	protected World(Mod mod, String id, Tile[][] tiles, Node goal, Node[] spawnpoints) {
+	protected World(Mod mod, String id, Tile[][] tiles, Node[] goals, Node[] spawnpoints) {
 		super(mod, id);
 
 		typeIds.put(id, this);
 		
 		this.tiles = tiles;
-		this.goal = goal;
+		this.goals = goals;
 		this.spawnpoints = spawnpoints;
 	}
 

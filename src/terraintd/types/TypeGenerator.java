@@ -521,24 +521,32 @@ public final class TypeGenerator {
 			}
 		}
 
-		Object goal = map.get("goal");
-		int goalX = 0, goalY = 0;
-		boolean goalTop = true;
-		if (goal instanceof List<?>) {
-			List<?> g = (List<?>) goal;
+		Object goals = map.get("goals");
+		List<Node> goalList = new ArrayList<>();
+		if (goals instanceof List<?>) {
+			for (Object goal : (List<?>) goals) {
+				int goalX = 0, goalY = 0;
+				boolean goalTop = true;
+				if (goal instanceof List<?>) {
+					List<?> g = (List<?>) goal;
 
-			try {
-				if (g.get(0) instanceof Number) goalX = ((Number) g.get(0)).intValue();
-				if (g.get(1) instanceof Number) goalY = ((Number) g.get(1)).intValue();
-				if (g.get(2) instanceof Boolean) goalTop = (Boolean) g.get(2);
-			} catch (IndexOutOfBoundsException e) {}
-		} else if (goal instanceof Map<?, ?>) {
-			Map<?, ?> g = (Map<?, ?>) goal;
+					try {
+						if (g.get(0) instanceof Number) goalX = ((Number) g.get(0)).intValue();
+						if (g.get(1) instanceof Number) goalY = ((Number) g.get(1)).intValue();
+						if (g.get(2) instanceof Boolean) goalTop = (Boolean) g.get(2);
+					} catch (IndexOutOfBoundsException e) {}
+				} else if (goal instanceof Map<?, ?>) {
+					Map<?, ?> g = (Map<?, ?>) goal;
 
-			if (g.get("x") instanceof Number) goalX = ((Number) g.get("x")).intValue();
-			if (g.get("y") instanceof Number) goalY = ((Number) g.get("y")).intValue();
-			if (g.get("top") instanceof Boolean) goalTop = (Boolean) g.get("top");
+					if (g.get("x") instanceof Number) goalX = ((Number) g.get("x")).intValue();
+					if (g.get("y") instanceof Number) goalY = ((Number) g.get("y")).intValue();
+					if (g.get("top") instanceof Boolean) goalTop = (Boolean) g.get("top");
+				}
+				
+				goalList.add(new Node(goalX, goalY, goalTop));
+			}
 		}
+		if (goalList.size() <= 0) throw new IllegalArgumentException();
 
 		Object spawnpoints = map.get("spawnpoints");
 		List<?> top = null, left = null, bottom = null, right = null;
@@ -612,7 +620,7 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new World(mod, id, tiles, new Node(goalX, goalY, goalTop), spawnNodes.toArray(new Node[spawnNodes.size()]));
+		return new World(mod, id, tiles, goalList.toArray(new Node[goalList.size()]), spawnNodes.toArray(new Node[spawnNodes.size()]));
 	}
 
 	static LevelSet parseLevelSet(Map<?, ?> map, Mod mod) {

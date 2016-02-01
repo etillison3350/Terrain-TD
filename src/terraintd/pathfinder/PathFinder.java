@@ -18,7 +18,7 @@ public class PathFinder {
 	public static final double SQRT2D2 = .7071067811865476;
 
 	private PathFinder() {}
-	
+
 	static final Comparator<Node> nodeComp = new Comparator<Node>() {
 
 		@Override
@@ -31,7 +31,7 @@ public class PathFinder {
 	public static Node[][][] calculatePaths(EnemyType type) {
 		return calculatePaths(type, GameLogic.getPermanentEntities(), GameLogic.getCurrentWorld());
 	}
-	
+
 	public static Node[][][] calculatePaths(EnemyType type, Entity[] entities, World world) {
 		Node[][][] nodes = new Node[world.getHeight() + 1][world.getWidth() + 1][2];
 
@@ -57,9 +57,10 @@ public class PathFinder {
 			}
 		}
 
-		if (nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0].isClosed()) return nodes;
+//		if (nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0].isClosed()) return nodes;
 
-		nodeSet.add(nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0]);
+		for (Node goal : world.goals)
+			nodeSet.add(nodes[goal.y][goal.x][goal.top ? 1 : 0]);
 
 		while (nodeSet.size() > 0) {
 			Node node = nodeSet.first();
@@ -107,7 +108,7 @@ public class PathFinder {
 				double speed = type.speed.get(world.tiles[y][x].terrain);
 
 				if (speed < Double.MIN_VALUE) continue;
-				
+
 				double newCost = node.getCost() + (i < 2 ? 1 : SQRT2D2) / speed;
 				if (n.getCost() == 0 || newCost < n.getCost()) {
 					n.setCost(newCost);
