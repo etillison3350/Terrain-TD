@@ -104,6 +104,7 @@ range=範圍
 sell=賣
 remove=破壞
 
+count=數
 reward=獎勵
 active-effects=活動效果
 
@@ -112,6 +113,7 @@ tower-line=激光炮
 tower-area=電磁脈衝
 tower-sector=馅饼塔
 tower-poison=毒鏢塔
+tower-electricball=電球
 
 enemy-a=坦克
 enemy-b=車輛

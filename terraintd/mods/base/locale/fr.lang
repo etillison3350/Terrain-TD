@@ -95,6 +95,7 @@ delivery-area=Région
 delivery-line=Faisceau
 delivery-sector=Secteur
 
+count=Numéro
 reward=Récompense
 active-effects=Effets Actifs
 
@@ -112,6 +113,7 @@ tower-line=Canon Laser
 tower-area=IEM
 tower-sector=Tour de Gâteau
 tower-poison=Tour de Dard de Poison
+tower-electricball=Balle Électrique
 
 enemy-a=Char d'assaut
 enemy-b=Véhicule

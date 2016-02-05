@@ -88,7 +88,7 @@ public class Window extends JFrame {
 				if (!GameLogic.isPaused()) pauseGame.doClick();
 				GameLogic.stop();
 				
-				Settings.setShowing(true);
+				Settings.showDialog();
 			} else if (e.getSource() == modList) {
 				if (!GameLogic.isPaused()) pauseGame.doClick();
 				GameLogic.stop();

@@ -104,6 +104,7 @@ range=範囲
 sell=売る
 remove=破壊します
 
+count=カウント
 reward=褒賞
 active-effects=アクティブ効果
 
@@ -112,6 +113,7 @@ tower-line=レーザーキャノン
 tower-area=EMP
 tower-sector=パイの塔
 tower-poison=毒ダーツタワー
+tower-electricball=電気ボール
 
 enemy-a=戦車
 enemy-b=車両

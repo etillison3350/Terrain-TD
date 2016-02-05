@@ -104,6 +104,7 @@ range=Reichweite
 sell=Verkaufen
 remove=Zerstören
 
+count=Zählung
 reward=Belohnung
 active-effects=Aktiven Effekte
 
@@ -112,6 +113,7 @@ tower-line=Laser-Kanonen
 tower-area=Elektromagnetische Impuls
 tower-sector=Turm der Torte
 tower-poison=Turm des Giftpfeil
+tower-electricball=Elektro-Ball
 
 enemy-a=Panzer
 enemy-b=Fahrzeug

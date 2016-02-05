@@ -129,7 +129,7 @@ public class GameLogic implements ActionListener {
 		saved = true;
 		lastSaveLocation = null;
 
-		currentWorld = World.values()[5];
+		currentWorld = World.values()[6];
 		levelIndex = 0;
 		currentLevelSet = LevelSet.values()[0];
 

@@ -95,6 +95,7 @@ delivery-area=Area
 delivery-line=Beam
 delivery-sector=Sector
 
+count=Count
 reward=Reward
 active-effects=Active Effects
 
@@ -112,6 +113,7 @@ tower-line=Laser Cannon
 tower-area=EMP
 tower-sector=Pie Tower
 tower-poison=Poison Dart Tower
+tower-electricball=Electric Ball
 
 enemy-a=Tank
 enemy-b=Vehicle

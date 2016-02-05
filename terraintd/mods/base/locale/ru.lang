@@ -104,6 +104,7 @@ range=Ассортимент
 sell=продавать
 remove=уничтожить
 
+count=подсчет
 reward=Награда
 active-effects=Активные эффекты
 
@@ -112,6 +113,7 @@ tower-line=Лазерная пушка
 tower-area=ЭМИ
 tower-sector=Пирог вышка
 tower-poison=Яд дротик башня
+tower-electricball=Электрический шар
 
 enemy-a=танк
 enemy-b=автомобиль

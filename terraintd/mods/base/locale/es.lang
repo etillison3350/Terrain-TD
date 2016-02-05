@@ -95,6 +95,7 @@ delivery-area=Área
 delivery-line=Linea
 delivery-sector=Sector
 
+count=Cuenta
 reward=Recompensa
 active-effects=Efectos Activos
 
@@ -112,6 +113,7 @@ tower-line=Cañón Láser
 tower-area=PEM
 tower-sector=Torre de Tarta
 tower-poison=Torre de Dardos Venenosos
+tower-electricball=Bola Eléctrica
 
 enemy-a=Tanque
 enemy-b=Vehículo

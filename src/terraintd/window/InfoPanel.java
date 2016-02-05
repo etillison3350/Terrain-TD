@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -286,8 +288,15 @@ public class InfoPanel extends JPanel {
 			if (projectiles == null || projectiles.length == 0) {
 				panel.add(createLabel("%s", 0, 1, Language.get("none")));
 			} else {
-				for (ProjectileType p : projectiles) {
+				TreeSet<ProjectileType> sorted = new TreeSet<>(projComp);
+				sorted.addAll(Arrays.asList(projectiles));
+
+				for (ProjectileType p : sorted) {
 					panel.add(createLabel("%s: %s", 0, 1, Language.get("delivery"), p.delivery.toString()));
+					if (sorted.size() != projectiles.length) {
+						long count = Arrays.stream(projectiles).filter(proj -> projComp.compare(proj, p) == 0).count();
+						if (count > 1) panel.add(createLabel("%s: %d", 0, 1, Language.get("count"), count));
+					}
 					panel.add(createLabel("%s: %.3g - %.3g", 0, 1, Language.get("damage"), p.damage, p.damage - p.falloff));
 					panel.add(createLabel("%s: %.4g %s", 0, 1, Language.get("rate"), p.rate * 60, Language.get("rpm")));
 					panel.add(createLabel("%s: %s", 0, 1, Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles"))));
@@ -309,6 +318,49 @@ public class InfoPanel extends JPanel {
 			panel.add(createSellButton((CollidableEntity) obj));
 		}
 	}
+
+	private static final Comparator<ProjectileType> projComp = new Comparator<ProjectileType>() {
+
+		@Override
+		public int compare(ProjectileType o1, ProjectileType o2) {
+			int i = Integer.compare(o1.delivery.hashCode(), o2.delivery.hashCode());
+			if (i != 0) return i;
+
+			i = Double.compare(o1.damage, o2.damage);
+			if (i != 0) return i;
+
+			i = Double.compare(o1.falloff, o2.falloff);
+			if (i != 0) return i;
+
+			i = Double.compare(o1.rate, o2.rate);
+			if (i != 0) return i;
+
+			i = Double.compare(o1.maxDist, o2.maxDist);
+			if (i != 0) return i;
+
+			i = Double.compare(o1.explodeRadius, o2.explodeRadius);
+			if (i != 0) return i;
+
+			i = Double.compare(o1.angle, o2.angle);
+			if (i != 0) return i;
+
+			i = Integer.compare(o1.effects.length, o2.effects.length);
+			if (i != 0) return i;
+
+			for (int n = 0; n < o1.effects.length; n++) {
+				i = Integer.compare(o1.effects[n].hashCode(), o2.effects[n].hashCode());
+				if (i != 0) return i;
+
+				i = Double.compare(o1.effects[n].duration, o2.effects[n].duration);
+				if (i != 0) return i;
+
+				i = Double.compare(o1.effects[n].amplifier, o2.effects[n].amplifier);
+				if (i != 0) return i;
+			}
+			return 0;
+		}
+
+	};
 
 	private static final ActionListener targetCycleListener = new ActionListener() {
 

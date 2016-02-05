@@ -98,6 +98,7 @@ delivery-sector=Setor
 sell=Vender
 remove=Destruir
 
+count=Contagem
 reward=Recompensa
 active-effects=Efeitos Ativos
 
@@ -112,6 +113,7 @@ tower-line=Canhão Laser
 tower-area=PEM
 tower-sector=Torre de Torta
 tower-poison=Torre do Dardo do Veneno
+tower-electricball=Ball Elétrica
 
 enemy-a=Tanque
 enemy-b=Veículo

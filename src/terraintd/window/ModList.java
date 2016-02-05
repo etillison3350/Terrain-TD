@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +17,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -109,7 +109,7 @@ public class ModList extends JDialog {
 			}
 		});
 
-		disable = new JButton("Disable");
+		disable = new JButton(Language.get("disable"));
 		disable.setEnabled(false);
 		disable.addActionListener(new ActionListener() {
 
@@ -136,8 +136,8 @@ public class ModList extends JDialog {
 
 		this.add(panel);
 
-		JPanel buttonPanel = new JPanel(new BorderLayout());
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+//		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		JPanel buttons = new JPanel(new GridLayout(1, 2, 5, 5));
 
@@ -178,7 +178,7 @@ public class ModList extends JDialog {
 		});
 		buttons.add(cancel);
 
-		buttonPanel.add(buttons, BorderLayout.LINE_END);
+		buttonPanel.add(buttons);
 
 		this.add(buttonPanel, BorderLayout.PAGE_END);
 
