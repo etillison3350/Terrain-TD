@@ -214,8 +214,8 @@ public class GamePanel extends JPanel {
 		g.setColor(new Color(255, 255, 192));
 		List<Node> spawnpoints = Arrays.asList(GameLogic.getCurrentWorld().spawnpoints);
 		for (Node spawn : spawnpoints) {
-			int w = spawn.top && spawnpoints.contains(new Node(spawn.x + 1, spawn.y, true)) ? (int) tile : 7;
-			int h = !spawn.top && spawnpoints.contains(new Node(spawn.x, spawn.y + 1, false)) ? (int) tile : 7;
+			int w = spawn.top && spawnpoints.contains(new Node(spawn.x + 1, spawn.y, true)) ? (int) (tile + 0.5) : 7;
+			int h = !spawn.top && spawnpoints.contains(new Node(spawn.x, spawn.y + 1, false)) ? (int) (tile + 0.5) : 7;
 			g.fillRect((int) (dx + spawn.getAbsX() * tile) - 3, (int) (dy + spawn.getAbsY() * tile) - 3, w, h);
 		}
 

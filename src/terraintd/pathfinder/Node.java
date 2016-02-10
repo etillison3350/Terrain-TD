@@ -57,6 +57,10 @@ public class Node {
 	public boolean isExplored() {
 		return explored;
 	}
+	
+	public boolean isBlocked() {
+		return closed && !explored;//false;//closed || !explored;
+	}
 
 	void close() {
 		this.closed = true;

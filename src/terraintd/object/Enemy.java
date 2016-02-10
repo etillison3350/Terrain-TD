@@ -2,12 +2,14 @@ package terraintd.object;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import terraintd.GameLogic;
 import terraintd.pathfinder.Node;
+import terraintd.pathfinder.PathFinder;
 import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
 import terraintd.types.IdType;
@@ -25,7 +27,7 @@ public class Enemy extends Entity implements Weapon {
 	private int dead;
 	public List<Projectile> futureDamage;
 
-	private Node nextNode, prevNode;
+	private Node nextNode, prevNode, oldPrev;
 
 	private Node[][][] newNodeSet;
 
@@ -159,8 +161,9 @@ public class Enemy extends Entity implements Weapon {
 		if (distance > d) {
 			this.x = nextNode.getAbsX();
 			this.y = nextNode.getAbsY();
+			this.oldPrev = prevNode;
 			this.prevNode = nextNode;
-			this.nextNode = nextNode.getNextNode();
+			this.nextNode = findNextNode();//nextNode.getNextNode();
 			if (newNodeSet != null) resetNodes(newNodeSet);
 			boolean ret = nextNode == null ? false : move((distance - d) / speed, speedMult);
 			if (!ret) dead = 2;
@@ -174,6 +177,26 @@ public class Enemy extends Entity implements Weapon {
 		this.x += dx * distance;
 
 		return true;
+	}
+	
+	int chance = 2;
+	
+	private Node findNextNode() {
+		if (GameLogic.rand.nextInt(chance / 2) == 0) {
+			chance++;
+			return prevNode.getNextNode();
+		}
+
+		chance = 2;
+		
+		Node next = prevNode.getNextNode();
+		if (next == null) return null;
+		if (next.getNextNode() == null) return next;
+		
+		Node[] nodes = PathFinder.getNeighbors(GameLogic.getNodes(type), prevNode);
+		
+		Object[] ns = Arrays.stream(nodes).filter(n -> !n.isBlocked() && n != oldPrev && n.getNextNode() != prevNode && n.getCost() - next.getCost() < 0.05 * Math.pow(n.getCost() * 3, 0.25)).toArray();
+		return ns.length <= 0 ? next : (Node) ns[GameLogic.rand.nextInt(ns.length)];
 	}
 
 	public void resetNodes(Node[][][] nodes) {
