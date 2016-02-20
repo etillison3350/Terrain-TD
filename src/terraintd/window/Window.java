@@ -1,6 +1,8 @@
 package terraintd.window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -119,7 +121,9 @@ public class Window extends JFrame {
 	private Window() {
 		super(Language.get("title"));
 
-		this.setSize(960, 640);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setSize(100 * (int) Math.floor((dim.width - 50) / 100), 100 * (int) Math.floor((dim.height - 50) / 100));
+		this.setLocationRelativeTo(null);
 		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
 		newGame.addActionListener(menuListener);

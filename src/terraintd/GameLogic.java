@@ -174,7 +174,7 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static void setFastForward(boolean fastForward) {
-		timer.setDelay((int) ((fastForward ? 500 : 1000) * FRAME_TIME));
+		timer.setDelay((int) ((fastForward ? 5000 : 1000) * FRAME_TIME));
 	}
 
 	/**

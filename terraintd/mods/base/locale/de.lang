@@ -36,12 +36,12 @@ confirm-exit=Speichern dieses Spiel?
 title-confirm-exit=Verlassen
 already-exists=existiert bereits.
 confirm-replace=Möchten Sie es ersetzen?
-title=confirm-replace=Bestätigen Sie Speichern Als
+title-confirm-replace=Bestätigen Sie Speichern Als
 file-not-found=Datei nicht gefunden.
 check-file-name=Überprüfen Sie den Dateinamen und versuchen Sie es erneut.
 title-file-not-found=Öffnen
 
-entension-name=Spiel (*.game)
+extension-name=Spiel (*.game)
 all-files=Alle Dateien
 file-name=Dateiname
 title-invalid-file=Ungültige Datei

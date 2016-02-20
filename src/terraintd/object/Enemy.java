@@ -179,23 +179,24 @@ public class Enemy extends Entity implements Weapon {
 		return true;
 	}
 	
-	int chance = 2;
+	private int chance = 1;
 	
 	private Node findNextNode() {
-		if (GameLogic.rand.nextInt(chance / 2) == 0) {
+		if (GameLogic.rand.nextInt(chance) == 0) {
 			chance++;
 			return prevNode.getNextNode();
 		}
 
-		chance = 2;
-		
+		chance = 1;
+
 		Node next = prevNode.getNextNode();
 		if (next == null) return null;
 		if (next.getNextNode() == null) return next;
 		
 		Node[] nodes = PathFinder.getNeighbors(GameLogic.getNodes(type), prevNode);
 		
-		Object[] ns = Arrays.stream(nodes).filter(n -> !n.isBlocked() && n != oldPrev && n.getNextNode() != prevNode && n.getCost() - next.getCost() < 0.05 * Math.pow(n.getCost() * 3, 0.25)).toArray();
+		double a = Math.atan2(prevNode.getAbsY() - next.getAbsY(), prevNode.getAbsX() - next.getAbsX());
+		Object[] ns = Arrays.stream(nodes).filter(n -> !n.isBlocked() && n != oldPrev && n.getNextNode() != prevNode && subAngles(a, Math.atan2(prevNode.getAbsY() - n.getAbsY(), prevNode.getAbsX() - n.getAbsX())) < (Math.PI / 2.1) && n.getCost() - next.getCost() < 0.05 * Math.pow(n.getCost() * 3, 0.25)).toArray();
 		return ns.length <= 0 ? next : (Node) ns[GameLogic.rand.nextInt(ns.length)];
 	}
 
@@ -325,6 +326,11 @@ public class Enemy extends Entity implements Weapon {
 			if (effect.type == StatusEffectType.BLUNTNESS) dm /= (1 + 0.25 * effect.amplifier);
 		}
 		return dm * this.type.damage;
+	}
+	
+	public static double subAngles(double ang1, double ang2) {
+		double d = Math.abs(ang1 - ang2) % (2 * Math.PI);
+		return d > Math.PI ? Math.PI * 2 - d : d;
 	}
 
 }
