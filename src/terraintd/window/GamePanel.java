@@ -37,6 +37,7 @@ import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.ImageType;
 import terraintd.types.TowerType;
+import terraintd.types.World;
 import terraintd.window.ImageManager.Resource;
 
 public class GamePanel extends JPanel {
@@ -118,6 +119,11 @@ public class GamePanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				if (GameLogic.getState() == State.COMPLETE) {
+					GameLogic.overrideNextLevel();
+					return;
+				}
+				
 				double mx = e.getX() / getTileSize();
 				double my = e.getY() / getTileSize();
 				double dx = startX - mx;
@@ -211,15 +217,37 @@ public class GamePanel extends JPanel {
 
 		g.drawImage(GameLogic.getCurrentWorld().getImage(), (int) dx, (int) dy, (int) (GameLogic.getCurrentWorld().getWidth() * tile), (int) (GameLogic.getCurrentWorld().getHeight() * tile), null);
 
-		g.setColor(new Color(255, 255, 192));
-		List<Node> spawnpoints = Arrays.asList(GameLogic.getCurrentWorld().spawnpoints);
+		World world = GameLogic.getCurrentWorld();
+
+		g.setColor(new Color(255, 255, 160));
+		List<Node> spawnpoints = Arrays.asList(world.spawnpoints);
 		for (Node spawn : spawnpoints) {
 			int w = spawn.top && spawnpoints.contains(new Node(spawn.x + 1, spawn.y, true)) ? (int) (tile + 0.5) : 7;
 			int h = !spawn.top && spawnpoints.contains(new Node(spawn.x, spawn.y + 1, false)) ? (int) (tile + 0.5) : 7;
 			g.fillRect((int) (dx + spawn.getAbsX() * tile) - 3, (int) (dy + spawn.getAbsY() * tile) - 3, w, h);
 		}
 
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (tile * 0.75)));
+		if (spawnpoints.contains(new Node(0, 0, true)) && spawnpoints.contains(new Node(0, 0, false))) {
+			g.fillRect((int) dx - 3, (int) dy - 3, (int) ((1 + tile) * 0.5), 7);
+			g.fillRect((int) dx - 3, (int) dy - 3, 7, (int) ((1 + tile) * 0.5));
+		}
+
+		if (spawnpoints.contains(new Node(0, world.getHeight(), true)) && spawnpoints.contains(new Node(0, GameLogic.getCurrentWorld().getHeight() - 1, false))) {
+			g.fillRect((int) dx - 3, (int) (dy + (world.getHeight() - 0.5) * tile) - 3, 7, 7 + (int) ((1 + tile) * 0.5));
+			g.fillRect((int) dx - 3, (int) (dy + world.getHeight() * tile) - 3, (int) ((1 + tile) * 0.5), 7);
+		}
+
+		if (spawnpoints.contains(new Node(GameLogic.getCurrentWorld().getWidth() - 1, 0, true)) && spawnpoints.contains(new Node(world.getWidth(), 0, false))) {
+			g.fillRect((int) (dx + world.getWidth() * tile) - 3, (int) dy - 3, 7, (int) ((1 + tile) * 0.5));
+			g.fillRect((int) (dx + (world.getWidth() - 0.5) * tile) - 3, (int) dy - 3, 7 + (int) ((1 + tile) * 0.5), 7);
+		}
+
+		if (spawnpoints.contains(new Node(GameLogic.getCurrentWorld().getWidth() - 1, world.getHeight(), true)) && spawnpoints.contains(new Node(world.getWidth(), world.getHeight() - 1, false))) {
+			g.fillRect((int) (dx + world.getWidth() * tile) - 3, (int) (dy + (world.getHeight() - 0.5) * tile) - 3, 7, 7 + (int) ((1 + tile) * 0.5));
+			g.fillRect((int) (dx + (world.getWidth() - 0.5) * tile) - 3, (int) (dy + world.getHeight() * tile) - 3, 7 + (int) ((1 + tile) * 0.5), 7);
+		}
+
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) tile));
 		g.setStroke(new BasicStroke((float) tile / 10.0F));
 		for (Entity e : GameLogic.getPermanentEntities()) {
 			if (e instanceof Enemy) {
@@ -234,8 +262,11 @@ public class GamePanel extends JPanel {
 				trans.rotate(en.getRotation(), img.getWidth() * 0.5, img.getHeight() * 0.5);
 				g.drawImage(img, trans, null);
 
-				g.setColor(Color.BLACK);
-				g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
+				if (en.getDead() != 2) {
+					g.setColor(Color.BLACK);
+					g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)));
+				}
+
 				if (en.getDead() == 0) {
 					g.setColor(en.getStatusEffects().length > 0 ? new Resource(en).color : Color.getHSBColor((float) (0.333 * en.getHealth() / en.type.health), 1.0F, 1.0F));
 					g.drawLine((int) (dx + tile * (en.getX() - en.type.hbWidth / 2)), (int) (dy + tile * (en.getY() + en.type.hbY)), (int) (dx + tile * (en.getX() + en.type.hbWidth * (en.getHealth() / en.type.health - 0.5))), (int) (dy + tile * (en.getY() + en.type.hbY)));
@@ -260,6 +291,8 @@ public class GamePanel extends JPanel {
 			}
 		}
 
+		float t = System.currentTimeMillis() % 1500;
+
 		if (GameLogic.getSelectedEntity() != null) {
 			if (GameLogic.getSelectedEntity() instanceof Tower) {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
@@ -276,8 +309,6 @@ public class GamePanel extends JPanel {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25F));
 				g.fillOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
 			}
-
-			float t = System.currentTimeMillis() % 1500;
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0008F * t - 0.00000053333F * t * t));
 			g.setColor(Color.BLACK);
@@ -313,6 +344,7 @@ public class GamePanel extends JPanel {
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
+//		float gs = -.0000008888F * t * t + 0.001333F * t + 1;
 		for (Node goal : GameLogic.getCurrentWorld().goals)
 			g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
 

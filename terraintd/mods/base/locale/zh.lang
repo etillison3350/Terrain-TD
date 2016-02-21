@@ -24,11 +24,14 @@ dont-save=丟棄
 save-as=另存為
 pause=暂停
 fast-forward=快進
-language=文
 exit=退出
 accept=承認
 yes=是
 cancel=取消
+
+settings=設定
+language=文
+pause-on-buy=購買時暫停
 
 confirm-new=保存這個遊戲？
 title-confirm-new=新遊戲
@@ -48,8 +51,11 @@ title-invalid-file=無效文件
 cannot-read=無法讀取該文件。
 invalid-file=這不是一個有效的遊戲文件，或目前不支持其格式。
 
-level-complete=級別完成
-level-failed=級別失敗
+level=水平
+
+state-complete=級別完成
+state-failed=游戏结束
+state-won=你赢了
 
 towers=塔
 enemies=敵人
@@ -95,18 +101,19 @@ delivery-area=區
 delivery-line=光束
 delivery-sector=扇形
 
+count=數
+reward=獎勵
+active-effects=活動效果
+
 damage=損傷
 rate=射速
 rpm=RPM
 detect-range=檢測範圍
 range=範圍
 
+sell-cost=售價
 sell=賣
 remove=破壞
-
-count=數
-reward=獎勵
-active-effects=活動效果
 
 tower-single=大砲
 tower-line=激光炮
@@ -117,5 +124,15 @@ tower-electricball=電球
 
 enemy-a=坦克
 enemy-b=車輛
+enemy-c=汽車
 
 obstacle-example=石
+
+level-example=例
+
+world-europe=歐洲
+world-test=未命名的世界 1
+world-matu=未命名的世界 2
+world-perlin-a=未命名的世界 3
+world-nn=未命名的世界 4
+world-perlin-b=未命名的世界 5

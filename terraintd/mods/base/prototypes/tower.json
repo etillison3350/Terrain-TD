@@ -2,8 +2,8 @@
     {
         "type":"tower",
         "id":"tower-single",
-        "cost":350,
-        "sell-cost":225,
+        "cost":700,
+        "sell-cost":450,
         "collision":[
             2,
             2
@@ -52,8 +52,8 @@
     {
         "type":"tower",
         "id":"tower-line",
-        "cost":975,
-        "sell-cost":800,
+        "cost":1950,
+        "sell-cost":1600,
         "collision":[
             2,
             2
@@ -101,8 +101,8 @@
     {
         "type":"tower",
         "id":"tower-area",
-        "cost":2000,
-        "sell-cost":1350,
+        "cost":4000,
+        "sell-cost":2700,
         "collision":[
             2,
             2
@@ -147,8 +147,8 @@
     {
         "type":"tower",
         "id":"tower-sector",
-        "cost":1050,
-        "sell-cost":825,
+        "cost":2100,
+        "sell-cost":1650,
         "collision":[
             2,
             2
@@ -195,8 +195,8 @@
     {
         "type":"tower",
         "id":"tower-poison",
-        "cost":575,
-        "sell-cost":400,
+        "cost":1150,
+        "sell-cost":800,
         "collision":[
             2,
             2
@@ -252,8 +252,8 @@
     {
         "type":"tower",
         "id":"tower-electricball",
-        "cost":1250,
-        "sell-cost":900,
+        "cost":2500,
+        "sell-cost":1800,
         "collision":[
             1,
             1
@@ -280,7 +280,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -302,7 +302,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -324,7 +324,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -346,7 +346,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -368,7 +368,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -390,7 +390,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -412,7 +412,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,
@@ -434,7 +434,7 @@
                 "speed":80,
                 "damage":[
                     40,
-                    35
+                    30
                 ],
                 "rate":2,
                 "follow":false,

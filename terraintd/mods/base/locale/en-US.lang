@@ -24,11 +24,14 @@ dont-save=Don't Save
 save-as=Save As
 pause=Pause
 fast-forward=Fast Forward
-language=Language
 exit=Exit
 accept=OK
 yes=Yes
 cancel=Cancel
+
+settings=Settings
+language=Language
+pause-on-buy=Pause when buying
 
 confirm-new=Save this game?
 title-confirm-new=New Game
@@ -48,8 +51,11 @@ title-invalid-file=Invalid File
 cannot-read=Cannot read this file.
 invalid-file=This is not a valid game file, or its format is not currently supported.
 
-level-complete=Level Complete
-level-failed=Level Failed
+level=Level
+
+state-complete=Level Complete
+state-failed=Level Failed
+state-won=You Win
 
 towers=Towers
 enemies=Enemies
@@ -105,6 +111,7 @@ rpm=RPM
 detect-range=Detection Range
 range=Range
 
+sell-cost=Sell cost
 sell=Sell
 remove=Destroy
 
@@ -117,5 +124,15 @@ tower-electricball=Electric Ball
 
 enemy-a=Tank
 enemy-b=Vehicle
+enemy-c=Car
 
 obstacle-example=Stone
+
+level-example=Example
+
+world-europe=Europe
+world-test=Unnamed world 1
+world-matu=Unnamed world 2
+world-perlin-a=Unnamed world 3
+world-nn=Unnamed world 4
+world-perlin-b=Unnamed world 5

@@ -100,6 +100,7 @@ public class GameLogic implements ActionListener {
 	private static long t0, t1, t2;
 
 	private static boolean wasPaused = true;
+	private static boolean pauseOnBuy = true;
 	private static CollidableType buying = null;
 
 	private static Entity selected = null;
@@ -129,7 +130,7 @@ public class GameLogic implements ActionListener {
 		saved = true;
 		lastSaveLocation = null;
 
-		currentWorld = World.values()[6];
+		currentWorld = World.values()[5];
 		levelIndex = 0;
 		currentLevelSet = LevelSet.values()[0];
 
@@ -150,6 +151,7 @@ public class GameLogic implements ActionListener {
 
 		GamePanel.resetView();
 		Window.repaintWindow();
+		Window.updateLevel();
 		InfoPanel.setDisplayedObject(null);
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
@@ -169,12 +171,13 @@ public class GameLogic implements ActionListener {
 		projectiles = new ArrayList<>();
 
 		Window.repaintWindow();
+		Window.updateLevel();
 		InfoPanel.setDisplayedObject(null);
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
 
 	public static void setFastForward(boolean fastForward) {
-		timer.setDelay((int) ((fastForward ? 5000 : 1000) * FRAME_TIME));
+		timer.setDelay((int) ((fastForward ? 100 : 1000) * FRAME_TIME));
 	}
 
 	/**
@@ -226,9 +229,17 @@ public class GameLogic implements ActionListener {
 			try {
 				Thread.sleep(2500);
 			} catch (InterruptedException e) {}
-			nextLevel();
+			if (!overrideNext) nextLevel();
+			overrideNext = false;
 		}
 	};
+
+	private static boolean overrideNext = false;
+
+	public static void overrideNextLevel() {
+		overrideNext = true;
+		nextLevel();
+	}
 
 	private static void processPermanents() {
 		if (health <= 0) {
@@ -250,14 +261,14 @@ public class GameLogic implements ActionListener {
 			Window.fastForward.setSelected(false);
 			InfoPanel.fastForward.setSelected(false);
 			setFastForward(false);
-			state = State.COMPLETE;
 			BuyPanel.updateButtons();
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();
 			if (currentLevelSet.levels.length - 1 == levelIndex) {
-				// TODO win
+				state = State.WON;
 			} else {
 				new Thread(nextLevel).start();
+				state = State.COMPLETE;
 			}
 			return;
 		}
@@ -517,7 +528,9 @@ public class GameLogic implements ActionListener {
 	 */
 	public static void buyObject(CollidableType type) {
 		wasPaused = !timer.isRunning();
-		stop();
+		if (pauseOnBuy) {
+			stop();
+		}
 		buying = type;
 		InfoPanel.setDisplayedObject(type);
 		selected = null;
@@ -584,6 +597,15 @@ public class GameLogic implements ActionListener {
 			BuyPanel.updateButtons();
 		}
 	}
+	
+	
+	public static boolean pausesOnBuy() {
+		return pauseOnBuy;
+	}
+
+	public static void setPauseOnBuy(boolean pauseOnBuy) {
+		GameLogic.pauseOnBuy = pauseOnBuy;
+	}
 
 	public static Entity getSelectedEntity() {
 		return selected;
@@ -631,6 +653,10 @@ public class GameLogic implements ActionListener {
 		return currentLevelSet;
 	}
 
+	public static int getLevelIndex() {
+		return levelIndex;
+	}
+
 	public static World getCurrentWorld() {
 		return currentWorld;
 	}
@@ -670,10 +696,11 @@ public class GameLogic implements ActionListener {
 	public static enum State {
 		PLAYING,
 		COMPLETE,
-		FAILED;
+		FAILED,
+		WON;
 
 		public String toString() {
-			return Language.get("level-" + this.name().toLowerCase());
+			return Language.get("state-" + this.name().toLowerCase());
 		}
 	}
 

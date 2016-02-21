@@ -24,11 +24,14 @@ dont-save=Descartar
 save-as=Guardar como
 pause=Pausar
 fast-forward=Avanço Rápido
-language=Idioma
 exit=Sair
 accept=Aceitar
 yes=Sim
 cancel=Cancelar
+
+settings=Definições
+language=Idioma
+pause-on-buy=Pare quando compra
 
 confirm-new=Guardar este jogo?
 title-confirm-new=Novo Jogo
@@ -48,8 +51,11 @@ title-invalid-file=Arquivo Inválido
 cannot-read=Não é possível ler este arquivo.
 invalid-file=Este não é um arquivo do jogo válido ou seu formato não é suportado.
 
-level-complete=Nível Completado
-level-failed=Nível Falhado
+level=Nível
+
+state-complete=Nível Completado
+state-failed=Fim de Jogo
+state-won=Você Ganhou
 
 towers=Torres
 enemies=Inimigos
@@ -95,9 +101,6 @@ delivery-area=Área
 delivery-line=Viga
 delivery-sector=Setor
 
-sell=Vender
-remove=Destruir
-
 count=Contagem
 reward=Recompensa
 active-effects=Efeitos Ativos
@@ -108,6 +111,10 @@ rpm=TPM
 detect-range=Faixa de detecção
 range=Alcance
 
+sell-cost=Preço de venda
+sell=Vender
+remove=Destruir
+
 tower-single=Canhão
 tower-line=Canhão Laser
 tower-area=PEM
@@ -117,5 +124,15 @@ tower-electricball=Ball Elétrica
 
 enemy-a=Tanque
 enemy-b=Veículo
+enemy-c=Carro
 
 obstacle-example=Pedra
+
+level-example=Exemplo
+
+world-europe=Europa
+world-test=Mundo sem nome 1
+world-matu=Mundo sem nome 2
+world-perlin-a=Mundo sem nome 3
+world-nn=Mundo sem nome 4
+world-perlin-b=Mundo sem nome 5

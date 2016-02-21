@@ -18,7 +18,7 @@
         },
         "health":200,
         "damage":10,
-        "reward":15,
+        "reward":20,
         "image":{
             "src":"images/tank.png"
         },
@@ -46,9 +46,37 @@
         },
         "health":350,
         "damage":20,
-        "reward":20,
+        "reward":30,
         "image":{
             "src":"images/vehicle.png"
+        },
+        "death":{
+            "src":"images/explosion.png"
+        },
+        "projectiles":null
+    },
+    {
+        "type":"enemy",
+        "id":"enemy-c",
+        "speed":[
+            3.25,
+            5,
+            3.25,
+            0.5,
+            3.5,
+            0.5,
+            0,
+            0
+        ],
+        "vertical-speed":{
+            "up":0.45,
+            "down":1.0625
+        },
+        "health":120,
+        "damage":10,
+        "reward":15,
+        "image":{
+            "src":"images/car.png"
         },
         "death":{
             "src":"images/explosion.png"

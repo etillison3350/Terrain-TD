@@ -1,5 +1,6 @@
 package terraintd.window;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -31,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
 
 import terraintd.GameLogic;
 import terraintd.GameLogic.State;
@@ -76,6 +78,7 @@ public class InfoPanel extends JPanel {
 	private static JLabel money;
 
 	private static JPanel panel;
+	private static JPanel bottom;
 
 	private InfoPanel() {
 		try {
@@ -113,6 +116,13 @@ public class InfoPanel extends JPanel {
 		this.add(scrollPane, c);
 
 		c.weighty = 0;
+		c.gridy = 4;
+		bottom = new JPanel();
+		bottom.setLayout(new BorderLayout());
+		bottom.setBackground(Color.BLACK);
+		bottom.setBorder(new EmptyBorder(0, 0, 5, 0));
+		this.add(bottom, c);
+		
 		c.gridy = 2;
 		money = createLabel("", 5, 0);
 		money.setBackground(Color.BLACK);
@@ -221,6 +231,7 @@ public class InfoPanel extends JPanel {
 		money.setText(String.format(Language.getCurrentLocale(), "%s: %d\n", Language.get("money"), GameLogic.getMoney()));
 
 		panel.removeAll();
+		bottom.removeAll();
 		if (obj == null) return;
 
 		panel.add(Box.createVerticalStrut(10));
@@ -261,6 +272,7 @@ public class InfoPanel extends JPanel {
 		}
 
 		if (type instanceof CollidableType) panel.add(createLabel("%s: %d x %d %s", 0, 0, Language.get("area"), ((CollidableType) type).width, ((CollidableType) type).height, Language.get("tiles")));
+		if (obj instanceof CollidableType) panel.add(createLabel("%s: %d", 0, 0, Language.get("sell-cost"), ((CollidableType) obj).sellCost));
 		if (projectiles != null && projectiles.length > 0) panel.add(createLabel("%s: %.5g", 0, 0, Language.get("dps"), getDamagePerSecond(projectiles)));
 		if (type instanceof TowerType) panel.add(createLabel("%s: %.3g %s", 0, 0, Language.get("detect-range"), ((TowerType) type).range, Language.get("tiles")));
 
@@ -314,8 +326,8 @@ public class InfoPanel extends JPanel {
 		}
 
 		if (obj instanceof CollidableEntity && GameLogic.getState() == State.PLAYING) {
-			panel.add(Box.createVerticalStrut(5));
-			panel.add(createSellButton((CollidableEntity) obj));
+//			panel.add(Box.createVerticalStrut(5));
+			bottom.add(createSellButton((CollidableEntity) obj));
 		}
 	}
 

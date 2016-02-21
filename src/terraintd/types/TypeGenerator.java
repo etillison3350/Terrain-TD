@@ -542,7 +542,7 @@ public final class TypeGenerator {
 					if (g.get("y") instanceof Number) goalY = ((Number) g.get("y")).intValue();
 					if (g.get("top") instanceof Boolean) goalTop = (Boolean) g.get("top");
 				}
-				
+
 				goalList.add(new Node(goalX, goalY, goalTop));
 			}
 		}

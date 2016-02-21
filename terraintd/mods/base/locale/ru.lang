@@ -24,12 +24,15 @@ dont-save=отбрасывать
 save-as=Сохранить как
 pause=пауза
 fast-forward=перемотка вперед
-language=язык
 exit=оставлять
 accept=признавать
 yes=да
 cancel=отменить
-	
+
+settings=настройка
+language=язык
+pause-on-buy=Пауза при покупке
+
 confirm-new=Сохранить в эту игру?
 title-confirm-new=Новая игра
 confirm-exit=Сохранить в эту игру?
@@ -48,8 +51,11 @@ title-invalid-file=неверный файл
 cannot-read=Не можете прочитать этот файл.
 invalid-file=Это не правильный файл игры, или его формат не поддерживается.
 
-level-complete=Уровень пройден
-level-failed=Уровень провален
+level=уровень
+
+state-complete=Уровень пройден
+state-failed=Игра закончена
+state-won=Ты победил
 
 towers=Башни
 enemies=враги
@@ -95,18 +101,19 @@ delivery-area=Площадка
 delivery-line=Луч
 delivery-sector=сектор
 
+count=подсчет
+reward=Награда
+active-effects=Активные эффекты
+
 damage=Наносить ущерб
 rate=Скорость стрельбы
 rpm=RPM
 detect-range=Диапазон обнаружения
 range=Ассортимент
 
+sell-cost=Цена продажи
 sell=продавать
 remove=уничтожить
-
-count=подсчет
-reward=Награда
-active-effects=Активные эффекты
 
 tower-single=пушка
 tower-line=Лазерная пушка
@@ -116,6 +123,16 @@ tower-poison=Яд дротик башня
 tower-electricball=Электрический шар
 
 enemy-a=танк
-enemy-b=автомобиль
+enemy-b=средство передвижения
+enemy-c=автомобиль
 
 obstacle-example=Камень
+
+level-example=пример
+
+world-europe=Европа
+world-test=Безымянные мир 1
+world-matu=Безымянные мир 2
+world-perlin-a=Безымянные мир 3
+world-nn=Безымянные мир 4
+world-perlin-b=Безымянные мир 5

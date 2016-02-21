@@ -24,11 +24,14 @@ dont-save=Descartar
 save-as=Guardar como
 pause=Pausar
 fast-forward=Avance Rapido
-language=Idioma
 exit=Salir
 accept=Aceptar
 yes=Sí
 cancel=Cancelar
+
+settings=Ajustes
+language=Idioma
+pause-on-buy=Pausar al comprar
 
 confirm-new=¿Guardar este juego?
 title-confirm-new=Juego Nuevo
@@ -48,8 +51,11 @@ title-invalid-file=Archivo Inválido
 cannot-read=No se puede leer este archivo.
 invalid-file=Esto no es un archivo de juego válido o su formato no es compatible actualmente.
 
-level-complete=Nivel Completado
-level-failed=Nivel Fallado
+level=Nivel
+
+state-complete=Nivel Completado
+state-failed=Juego Terminado
+state-won=Usted Ganó
 
 towers=Torres
 enemies=Enemigos
@@ -105,6 +111,7 @@ rpm=DPM
 detect-range=Distancia de Visión
 range=Alcance
 
+sell-cost=Precio de venta
 sell=Vender
 remove=Destruir
 
@@ -117,5 +124,15 @@ tower-electricball=Bola Eléctrica
 
 enemy-a=Tanque
 enemy-b=Vehículo
+enemy-c=Coche
 
 obstacle-example=Piedra
+
+level-example=Ejemplo
+
+world-europe=Europa
+world-test=Mundo sin nombre 1
+world-matu=Mundo sin nombre 2
+world-perlin-a=Mundo sin nombre 3
+world-nn=Mundo sin nombre 4
+world-perlin-b=Mundo sin nombre 5

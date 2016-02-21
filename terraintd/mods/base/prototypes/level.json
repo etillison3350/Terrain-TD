@@ -2,32 +2,65 @@
     {
         "type":"level",
         "id":"level-example",
-        "health":300,
+        "health":400,
         "levels":[
             {
-                "money":1750,
+                "money":1500,
                 "enemies":[
-                    ["enemy-a", 0.25, 50]
+                    ["enemy-c", 0.9375, 12]
                 ]
             },
             {
-                "money":650,
+                "money":900,
                 "enemies":[
-                    ["enemy-a", 0.2, 100]
+                    ["enemy-c", 0.65, 12],
+                    ["enemy-a", 1.03125, 8]
                 ]
             },
             {
-                "money":800,
+                "money":1050,
+                "enemies":[
+                    ["enemy-c", 0.25, 20],
+                    ["enemy-a", 0.55, 5],
+                    ["enemy-c", 0.15, 5]
+                ]
+            },
+            {
+                "money":1200,
+                "enemies":[
+                    ["enemy-a", 0.2345, 50]
+                ]
+            },
+            {
+                "money":1325,
+                "enemies":[
+                    ["enemy-a", 0.2, 75],
+                    ["enemy-c", 0.175, 10]
+                ]
+            },
+            {
+                "money":1450,
                 "enemies":[
                     ["enemy-a", 0.2, 50],
                     ["enemy-b", 0.375, 25]
                 ]
             },
             {
-                "money":900,
+                "money":1675,
                 "enemies":[
                     ["enemy-b", 0.2, 50],
+                    ["enemy-c", 0.1, 30],
                     ["enemy-a", 0.175, 65]
+                ]
+            },
+            {
+                "money":1900,
+                "enemies":[
+                    ["enemy-c", 0.05, 50],
+                    ["enemy-a", 0.05, 50],
+                    ["enemy-b", 0.05, 100],
+                    ["enemy-a", 0.05, 50],
+                    ["enemy-c", 0.05, 50]
                 ]
             }
         ]

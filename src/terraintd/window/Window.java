@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.swing.Box;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -38,6 +40,8 @@ public class Window extends JFrame {
 
 	public static final JMenu help = new JMenu();
 
+	public static final JLabel levelLabel = new JLabel();
+	
 	private static final ActionListener menuListener = new ActionListener() {
 
 		@Override
@@ -164,6 +168,12 @@ public class Window extends JFrame {
 
 		menuBar.add(help);
 
+		menuBar.add(Box.createHorizontalGlue());
+		
+		menuBar.add(levelLabel);
+		
+		menuBar.add(Box.createHorizontalStrut(5));
+		
 		this.setJMenuBar(menuBar);
 
 		renameButtons();
@@ -185,7 +195,7 @@ public class Window extends JFrame {
 		saveGameAs.setText(Language.get("save-as"));
 		pauseGame.setText(Language.get("pause"));
 		fastForward.setText(Language.get("fast-forward"));
-		language.setText(Language.get("language"));
+		language.setText(Language.get("settings"));
 		modList.setText(Language.get("mods"));
 		exit.setText(Language.get("exit"));
 		help.setText(Language.get("help"));
@@ -196,6 +206,10 @@ public class Window extends JFrame {
 		fastForward.setEnabled(enabled);
 		InfoPanel.pause.setEnabled(enabled);
 		InfoPanel.fastForward.setEnabled(enabled);
+	}
+	
+	public static void updateLevel() {
+		levelLabel.setText(String.format(Language.getCurrentLocale(), "%s  |  %s %d  |  %s", Language.get(GameLogic.getCurrentLevelSet().id), Language.get("level"), GameLogic.getLevelIndex() + 1, Language.get(GameLogic.getCurrentWorld().id)));
 	}
 
 	public static void repaintWindow() {

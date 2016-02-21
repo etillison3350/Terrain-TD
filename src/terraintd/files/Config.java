@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import terraintd.GameLogic;
 import terraintd.Language;
 import terraintd.window.BuyPanel;
 import terraintd.window.GamePanel;
@@ -21,6 +22,7 @@ public class Config {
 	public final Path path;
 
 	public Locale language;
+	public boolean pauseOnBuy;
 
 	public Config(Path path) {
 		this.path = path;
@@ -48,6 +50,7 @@ public class Config {
 			}
 
 			language = entries.containsKey("language") ? Locale.forLanguageTag(entries.get("language")) : Locale.US;
+			pauseOnBuy = entries.containsKey("pause-on-buy") ? Boolean.parseBoolean("pause-on-buy") : true;
 		} catch (IOException e) {
 			return;
 		}
@@ -55,22 +58,25 @@ public class Config {
 
 	public void apply() {
 		Language.setCurrentLocale(language);
+		GameLogic.setPauseOnBuy(pauseOnBuy);
 		InfoPanel.refreshDisplay();
 		InfoPanel.paintHealthBar();
 		BuyPanel.updateButtons();
 		Window.renameButtons();
+		Window.updateLevel();
 		GamePanel.repaintPanel();
 	}
 
 	public void setValues() {
 		language = Language.getCurrentLocale();
+		pauseOnBuy = GameLogic.pausesOnBuy();
 	}
 
 	public void write() {
 		try {
 			Files.delete(path);
 			Files.createFile(path);
-			Files.write(path, String.format("language=%s\n", language.toLanguageTag()).getBytes());
+			Files.write(path, String.format("language=%s\npause-on-buy=%b", language.toLanguageTag(), pauseOnBuy).getBytes());
 		} catch (IOException e) {}
 	}
 

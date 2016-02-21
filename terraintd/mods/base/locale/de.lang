@@ -24,11 +24,14 @@ dont-save=Nicht speichern
 save-as=Speichern als
 pause=Pause
 fast-forward=Fast Forward
-language=Sprache
 exit=Verlassen
 accept=Akzeptieren
 yes=Ja
 cancel=Absagen
+
+settings=Einstellungen
+language=Sprache
+pause-on-buy=Pause beim Kauf
 
 confirm-new=Speichern dieses Spiel?
 title-confirm-new=Neues Spiel
@@ -48,8 +51,11 @@ title-invalid-file=Ungültige Datei
 cannot-read=Kann diese Datei nicht lesen.
 invalid-file=Dies ist kein gültiges Spiel-Datei, oder das Format wird derzeit nicht unterstützt.
 
-level-complete=Level geschafft
-level-failed=Level gescheitert
+level=Level
+
+state-complete=Level geschafft
+state-failed=Spiel zu Ende
+state-won=Du Hast Gewonnen
 
 towers=Towers
 enemies=Feinde
@@ -95,18 +101,19 @@ delivery-area=Bereich
 delivery-line=Strahl
 delivery-sector=Sektor
 
+count=Zählung
+reward=Belohnung
+active-effects=Aktiven Effekte
+
 damage=Schäden
 rate=Kadenz
 rpm=Schuss pro Minute
 detect-range=Erfassungsbereich
 range=Reichweite
 
+sell-cost=Verkaufspreis
 sell=Verkaufen
 remove=Zerstören
-
-count=Zählung
-reward=Belohnung
-active-effects=Aktiven Effekte
 
 tower-single=Kanone
 tower-line=Laser-Kanonen
@@ -117,5 +124,15 @@ tower-electricball=Elektro-Ball
 
 enemy-a=Panzer
 enemy-b=Fahrzeug
+enemy-c=Auto
 
 obstacle-example=Stein
+
+level-example=Beispiel
+
+world-europe=Europa
+world-test=Unbenannt Welt 1
+world-matu=Unbenannt Welt 2
+world-perlin-a=Unbenannt Welt 3
+world-nn=Unbenannt Welt 4
+world-perlin-b=Unbenannt Welt 5
