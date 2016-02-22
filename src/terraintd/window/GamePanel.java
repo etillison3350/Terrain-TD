@@ -297,7 +297,7 @@ public class GamePanel extends JPanel {
 			if (GameLogic.getSelectedEntity() instanceof Tower) {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-				TowerType tower = ((Tower) GameLogic.getSelectedEntity()).type;
+				TowerType tower = ((Tower) GameLogic.getSelectedEntity()).getType();
 
 				double r = tower.range;
 

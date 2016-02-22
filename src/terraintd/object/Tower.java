@@ -1,14 +1,13 @@
 package terraintd.object;
 
 import terraintd.GameLogic;
-import terraintd.types.CollidableType;
 import terraintd.types.ProjectileType;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
 
 public class Tower extends CollidableEntity implements Weapon {
 
-	public final TowerType type;
+	private TowerType type;
 	private double x, y;
 	private double rotation;
 	
@@ -65,7 +64,7 @@ public class Tower extends CollidableEntity implements Weapon {
 	}
 
 	@Override
-	public CollidableType getType() {
+	public TowerType getType() {
 		return this.type;
 	}
 	

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -210,7 +211,7 @@ public final class TypeGenerator {
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p, mod));
+				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
 			}
 		}
 
@@ -314,7 +315,7 @@ public final class TypeGenerator {
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.add(parseProjectile((Map<?, ?>) p, mod));
+				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
 			}
 		}
 
@@ -409,7 +410,7 @@ public final class TypeGenerator {
 
 	}
 
-	static ProjectileType parseProjectile(Map<?, ?> map, Mod mod) {
+	static Collection<ProjectileType> parseProjectiles(Map<?, ?> map, Mod mod) {
 		DeliveryType delivery = DeliveryType.SINGLE_TARGET;
 		try {
 			delivery = DeliveryType.valueOf(((String) map.get("delivery")).toUpperCase());
@@ -453,6 +454,8 @@ public final class TypeGenerator {
 
 		boolean damageFade = map.get("damage-fade") instanceof Boolean ? (Boolean) map.get("damage-fade") : true;
 
+		int count = map.get("count") instanceof Number ? ((Number) map.get("count")).intValue() : 1;
+		
 		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
 		ImageType explosion = map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : null;
@@ -468,7 +471,13 @@ public final class TypeGenerator {
 			}
 		}
 
-		return new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, offset, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()]));
+		Collection<ProjectileType> projs = new ArrayList<>();
+		
+		for (int i = 0; i < count; i++) {
+			projs.add(new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, offset, angle, (rotation + (2 * Math.PI * i / count)) % (2 * Math.PI), absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()])));
+		}
+		
+		return projs;
 	}
 
 	static EffectType parseEffect(Map<?, ?> map) {

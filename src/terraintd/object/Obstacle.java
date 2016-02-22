@@ -1,11 +1,10 @@
 package terraintd.object;
 
-import terraintd.types.CollidableType;
 import terraintd.types.ObstacleType;
 
 public class Obstacle extends CollidableEntity {
 
-	public final ObstacleType type;
+	private ObstacleType type;
 	private double x, y;
 
 	@Override
@@ -29,7 +28,7 @@ public class Obstacle extends CollidableEntity {
 	}
 	
 	@Override
-	public CollidableType getType() {
+	public ObstacleType getType() {
 		return this.type;
 	}
 

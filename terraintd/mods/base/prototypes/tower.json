@@ -29,8 +29,8 @@
                 "explosion-radius":0,
                 "speed":20,
                 "damage":[
-                    10,
-                    9
+                    8,
+                    7
                 ],
                 "rate":10,
                 "follow":true,
@@ -195,8 +195,8 @@
     {
         "type":"tower",
         "id":"tower-poison",
-        "cost":1150,
-        "sell-cost":800,
+        "cost":1250,
+        "sell-cost":850,
         "collision":[
             2,
             2
@@ -291,160 +291,7 @@
                 "dying-fade-time":0.1,
                 "dying-fade":true,
                 "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":0.785398,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":1.5708,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":2.35619,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":3.14159,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":3.92699,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":4.71239,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
-                "image":{
-                    "src":"images/electricbeam.png",
-                    "height":0.5
-                }
-            },
-            {
-                "delivery":"line",
-                "explosion-radius":0,
-                "speed":80,
-                "damage":[
-                    40,
-                    30
-                ],
-                "rate":2,
-                "follow":false,
-                "max-dist":7,
-                "offset":0.7,
-                "rotation":5.49779,
-                "abs-rotation":false,
-                "dying-fade-time":0.1,
-                "dying-fade":true,
-                "damage-fade":false,
+                "count":8,
                 "image":{
                     "src":"images/electricbeam.png",
                     "height":0.5

@@ -12,7 +12,6 @@ import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
 import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
-import terraintd.types.IdType;
 import terraintd.types.ProjectileType;
 import terraintd.types.StatusEffectType;
 
@@ -303,7 +302,7 @@ public class Enemy extends Entity implements Weapon {
 	}
 
 	@Override
-	public IdType getType() {
+	public EnemyType getType() {
 		return this.type;
 	}
 

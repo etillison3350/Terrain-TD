@@ -170,6 +170,8 @@ public class GameLogic implements ActionListener {
 
 		projectiles = new ArrayList<>();
 
+		wasPaused = true;
+		
 		Window.repaintWindow();
 		Window.updateLevel();
 		InfoPanel.setDisplayedObject(null);
@@ -177,7 +179,7 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static void setFastForward(boolean fastForward) {
-		timer.setDelay((int) ((fastForward ? 100 : 1000) * FRAME_TIME));
+		timer.setDelay((int) ((fastForward ? 333 : 1000) * FRAME_TIME));
 	}
 
 	/**

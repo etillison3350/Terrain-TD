@@ -61,8 +61,8 @@ public class Gun {
 		double range;
 
 		if (e instanceof Tower) {
-			this.projectiles = ((Tower) e).type.projectiles;
-			range = ((Tower) e).type.range;
+			this.projectiles = ((Tower) e).getType().projectiles;
+			range = ((Tower) e).getType().range;
 		} else if (e instanceof Enemy) {
 			this.projectiles = ((Enemy) e).type.projectiles;
 			range = ((Enemy) e).type.range;
