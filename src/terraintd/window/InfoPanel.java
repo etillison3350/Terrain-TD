@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -71,9 +72,9 @@ public class InfoPanel extends JPanel {
 
 	private static Object displayedObject;
 
-	private static BufferedImage playImage, pauseImage, ffImage, rewImage;
+	public static JToggleButton[] buttons;
+	private static BufferedImage[] images;
 
-	public static JToggleButton pause, fastForward;
 	private static HealthBar health;
 	private static JLabel money;
 
@@ -81,18 +82,20 @@ public class InfoPanel extends JPanel {
 	private static JPanel bottom;
 
 	private InfoPanel() {
+		images = new BufferedImage[5];
 		try {
-			playImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/play.png").toFile());
+			images[0] = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/pause.png").toFile());
 		} catch (IOException e) {}
-		try {
-			pauseImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/pause.png").toFile());
-		} catch (IOException e) {}
-		try {
-			ffImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/ff.png").toFile());
-		} catch (IOException e) {}
-		try {
-			rewImage = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/rew.png").toFile());
-		} catch (IOException e) {}
+
+		for (int i = 1; i < 5; i++) {
+			try {
+				images[i] = ImageIO.read(Paths.get("terraintd/mods/base/images/icons/sp" + i + ".png").toFile());
+			} catch (IOException e) {}
+		}
+
+//		for (int i = 0; i < 5; i++) {
+//			images[i] = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+//		}
 
 		this.setLayout(new GridBagLayout());
 
@@ -101,7 +104,7 @@ public class InfoPanel extends JPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
-		c.gridwidth = 2;
+		c.gridwidth = 5;
 		c.gridy = 1;
 		health = new HealthBar();
 		this.add(health, c);
@@ -129,39 +132,35 @@ public class InfoPanel extends JPanel {
 		money.setOpaque(true);
 		this.add(money, c);
 
+		final ActionListener buttonListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				((JToggleButton) e.getSource()).setSelected(true);
+				for (int i = 0; i < 5; i++) {
+					if (e.getSource() == buttons[i]) {
+						Window.speeds[i].doClick();
+					}
+				}
+			}
+		};
+		
 		c.gridwidth = 1;
 		c.weightx = 0.5;
 		c.gridy = 0;
-		pause = new JToggleButton(new ImageIcon(playImage));
-		pause.setSelectedIcon(new ImageIcon(pauseImage));
-		pause.setMargin(new Insets(0, 0, 0, 0));
-		pause.setBackground(new Color(184, 207, 229));
-		pause.setBorderPainted(false);
-		pause.setFocusPainted(false);
-		pause.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (Window.pauseGame.isSelected() == pause.isSelected()) Window.pauseGame.doClick();
-			}
-		});
-		this.add(pause, c);
-
-		c.gridx = 1;
-		fastForward = new JToggleButton(new ImageIcon(ffImage));
-		fastForward.setSelectedIcon(new ImageIcon(rewImage));
-		fastForward.setMargin(new Insets(0, 0, 0, 0));
-		fastForward.setBackground(new Color(184, 207, 229));
-		fastForward.setBorderPainted(false);
-		fastForward.setFocusPainted(false);
-		fastForward.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (Window.fastForward.isSelected() != fastForward.isSelected()) Window.fastForward.doClick();
-			}
-		});
-		this.add(fastForward, c);
+		buttons = new JToggleButton[5];
+		ButtonGroup group = new ButtonGroup();
+		for (int i = 0; i < 5; i++) {
+			c.gridx = i;
+			buttons[i] = new JToggleButton(new ImageIcon(images[i]));
+			buttons[i].setMargin(new Insets(0, 0, 0, 0));
+			buttons[i].setBackground(new Color(238, 238, 238));
+			buttons[i].setBorderPainted(false);
+			buttons[i].setFocusPainted(false);
+			buttons[i].addActionListener(buttonListener);
+			group.add(buttons[i]);
+			this.add(buttons[i], c);
+		}
 	}
 
 	private static JLabel createLabel(String format, int header, int indent, Object... args) {
@@ -457,6 +456,12 @@ public class InfoPanel extends JPanel {
 			g.drawString(str, 128 - fm.stringWidth(str) / 2, 14);
 		}
 
+	}
+
+	public static void enableButtons(boolean enabled) {
+		for (JToggleButton button : buttons) {
+			button.setEnabled(enabled);
+		}
 	}
 
 }

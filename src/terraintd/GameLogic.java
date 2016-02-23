@@ -118,14 +118,12 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static void reset() {
-		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
+//		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
 
-		if (!isPaused()) Window.pauseGame.doClick();
 		stop();
 
-		Window.fastForward.setSelected(false);
-		InfoPanel.fastForward.setSelected(false);
-		setFastForward(false);
+		Window.selectButton(0);
+		setSpeed(1);
 
 		state = State.PLAYING;
 
@@ -176,12 +174,11 @@ public class GameLogic implements ActionListener {
 
 		Window.repaintWindow();
 		Window.updateLevel();
-		InfoPanel.setDisplayedObject(null);
 		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
 
-	public static void setFastForward(boolean fastForward) {
-		timer.setDelay((int) ((fastForward ? 333 : 1000) * FRAME_TIME));
+	public static void setSpeed(double mult) {
+		timer.setDelay((int) (FRAME_TIME * 1000.0 / mult));
 	}
 
 	/**
@@ -248,11 +245,9 @@ public class GameLogic implements ActionListener {
 	private static void processPermanents() {
 		if (health <= 0) {
 			health = 0;
-			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
-			Window.fastForward.setSelected(false);
-			InfoPanel.fastForward.setSelected(false);
-			setFastForward(false);
+			Window.selectButton(0);
+			setSpeed(1);
 			state = State.FAILED;
 			BuyPanel.updateButtons();
 			InfoPanel.paintHealthBar();
@@ -260,11 +255,9 @@ public class GameLogic implements ActionListener {
 			GamePanel.repaintPanel();
 			return;
 		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
-			if (!isPaused()) Window.pauseGame.doClick();
 			stop();
-			Window.fastForward.setSelected(false);
-			InfoPanel.fastForward.setSelected(false);
-			setFastForward(false);
+			Window.selectButton(0);
+			setSpeed(1);
 			BuyPanel.updateButtons();
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();

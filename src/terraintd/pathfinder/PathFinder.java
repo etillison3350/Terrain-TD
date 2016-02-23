@@ -72,57 +72,9 @@ public class PathFinder {
 			nodeSet.addAll(nodeList);
 			node.explore();
 
-//			Node[] next = new Node[6];
-//			if (node.top) {
-//				if (node.y != 0) {
-//					next[0] = nodes[node.y - 1][node.x][1];
-//					next[2] = nodes[node.y - 1][node.x][0];
-//					if (node.x != world.getWidth()) next[4] = nodes[node.y - 1][node.x + 1][0];
-//				}
-//
-//				if (node.y != world.getHeight()) {
-//					next[1] = nodes[node.y + 1][node.x][1];
-//					next[3] = nodes[node.y][node.x][0];
-//					if (node.x != world.getWidth()) next[5] = nodes[node.y][node.x + 1][0];
-//				}
-//			} else {
-//				if (node.x != 0) {
-//					next[0] = nodes[node.y][node.x - 1][0];
-//					next[2] = nodes[node.y][node.x - 1][1];
-//					if (node.y != world.getHeight()) next[4] = nodes[node.y + 1][node.x - 1][1];
-//				}
-//
-//				if (node.x != world.getWidth()) {
-//					next[1] = nodes[node.y][node.x + 1][0];
-//					next[3] = nodes[node.y][node.x][1];
-//					if (node.y != world.getHeight()) next[5] = nodes[node.y + 1][node.x][1];
-//				}
-//			}
-//
-//			for (int i = 0; i < 6; i++) {
-//				Node n = next[i];
-//
-//				if (n == null || n.isClosed()) continue;
-//
-//				int y = node.y - (node.top && (i % 2 == 0) ? 1 : 0);
-//				int x = node.x - (!node.top && (i % 2 == 0) ? 1 : 0);
-//				double speed = type.speed.get(world.tiles[y][x].terrain);
-//
-//				if (speed < Double.MIN_VALUE) continue;
-//
-//				double newCost = node.getCost() + (i < 2 ? 1 : SQRT2D2) / speed;
-//				if (n.getCost() == 0 || newCost < n.getCost()) {
-//					n.setCost(newCost);
-//					n.setNext(node);
-//				}
-//				nodeSet.add(n);
-//			}
-			
 			for (Node n : getNeighbors(nodes, node)) {
 				if (n.isClosed()) continue;
 				
-//				int y = node.y - (node.top && (i % 2 == 0) ? 1 : 0);
-//				int x = node.x - (!node.top && (i % 2 == 0) ? 1 : 0);
 				int x = node.x - (!node.top && node.x - n.x == 1 ? 1 : 0);
 				int y = node.y - (node.top && node.y - n.y == 1 ? 1 : 0);
 				double speed = type.speed.get(world.tiles[y][x].terrain);

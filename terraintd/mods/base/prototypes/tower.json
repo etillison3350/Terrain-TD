@@ -302,25 +302,24 @@
     {
         "type":"tower",
         "id":"tower-testsingle",
-        "cost":0,
-        "sell-cost":0,
-        "collision":[1, 1],
-        "terrain":["all"],
+        "cost":875,
+        "collision":[2, 2],
+        "terrain":["land"],
         "range":12,
         "rotate":false,
         "icon":{
-            "src":"images/icons/pause.png"
+            "src":"images/electricbeam.png"
         },
         "image":{
-            "src":"images/icons/pause.png",
-            "width":1,
-            "height":1
+            "src":"images/lasercannon.png",
+            "width":3,
+            "height":3
         },
         "projectiles":[
             {
                 "delivery":"single_target",
                 "explosion-radius":0.833333,
-                "speed":5,
+                "speed":7.5,
                 "damage":[
                     15,
                     15

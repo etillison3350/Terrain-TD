@@ -10,13 +10,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.Box;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import terraintd.GameLogic;
 import terraintd.Language;
@@ -32,8 +34,8 @@ public class Window extends JFrame {
 	public static final JMenuItem openGame = new JMenuItem();
 	public static final JMenuItem saveGame = new JMenuItem();
 	public static final JMenuItem saveGameAs = new JMenuItem();
-	public static final JCheckBoxMenuItem pauseGame = new JCheckBoxMenuItem();
-	public static final JCheckBoxMenuItem fastForward = new JCheckBoxMenuItem();
+	public static final JMenu speed = new JMenu();
+	public static final JRadioButtonMenuItem[] speeds = {new JRadioButtonMenuItem(), new JRadioButtonMenuItem(), new JRadioButtonMenuItem(), new JRadioButtonMenuItem(), new JRadioButtonMenuItem()};
 	public static final JMenuItem language = new JMenuItem();
 	public static final JMenuItem modList = new JMenuItem();
 	public static final JMenuItem exit = new JMenuItem();
@@ -41,14 +43,14 @@ public class Window extends JFrame {
 	public static final JMenu help = new JMenu();
 
 	public static final JLabel levelLabel = new JLabel();
-	
+
 	private static final ActionListener menuListener = new ActionListener() {
 
 		@Override
 		public synchronized void actionPerformed(ActionEvent e) {
 			if (e.getSource() == newGame) {
 				boolean wasPaused = GameLogic.isPaused();
-				if (!wasPaused) pauseGame.doClick();
+				if (!wasPaused) speeds[0].doClick();
 				GameLogic.stop();
 
 				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-new"), Language.get("title-confirm-new"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
@@ -80,29 +82,19 @@ public class Window extends JFrame {
 			} else if ((e.getSource() == saveGame && !GameLogic.isSaved() && !GameLogic.save()) || e.getSource() == saveGameAs) {
 				Path path = FileChooser.showSaveDialog(window, Paths.get("").toAbsolutePath());
 				if (path != null) GameLogic.save(path);
-			} else if (e.getSource() == pauseGame) {
-				InfoPanel.pause.setSelected(!pauseGame.isSelected());
-
-				if (pauseGame.isSelected()) {
-					GameLogic.stop();
-				} else {
-					GameLogic.start();
-				}
-			} else if (e.getSource() == fastForward) {
-				GameLogic.setFastForward(fastForward.isSelected());
 			} else if (e.getSource() == language) {
-				if (!GameLogic.isPaused()) pauseGame.doClick();
+				if (!GameLogic.isPaused()) speeds[0].doClick();
 				GameLogic.stop();
-				
+
 				Settings.showDialog();
 			} else if (e.getSource() == modList) {
-				if (!GameLogic.isPaused()) pauseGame.doClick();
+				if (!GameLogic.isPaused()) speeds[0].doClick();
 				GameLogic.stop();
-				
+
 				ModList.showDialog(window);
 			} else if (e.getSource() == exit) {
 				boolean wasPaused = GameLogic.isPaused();
-				if (!wasPaused) pauseGame.doClick();
+				if (!wasPaused) speeds[0].doClick();
 				GameLogic.stop();
 
 				int i = GameLogic.isSaved() ? 1 : JOptionPane.showOptionDialog(window, Language.get("confirm-exit"), Language.get("title-confirm-exit"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[] {Language.get("save"), Language.get("dont-save"), Language.get("cancel")}, Language.get("save"));
@@ -116,6 +108,17 @@ public class Window extends JFrame {
 					if (!wasPaused) GameLogic.start();
 					return;
 				}
+			} else {
+				for (int i = 0; i < 5; i++) {
+					if (e.getSource() == speeds[i]) {
+						if (i == 0) {
+							GameLogic.stop();
+						} else {
+							GameLogic.setSpeed(i);
+							GameLogic.start();
+						}
+					}
+				}
 			}
 		}
 	};
@@ -124,6 +127,7 @@ public class Window extends JFrame {
 
 	private Window() {
 		super(Language.get("title"));
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(100 * (int) Math.floor((dim.width - 50) / 100), 100 * (int) Math.floor((dim.height - 50) / 100));
@@ -144,18 +148,22 @@ public class Window extends JFrame {
 
 		game.addSeparator();
 
-		pauseGame.addActionListener(menuListener);
-		pauseGame.setSelected(true);
-		game.add(pauseGame);
+		ButtonGroup group = new ButtonGroup();
+		for (int i = 0; i < 5; i++) {
+			speeds[i].addActionListener(menuListener);
+			speed.add(speeds[i]);
+			group.add(speeds[i]);
+		}
 
-		fastForward.addActionListener(menuListener);
-		game.add(fastForward);
+		speeds[0].setSelected(true);
+
+		game.add(speed);
 
 		game.addSeparator();
 
 		language.addActionListener(menuListener);
 		game.add(language);
-		
+
 		modList.addActionListener(menuListener);
 		game.add(modList);
 
@@ -169,11 +177,11 @@ public class Window extends JFrame {
 		menuBar.add(help);
 
 		menuBar.add(Box.createHorizontalGlue());
-		
+
 		menuBar.add(levelLabel);
-		
+
 		menuBar.add(Box.createHorizontalStrut(5));
-		
+
 		this.setJMenuBar(menuBar);
 
 		renameButtons();
@@ -193,8 +201,11 @@ public class Window extends JFrame {
 		openGame.setText(Language.get("open"));
 		saveGame.setText(Language.get("save"));
 		saveGameAs.setText(Language.get("save-as"));
-		pauseGame.setText(Language.get("pause"));
-		fastForward.setText(Language.get("fast-forward"));
+		speed.setText(Language.get("game-speed"));
+		speeds[0].setText(Language.get("pause"));
+		for (int i = 1; i < 5; i++) {
+			speeds[i].setText(i + "\u00D7");
+		}
 		language.setText(Language.get("settings"));
 		modList.setText(Language.get("mods"));
 		exit.setText(Language.get("exit"));
@@ -202,12 +213,19 @@ public class Window extends JFrame {
 	}
 
 	public static void setButtonsEnabled(boolean enabled) {
-		pauseGame.setEnabled(enabled);
-		fastForward.setEnabled(enabled);
-		InfoPanel.pause.setEnabled(enabled);
-		InfoPanel.fastForward.setEnabled(enabled);
+		for (JRadioButtonMenuItem b : speeds) {
+			b.setEnabled(enabled);
+		}
+		InfoPanel.enableButtons(enabled);
 	}
-	
+
+	public static void selectButton(int button) {
+		if (button >= 5 || button < 0) return;
+
+		speeds[button].doClick();
+		InfoPanel.buttons[button].setSelected(true);
+	}
+
 	public static void updateLevel() {
 		levelLabel.setText(String.format(Language.getCurrentLocale(), "%s  |  %s %d  |  %s", Language.get(GameLogic.getCurrentLevelSet().id), Language.get("level"), GameLogic.getLevelIndex() + 1, Language.get(GameLogic.getCurrentWorld().id)));
 	}
@@ -216,12 +234,13 @@ public class Window extends JFrame {
 		window.repaint();
 	}
 
-	public static void setWindowVisible(boolean b) {
-		window.setVisible(true);
-	}
+	public static void setWindowVisible(boolean visible) {
+		SwingUtilities.invokeLater(new Runnable() {
 
-	public static void setWindowDefaultCloseOperation(int operation) {
-		window.setDefaultCloseOperation(operation);
+			@Override
+			public void run() {
+				window.setVisible(true);
+			}
+		});
 	}
-
 }
