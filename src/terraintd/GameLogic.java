@@ -481,6 +481,16 @@ public class GameLogic implements ActionListener {
 					
 					if (en.damage(p)) money += en.type.reward;
 					p.hitTarget(en);
+					
+					if (p.type.explodeRadius > 0.00001) {
+						for (Entity e : permanents) {
+							if (!(e instanceof Enemy) || (en == e)) continue;
+
+							if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) <= p.type.explodeRadius * p.type.explodeRadius) {
+								if (((Enemy) e).damage(p)) money += ((Enemy) e).type.reward;
+							}
+						}
+					}
 				}
 			}
 		}

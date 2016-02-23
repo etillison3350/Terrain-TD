@@ -11,7 +11,7 @@ import terraintd.Language;
 
 public enum StatusEffectType {
 	FIRE(true, Color.ORANGE, "fireEffect.png"),
-	PARALYSIS(false, Color.LIGHT_GRAY, null),
+	PARALYSIS(false, new Color(0.8F, 0.8F, 0.9F), null),
 	SLOWNESS(true, new Color(0.25F, 0.125F, 0.5F), null),
 	WEAKNESS(true, new Color(0.5F, 0.0F, 1.0F), null),
 	BLUNTNESS(true, Color.DARK_GRAY, null),

@@ -1,13 +1,14 @@
 package terraintd.types;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
 public class ImageType {
 
+	public static final ImageType BLANK = new ImageType(null, 1, 1, 0, 0);
+	
 	public final BufferedImage image;
 	public final Path src;
 	public final double width;
@@ -26,7 +27,7 @@ public class ImageType {
 		BufferedImage image;
 		try {
 			image = ImageIO.read(src.toFile());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		}
 		this.image = image;

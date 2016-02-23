@@ -319,7 +319,7 @@
         "projectiles":[
             {
                 "delivery":"single_target",
-                "explosion-radius":0,
+                "explosion-radius":0.833333,
                 "speed":5,
                 "damage":[
                     15,
@@ -337,6 +337,11 @@
                 "image":{
                     "src":"images/electricbeam.png",
                     "height":0.5
+                },
+                "explosion":{
+                    "src":"images/electricbeam.png",
+                    "width":1.6666666,
+                    "height":1.6666666
                 },
                 "effects":[
                     {
