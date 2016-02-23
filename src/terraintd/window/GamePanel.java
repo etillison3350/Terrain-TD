@@ -87,12 +87,7 @@ public class GamePanel extends JPanel {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				double mouseX = e.getX() / getTileSize();
-				double mouseY = e.getY() / getTileSize();
-
-				double dx = startX - mouseX;
-				double dy = startY - mouseY;
-				if (dx * dx + dy * dy > 0.25) {
+				if (GameLogic.distanceSq(startX, e.getX() / getTileSize(), startY, e.getY() / getTileSize()) > 0.25) {
 					ox = sox - dx;
 					oy = soy - dy;
 					repaint();
@@ -124,11 +119,7 @@ public class GamePanel extends JPanel {
 					return;
 				}
 				
-				double mx = e.getX() / getTileSize();
-				double my = e.getY() / getTileSize();
-				double dx = startX - mx;
-				double dy = startY - my;
-				if (dx * dx + dy * dy < 0.25) {
+				if (GameLogic.distanceSq(startX, e.getX() / getTileSize(), startY, e.getY() / getTileSize()) < 0.25) {
 					if (GameLogic.getBuyingType() != null) {
 						int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width * 0.5);
 						int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height * 0.5);
@@ -349,8 +340,8 @@ public class GamePanel extends JPanel {
 			g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
 
 		for (Projectile p : GameLogic.getProjectiles()) {
-			ImageType img = p.type.image;
-
+			ImageType img = p.getDeathTime() >= 0 ? p.type.explosion : p.type.image;
+			
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, p.type.dyingFade ? 1 - (float) (Math.max(0, p.getDeathTime()) / p.type.dyingFadeTime) : 1));
 			AffineTransform trans = new AffineTransform();
 

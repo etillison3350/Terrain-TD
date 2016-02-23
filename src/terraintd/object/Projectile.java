@@ -80,7 +80,7 @@ public class Projectile {
 				dy = ty - this.y;
 			}
 
-			if (dx * dx + dy * dy < 2) {
+			if (dx * dx + dy * dy < (this.type.follow ? 2 : 0.1)) {
 				this.x = tx;
 				this.y = ty;
 				return false;
@@ -158,6 +158,12 @@ public class Projectile {
 
 	public void hitTarget(Enemy target) {
 		this.hitTargets.add(target);
+		
+		if (this.type.delivery == DeliveryType.SINGLE_TARGET) {
+//			this.x = (this.x + target.getX()) * 0.5;
+//			this.y = (this.y + target.getY()) * 0.5;
+			this.fade();
+		}
 	}
 
 	/**

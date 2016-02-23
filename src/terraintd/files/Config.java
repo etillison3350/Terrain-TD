@@ -50,7 +50,7 @@ public class Config {
 			}
 
 			language = entries.containsKey("language") ? Locale.forLanguageTag(entries.get("language")) : Locale.US;
-			pauseOnBuy = entries.containsKey("pause-on-buy") ? Boolean.parseBoolean("pause-on-buy") : true;
+			pauseOnBuy = entries.containsKey("pause-on-buy") ? Boolean.parseBoolean(entries.get("pause-on-buy")) : true;
 		} catch (IOException e) {
 			return;
 		}

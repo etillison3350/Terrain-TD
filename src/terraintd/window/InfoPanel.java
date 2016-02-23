@@ -122,7 +122,7 @@ public class InfoPanel extends JPanel {
 		bottom.setBackground(Color.BLACK);
 		bottom.setBorder(new EmptyBorder(0, 0, 5, 0));
 		this.add(bottom, c);
-		
+
 		c.gridy = 2;
 		money = createLabel("", 5, 0);
 		money.setBackground(Color.BLACK);
@@ -287,9 +287,8 @@ public class InfoPanel extends JPanel {
 				if (effects.length <= 0) {
 					panel.add(createLabel("%s", 0, 1, Language.get("none")));
 				} else {
-					for (StatusEffect e : effects) {
-						panel.add(createLabel("%s %s, %.3gs", 0, 2, e.type, e.amplifier, e.getDuration()));
-					}
+					for (StatusEffect e : effects)
+						panel.add(createLabel(e.toString(), 0, 2));
 				}
 			}
 		}
@@ -316,9 +315,8 @@ public class InfoPanel extends JPanel {
 					if (p.effects.length == 0) {
 						panel.add(createLabel("%s", 0, 2, Language.get("none")));
 					} else {
-						for (EffectType e : p.effects) {
-							panel.add(createLabel("%s %s, %.3gs", 0, 2, e.type, e.amplifier, e.duration));
-						}
+						for (EffectType e : p.effects)
+							panel.add(createLabel(e.toString(), 0, 2));
 					}
 					panel.add(new JSeparator()).setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 				}

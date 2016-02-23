@@ -9,10 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.swing.Timer;
@@ -171,7 +173,7 @@ public class GameLogic implements ActionListener {
 		projectiles = new ArrayList<>();
 
 		wasPaused = true;
-		
+
 		Window.repaintWindow();
 		Window.updateLevel();
 		InfoPanel.setDisplayedObject(null);
@@ -315,16 +317,14 @@ public class GameLogic implements ActionListener {
 						Enemy enemy = (Enemy) entity;
 						if (enemy.getFutureHealth() < 0) continue;
 
-						final double dx = enemy.getX() - g.shooter.getX();
-						final double dy = enemy.getY() - g.shooter.getY();
-						final double d2 = dx * dx + dy * dy;
+						final double d = distanceSq(enemy.getX(), g.shooter.getX(), enemy.getY(), g.shooter.getY());
 
-						if (d2 > g.range * g.range) continue;
+						if (d > g.range * g.range) continue;
 
 						switch (g.getTargetType()) {
 							case FARTHEST:
-								if (d2 > min) {
-									min = d2;
+								if (d > min) {
+									min = d;
 									target = enemy;
 								}
 								break;
@@ -341,8 +341,8 @@ public class GameLogic implements ActionListener {
 								}
 								break;
 							case NEAREST:
-								if (d2 < min) {
-									min = d2;
+								if (d < min) {
+									min = d;
 									target = enemy;
 								}
 								break;
@@ -417,24 +417,15 @@ public class GameLogic implements ActionListener {
 
 				if (p.type.delivery == DeliveryType.SINGLE_TARGET) {
 					if (p.type.follow) {
-						if (p.getTarget().damage(p)) {
-							money += p.getTarget().type.reward;
-						}
+						if (p.getTarget().damage(p)) money += p.getTarget().type.reward;
 					}
 
 					if (p.type.explodeRadius > 0.00001) {
 						for (Entity e : permanents) {
 							if (!(e instanceof Enemy) || (p.type.follow && p.getTarget() == e)) continue;
 
-							Enemy enemy = (Enemy) e;
-
-							double dx = e.getX() - p.getX();
-							double dy = e.getY() - p.getX();
-
-							if (dy * dy + dx * dx <= p.type.explodeRadius * p.type.explodeRadius) {
-								if (enemy.damage(p)) {
-									money += enemy.type.reward;
-								}
+							if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) <= p.type.explodeRadius * p.type.explodeRadius) {
+								if (((Enemy) e).damage(p)) money += ((Enemy) e).type.reward;
 							}
 						}
 					}
@@ -445,10 +436,7 @@ public class GameLogic implements ActionListener {
 				for (Entity e : permanents) {
 					if (!(e instanceof Enemy)) continue;
 
-					double dx = e.getX() - p.getX();
-					double dy = e.getY() - p.getY();
-
-					if (dy * dy + dx * dx > p.getRadius() * p.getRadius()) continue;
+					if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) > p.getRadius() * p.getRadius()) continue;
 
 					boolean damage = false;
 
@@ -469,11 +457,30 @@ public class GameLogic implements ActionListener {
 					}
 
 					if (damage) {
-						if (((Enemy) e).damage(p)) {
-							money += ((Enemy) e).type.reward;
-						}
+						if (((Enemy) e).damage(p)) money += ((Enemy) e).type.reward;
 						p.hitTarget((Enemy) e);
 					}
+				}
+			} else if (!p.type.follow) {
+//				Optional<Entity> oe = Arrays.stream(permanents).filter(e -> e instanceof Enemy && distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) < 2).sorted(new Comparator<Entity>() {
+				Optional<Entity> oe = Arrays.stream(permanents).filter(e -> e instanceof Enemy && e.getRectangle().contains(p.getX(), p.getY())).sorted(new Comparator<Entity>() {
+
+					
+					@Override
+					public int compare(Entity o1, Entity o2) {
+						int i = Double.compare(distanceSq(o1.getX(), p.getX(), o1.getY(), p.getY()), distanceSq(o2.getX(), p.getX(), o2.getY(), p.getY()));
+						
+						if (i == 0) return Integer.compare(o1.hashCode(), o2.hashCode());
+						
+						return i;
+					}
+				}).findFirst();
+				
+				if (oe.isPresent() && oe.get() instanceof Enemy) {
+					Enemy en = (Enemy) oe.get();
+					
+					if (en.damage(p)) money += en.type.reward;
+					p.hitTarget(en);
 				}
 			}
 		}
@@ -599,8 +606,7 @@ public class GameLogic implements ActionListener {
 			BuyPanel.updateButtons();
 		}
 	}
-	
-	
+
 	public static boolean pausesOnBuy() {
 		return pauseOnBuy;
 	}
@@ -708,6 +714,13 @@ public class GameLogic implements ActionListener {
 
 	public static State getState() {
 		return state;
+	}
+
+	public static final double distanceSq(double x1, double x2, double y1, double y2) {
+		double dx = x2 - x1;
+		double dy = y2 - y1;
+
+		return dx * dx + dy * dy;
 	}
 
 	public static boolean isSaved() {

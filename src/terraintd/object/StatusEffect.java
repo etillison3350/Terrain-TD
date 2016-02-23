@@ -1,6 +1,7 @@
 package terraintd.object;
 
 import terraintd.GameLogic;
+import terraintd.Language;
 import terraintd.types.EffectType;
 import terraintd.types.StatusEffectType;
 
@@ -64,6 +65,11 @@ public class StatusEffect {
 		}
 		if (type != other.type) return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s%s, %.3gs", type, type.amplifiable ? String.format(Language.getCurrentLocale(), " %f", amplifier) : "", duration);
 	}
 
 }

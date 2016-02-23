@@ -458,8 +458,8 @@ public final class TypeGenerator {
 		
 		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : null;
 
-		ImageType explosion = map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : null;
-
+		ImageType explosion = map.containsKey("explosion") ? (map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : null) : image;
+		
 		List<EffectType> effects = new ArrayList<>();
 		if (map.get("effects") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("effects")) {
@@ -485,7 +485,7 @@ public final class TypeGenerator {
 
 		double duration = map.get("duration") instanceof Number ? ((Number) map.get("duration")).doubleValue() : 1;
 
-		double amplifier = map.get("amplifier") instanceof Number ? ((Number) map.get("amplifier")).doubleValue() : 1;
+		double amplifier = type.amplifiable && map.get("amplifier") instanceof Number ? ((Number) map.get("amplifier")).doubleValue() : 1;
 
 		if (amplifier <= 0) throw new IllegalArgumentException();
 

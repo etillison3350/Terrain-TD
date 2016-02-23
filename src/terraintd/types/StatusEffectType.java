@@ -10,19 +10,21 @@ import javax.imageio.ImageIO;
 import terraintd.Language;
 
 public enum StatusEffectType {
-	FIRE(Color.ORANGE, "fireEffect.png"),
-	PARALYSIS(Color.LIGHT_GRAY, null),
-	SLOWNESS(new Color(0.25F, 0.125F, 0.5F), null),
-	WEAKNESS(new Color(0.5F, 0.0F, 1.0F), null),
-	BLUNTNESS(Color.DARK_GRAY, null),
-	FROST(new Color(0.0F, 1.0F, 1.0F), null),
-	POISON(Color.GREEN, null),
-	BLEED(Color.RED, null);
+	FIRE(true, Color.ORANGE, "fireEffect.png"),
+	PARALYSIS(false, Color.LIGHT_GRAY, null),
+	SLOWNESS(true, new Color(0.25F, 0.125F, 0.5F), null),
+	WEAKNESS(true, new Color(0.5F, 0.0F, 1.0F), null),
+	BLUNTNESS(true, Color.DARK_GRAY, null),
+	FROST(true, new Color(0.0F, 1.0F, 1.0F), null),
+	POISON(true, Color.GREEN, null),
+	BLEED(true, Color.RED, null);
 
+	public final boolean amplifiable;
 	public final Color color;
 	private BufferedImage image;
 
-	private StatusEffectType(Color color, String imgSrc) {
+	private StatusEffectType(boolean amplifiable, Color color, String imgSrc) {
+		this.amplifiable = amplifiable;
 		this.color = color;
 		try {
 			this.image = ImageIO.read(Paths.get("terraintd/mods/base/images/" + imgSrc).toFile());

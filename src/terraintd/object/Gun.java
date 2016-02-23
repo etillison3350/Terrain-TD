@@ -39,7 +39,7 @@ public class Gun {
 		this.range = range;
 		this.time = new double[projectiles.length];
 		this.shooter = new Position(x, y);
-		
+
 		this.targetType = targetType;
 		this.kills = kills;
 		this.damageDone = damageDone;
@@ -107,14 +107,15 @@ public class Gun {
 	public ProjectileType[] fire() {
 		ArrayList<ProjectileType> firing = new ArrayList<>();
 
-		if (getDistanceSq() < range * range) {
-			for (int n = 0; n < time.length; n++) {
-				time[n] += GameLogic.FRAME_TIME;
+		boolean ds = getDistanceSq() < range * range;
 
-				while (time[n] > 0) {
-					time[n] -= 1.0 / projectiles[n].rate;
-					firing.add(projectiles[n]);
-				}
+		for (int n = 0; n < time.length; n++) {
+			time[n] += GameLogic.FRAME_TIME;
+			if (!ds && time[n] >= 0) time[n] = 0;
+			
+			while (ds && time[n] >= 0) {
+				time[n] -= 1.0 / projectiles[n].rate;
+				firing.add(projectiles[n]);
 			}
 		}
 
