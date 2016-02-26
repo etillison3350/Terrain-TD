@@ -1,5 +1,6 @@
 package terraintd.types;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 public class TowerType extends CollidableType {
@@ -30,5 +31,10 @@ public class TowerType extends CollidableType {
 
 	public static TowerType[] values() {
 		return TypeGenerator.towers();
+	}
+	
+	@Override
+	public Color getBackgroundColor() {
+		return new Color(0.375F, 0.375F, 0.75F);
 	}
 }

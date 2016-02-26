@@ -94,13 +94,21 @@ target-na=Tudo
 area=Área
 tiles=praças
 dps=Dano por segundo
-delivery=Tipo
+total-damage=Dano total
 
+delivery=Tipo
 delivery-singletarget=Único
 delivery-area=Área
 delivery-line=Viga
 delivery-sector=Setor
 
+inst-target=Tem como alvo
+inst-target-enemy=Inimigos
+inst-target-location=Locais aleatórios
+inst-target-rotation=Rotações aleatórias
+inst-target-spread=Rotações aleatórias
+
+explode-radius=Raio de explosão
 count=Contagem
 reward=Recompensa
 active-effects=Efeitos Ativos
@@ -121,10 +129,14 @@ tower-area=PEM
 tower-sector=Torre de Torta
 tower-poison=Torre do Dardo do Veneno
 tower-electricball=Ball Elétrica
+tower-testsingle=Canhão de Choque
+tower-explode=Lançador de Mísseis
 
 enemy-a=Tanque
 enemy-b=Veículo
 enemy-c=Carro
+
+instant-example=Ataque aéreo
 
 obstacle-example=Pedra
 

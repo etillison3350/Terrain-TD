@@ -1,5 +1,6 @@
 package terraintd.types;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 public class ObstacleType extends CollidableType {
@@ -22,5 +23,10 @@ public class ObstacleType extends CollidableType {
 	
 	public static ObstacleType[] values() {
 		return TypeGenerator.obstacles();
+	}
+	
+	@Override
+	public Color getBackgroundColor() {
+		return new Color(0.375F, 0.75F, 0.75F);
 	}
 }

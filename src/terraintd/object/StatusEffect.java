@@ -7,26 +7,26 @@ import terraintd.types.StatusEffectType;
 
 public class StatusEffect {
 
-	public final Weapon inflictor;
+	public final Object inflictor;
 	public final StatusEffectType type;
 	public final double origDuration, amplifier;
 	private double duration;
 
-	public StatusEffect(Weapon inflictor, StatusEffectType type, double amplifier, double duration) {
+	public StatusEffect(Object inflictor, StatusEffectType type, double amplifier, double duration) {
 		this.inflictor = inflictor;
 		this.type = type;
 		this.amplifier = amplifier;
 		this.origDuration = this.duration = duration;
 	}
 
-	public StatusEffect(Weapon inflictor, EffectType type) {
+	public StatusEffect(Object inflictor, EffectType type) {
 		this(inflictor, type.type, type.amplifier, type.duration);
 	}
 
 	/**
 	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
 	 */
-	public StatusEffect(Weapon inflictor, StatusEffectType type, double amplifier, double duration, double origDuration) {
+	public StatusEffect(Object inflictor, StatusEffectType type, double amplifier, double duration, double origDuration) {
 		this.inflictor = inflictor;
 		this.type = type;
 		this.amplifier = amplifier;
@@ -41,6 +41,14 @@ public class StatusEffect {
 
 	public double getDuration() {
 		return duration;
+	}
+	
+	public void registerInflictDamage(double damage) {
+		if (this.inflictor instanceof Weapon) ((Weapon) this.inflictor).getGun().registerDamage(damage);
+	}
+	
+	public void registerInflictKill() {
+		if (this.inflictor instanceof Weapon) ((Weapon) this.inflictor).getGun().registerKill();
 	}
 
 	@Override

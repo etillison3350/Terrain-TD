@@ -94,13 +94,21 @@ target-na=Todo
 area=Área
 tiles=cuadrados
 dps=Daño Por Segundo
-delivery=Tipo
+total-damage=Daño total
 
+delivery=Tipo
 delivery-singletarget=Un disparo
 delivery-area=Área
 delivery-line=Linea
 delivery-sector=Sector
 
+inst-target=Dirigido a
+inst-target-enemy=Enemigos
+inst-target-location=Lugares aleatorios
+inst-target-rotation=Rotaciones aleatorias
+inst-target-spread=Rotaciones aleatorias
+
+explode-radius=Radio de explosión
 count=Cuenta
 reward=Recompensa
 active-effects=Efectos Activos
@@ -121,10 +129,14 @@ tower-area=PEM
 tower-sector=Torre de Tarta
 tower-poison=Torre de Dardos Venenosos
 tower-electricball=Bola Eléctrica
+tower-testsingle=Cañón de Aturdimiento
+tower-explode=Lanzador de misiles
 
 enemy-a=Tanque
 enemy-b=Vehículo
 enemy-c=Coche
+
+instant-example=Asalto aéreo
 
 obstacle-example=Piedra
 

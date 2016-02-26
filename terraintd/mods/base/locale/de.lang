@@ -94,13 +94,21 @@ target-na=Alles
 area=Bereich
 tiles=Fliesen
 dps=Schaden pro Sekunde
-delivery=Art
+total-damage=Gesamtschaden
 
+delivery=Art
 delivery-singletarget=Single
 delivery-area=Bereich
 delivery-line=Strahl
 delivery-sector=Sektor
 
+inst-target=Zielt
+inst-target-enemy=Enemies
+inst-target-locaiton=Zufällige Orte
+inst-target-rotation=Zufällige Rotationen
+inst-target-spread=Zufällige Rotationen
+
+explode-radius=Explosionsradius
 count=Zählung
 reward=Belohnung
 active-effects=Aktiven Effekte
@@ -121,10 +129,14 @@ tower-area=Elektromagnetische Impuls
 tower-sector=Turm der Torte
 tower-poison=Turm des Giftpfeil
 tower-electricball=Elektro-Ball
+tower-testsingle=Betäubungskanone
+tower-explode=Raketenwerfer
 
 enemy-a=Panzer
 enemy-b=Fahrzeug
 enemy-c=Auto
+
+instant-example=Luftangriff
 
 obstacle-example=Stein
 

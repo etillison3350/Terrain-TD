@@ -94,13 +94,21 @@ target-na=すべて
 area=エリア
 tiles=タイル
 dps=秒当たりのダメージ
-delivery=タイプ
+total-damage=被害総額
 
+delivery=タイプ
 delivery-singletarget=シングル
 delivery-area=エリア
 delivery-line=ビーム
 delivery-sector=セクタ
 
+inst-target=目指す
+inst-target-enemies=敵
+inst-target-location=ランダムな位置
+inst-target-rotation=ランダムローテーション
+inst-target-spread=ランダムローテーション
+
+explode-radius=爆発半径
 count=カウント
 reward=褒賞
 active-effects=アクティブ効果
@@ -121,10 +129,14 @@ tower-area=EMP
 tower-sector=パイの塔
 tower-poison=毒ダーツタワー
 tower-electricball=電気ボール
+tower-testsingle=スタン大砲
+tower-explode=ミサイル発射装置
 
 enemy-a=戦車
 enemy-b=車両
 enemy-c=車
+
+instant-example=空襲
 
 obstacle-example=石
 

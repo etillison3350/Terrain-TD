@@ -11,13 +11,14 @@ public class Projectile {
 
 	public final ProjectileType type;
 	public final Weapon shootingEntity;
+	public final Instant instant;
 	public final double startX, startY;
 	private double x, y;
 	private double rotation;
 	private double radius;
 	private double deathTime;
 
-	private final Enemy target;
+	private final Entity target;
 	public final double targetX, targetY;
 	private final List<Enemy> hitTargets;
 
@@ -26,12 +27,13 @@ public class Projectile {
 		this.startX = shootingEntity.getGun().shooter.getX();
 		this.startY = shootingEntity.getGun().shooter.getY();
 		this.rotation = type.rotation + ((!type.absRotation && shootingEntity instanceof Tower) ? ((Tower) shootingEntity).getRotation() : 0);
-		
+
 		this.x = startX + type.offset * Math.cos(this.rotation);
 		this.y = startY + type.offset * Math.sin(this.rotation);
-		
+
 		this.shootingEntity = shootingEntity;
-		
+		this.instant = null;
+
 		this.deathTime = -1;
 
 		this.target = shootingEntity.getGun().getTarget();
@@ -43,11 +45,33 @@ public class Projectile {
 		this.shootingEntity.getGun().registerProjectile();
 	}
 
+	public Projectile(ProjectileType type, Instant instant, Entity target, double x, double y) {
+		this.type = type;
+		this.startX = type.delivery != DeliveryType.SINGLE_TARGET || instant.type.individual ? x : instant.x;
+		this.startY = type.delivery != DeliveryType.SINGLE_TARGET || instant.type.individual ? y : instant.y;
+		this.rotation = type.rotation;
+
+		this.x = (type.delivery == DeliveryType.SINGLE_TARGET ? x : startX) + type.offset * Math.cos(this.rotation);
+		this.y = (type.delivery == DeliveryType.SINGLE_TARGET ? y : startY) + type.offset * Math.sin(this.rotation);
+		
+		this.shootingEntity = null;
+		this.instant = instant;
+		
+		this.deathTime = -1;
+
+		this.target = target;
+		targetX = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getX() : 0;
+		targetY = type.delivery == DeliveryType.SINGLE_TARGET && !type.follow ? this.target.getY() : 0;
+
+		this.hitTargets = new ArrayList<>();
+	}
+
 	/**
 	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
 	 */
 	public Projectile(Weapon shootingEntity, ProjectileType type, double x, double y, double startX, double startY, double targetX, double targetY, double rotation, double deathTime, double radius, Enemy target, List<Enemy> hitTargets) {
 		this.shootingEntity = shootingEntity;
+		this.instant = null; // TODO
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -148,7 +172,7 @@ public class Projectile {
 		return radius;
 	}
 
-	public Enemy getTarget() {
+	public Entity getTarget() {
 		return target;
 	}
 
@@ -158,12 +182,8 @@ public class Projectile {
 
 	public void hitTarget(Enemy target) {
 		this.hitTargets.add(target);
-		
-		if (this.type.delivery == DeliveryType.SINGLE_TARGET) {
-//			this.x = (this.x + target.getX()) * 0.5;
-//			this.y = (this.y + target.getY()) * 0.5;
-			this.fade();
-		}
+
+		if (this.type.delivery == DeliveryType.SINGLE_TARGET) this.fade();
 	}
 
 	/**
@@ -177,6 +197,11 @@ public class Projectile {
 	 */
 	public double getDeathTime() {
 		return deathTime;
+	}
+	
+	public Object getEffectInflictor() {
+		if (this.shootingEntity != null) return this.shootingEntity;
+		return this.instant;
 	}
 
 }

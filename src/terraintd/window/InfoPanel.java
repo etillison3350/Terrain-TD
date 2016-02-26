@@ -50,8 +50,10 @@ import terraintd.types.DeliveryType;
 import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
 import terraintd.types.IdType;
+import terraintd.types.InstantType;
 import terraintd.types.ModdedType;
 import terraintd.types.ProjectileType;
+import terraintd.types.Sellable;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
 
@@ -144,7 +146,7 @@ public class InfoPanel extends JPanel {
 				}
 			}
 		};
-		
+
 		c.gridwidth = 1;
 		c.weightx = 0.5;
 		c.gridy = 0;
@@ -210,6 +212,17 @@ public class InfoPanel extends JPanel {
 		return dps;
 	}
 
+	private static double getTotalDamage(InstantType instant) {
+		double damage = 0;
+		for (int i = 0; i < instant.count; i++) {
+			for (ProjectileType p : instant.projectiles) {
+				damage += p.damage - (p.falloff * 0.5);
+			}
+		}
+
+		return damage;
+	}
+
 	public static Object getDisplayedType() {
 		return displayedObject;
 	}
@@ -271,7 +284,7 @@ public class InfoPanel extends JPanel {
 		}
 
 		if (type instanceof CollidableType) panel.add(createLabel("%s: %d x %d %s", 0, 0, Language.get("area"), ((CollidableType) type).width, ((CollidableType) type).height, Language.get("tiles")));
-		if (obj instanceof CollidableType) panel.add(createLabel("%s: %d", 0, 0, Language.get("sell-cost"), ((CollidableType) obj).sellCost));
+		if (obj instanceof Sellable) panel.add(createLabel("%s: %d", 0, 0, Language.get("sell-cost"), ((Sellable) obj).getSellCost()));
 		if (projectiles != null && projectiles.length > 0) panel.add(createLabel("%s: %.5g", 0, 0, Language.get("dps"), getDamagePerSecond(projectiles)));
 		if (type instanceof TowerType) panel.add(createLabel("%s: %.3g %s", 0, 0, Language.get("detect-range"), ((TowerType) type).range, Language.get("tiles")));
 
@@ -295,7 +308,7 @@ public class InfoPanel extends JPanel {
 		panel.add(new JSeparator()).setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 		if (projectiles != null) {
 			panel.add(createLabel("%s", 5, 0, Language.get("projectiles")));
-			if (projectiles == null || projectiles.length == 0) {
+			if (projectiles.length == 0) {
 				panel.add(createLabel("%s", 0, 1, Language.get("none")));
 			} else {
 				TreeSet<ProjectileType> sorted = new TreeSet<>(projComp);
@@ -310,6 +323,44 @@ public class InfoPanel extends JPanel {
 					panel.add(createLabel("%s: %.3g - %.3g", 0, 1, Language.get("damage"), p.damage, p.damage - p.falloff));
 					panel.add(createLabel("%s: %.4g %s", 0, 1, Language.get("rate"), p.rate * 60, Language.get("rpm")));
 					panel.add(createLabel("%s: %s", 0, 1, Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles"))));
+					if (p.explodeRadius > 0.000001 && p.delivery == DeliveryType.SINGLE_TARGET) panel.add(createLabel("%s: %.3g", 0, 1, Language.get("explode-radius"), p.explodeRadius));
+					panel.add(createLabel("%s", 6, 1, Language.get("effects")));
+					if (p.effects.length == 0) {
+						panel.add(createLabel("%s", 0, 2, Language.get("none")));
+					} else {
+						for (EffectType e : p.effects)
+							panel.add(createLabel(e.toString(), 0, 2));
+					}
+					panel.add(new JSeparator()).setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+				}
+			}
+		}
+
+		if (type instanceof InstantType) {
+			InstantType instant = (InstantType) type;
+
+			panel.add(createLabel("%s: %s", 0, 0, Language.get("inst-target"), instant.target.toString()));
+			panel.add(createLabel("%s: %.5g", 0, 0, Language.get("total-damage"), getTotalDamage(instant)));
+			panel.add(createLabel("%s: %.3g %s", 0, 0, Language.get("detect-range"), instant.range, Language.get("tiles")));
+			if (instant.count > 1) panel.add(createLabel("%s: %d", 0, 0, Language.get("count"), instant.count));
+
+			panel.add(createLabel("%s", 5, 0, Language.get("projectiles")));
+			if (instant.projectiles.length == 0) {
+				panel.add(createLabel("%s", 0, 1, Language.get("none")));
+			} else {
+				TreeSet<ProjectileType> sorted = new TreeSet<>(projComp);
+				sorted.addAll(Arrays.asList(instant.projectiles));
+
+				for (ProjectileType p : sorted) {
+					panel.add(createLabel("%s: %s", 0, 1, Language.get("delivery"), p.delivery.toString()));
+					if (sorted.size() != instant.projectiles.length) {
+						long count = Arrays.stream(instant.projectiles).filter(proj -> projComp.compare(proj, p) == 0).count();
+						if (count > 1) panel.add(createLabel("%s: %d", 0, 1, Language.get("count"), count));
+					}
+					panel.add(createLabel("%s: %.3g - %.3g", 0, 1, Language.get("damage"), p.damage, p.damage - p.falloff));
+					panel.add(createLabel("%s: %.4g %s", 0, 1, Language.get("rate"), p.rate * 60, Language.get("rpm")));
+					panel.add(createLabel("%s: %s", 0, 1, Language.get("range"), p.maxDist > 1e100 ? "\u221E" : String.format(Language.getCurrentLocale(), "%.3g %s", p.maxDist, Language.get("tiles"))));
+					if (p.explodeRadius > 0.000001 && p.delivery == DeliveryType.SINGLE_TARGET) panel.add(createLabel("%s: %.3g", 0, 1, Language.get("explode-radius"), p.explodeRadius));
 					panel.add(createLabel("%s", 6, 1, Language.get("effects")));
 					if (p.effects.length == 0) {
 						panel.add(createLabel("%s", 0, 2, Language.get("none")));

@@ -30,7 +30,7 @@ public class PathFinder {
 	};
 
 	public static Node[][][] calculatePaths(EnemyType type) {
-		return calculatePaths(type, GameLogic.getPermanentEntities(), GameLogic.getCurrentWorld());
+		return calculatePaths(type, GameLogic.getEntities(), GameLogic.getCurrentWorld());
 	}
 
 	public static Node[][][] calculatePaths(EnemyType type, Entity[] entities, World world) {

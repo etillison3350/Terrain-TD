@@ -112,7 +112,7 @@ public class Gun {
 		for (int n = 0; n < time.length; n++) {
 			time[n] += GameLogic.FRAME_TIME;
 			if (!ds && time[n] >= 0) time[n] = 0;
-			
+
 			while (ds && time[n] >= 0) {
 				time[n] -= 1.0 / projectiles[n].rate;
 				firing.add(projectiles[n]);

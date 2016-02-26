@@ -94,13 +94,21 @@ target-na=All
 area=Area
 tiles=tiles
 dps=Damage Per Second
-delivery=Type
+total-damage=Total Damage
 
+delivery=Type
 delivery-singletarget=Single
 delivery-area=Area
 delivery-line=Beam
 delivery-sector=Sector
 
+inst-target=Targets
+inst-target-enemy=Enemies
+inst-target-location=Random locations
+inst-target-rotation=Random rotations
+inst-target-spread=Random rotations
+
+explode-radius=Explosion radius
 count=Count
 reward=Reward
 active-effects=Active Effects
@@ -121,10 +129,14 @@ tower-area=EMP
 tower-sector=Pie Tower
 tower-poison=Poison Dart Tower
 tower-electricball=Electric Ball
+tower-testsingle=Stun cannon
+tower-explode=Missle launcher
 
 enemy-a=Tank
 enemy-b=Vehicle
 enemy-c=Car
+
+instant-example=Air strike
 
 obstacle-example=Stone
 

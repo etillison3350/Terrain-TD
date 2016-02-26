@@ -115,8 +115,8 @@ public class Enemy extends Entity implements Weapon {
 			switch (effect.type) {
 				case FIRE:
 					this.health -= .125 * effect.amplifier + 1.125;
-					effect.inflictor.getGun().registerDamage(.125 * effect.amplifier + 1.125);
-					if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
+					effect.registerInflictDamage(.125 * effect.amplifier + 1.125);
+					if (this.health < 0.00001) effect.registerInflictKill();
 					break;
 				case FROST:
 					if (effect.amplifier >= 10.999) return true;
@@ -128,8 +128,8 @@ public class Enemy extends Entity implements Weapon {
 				case POISON:
 					double lastHealth = this.health;
 					this.health = this.health * (1 - effect.amplifier * 0.0021) - 0.05 * effect.amplifier;
-					effect.inflictor.getGun().registerDamage(lastHealth - this.health);
-					if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
+					effect.registerInflictDamage(lastHealth - this.health);
+					if (this.health < 0.00001) effect.registerInflictKill();
 					break;
 				case SLOWNESS:
 					speedMultiplier *= 1 - 0.09090909 * effect.amplifier;
@@ -152,8 +152,8 @@ public class Enemy extends Entity implements Weapon {
 		for (StatusEffect effect : statusEffects) {
 			if (effect.type == StatusEffectType.BLEED) {
 				this.health -= 10 * effect.amplifier * distance;
-				effect.inflictor.getGun().registerDamage(10 * effect.amplifier * distance);
-				if (this.health < 0.00001) effect.inflictor.getGun().registerKill();
+				effect.registerInflictDamage(10 * effect.amplifier * distance);
+				if (this.health < 0.00001) effect.registerInflictKill();
 			}
 		}
 
@@ -162,7 +162,7 @@ public class Enemy extends Entity implements Weapon {
 			this.y = nextNode.getAbsY();
 			this.oldPrev = prevNode;
 			this.prevNode = nextNode;
-			this.nextNode = findNextNode();//nextNode.getNextNode();
+			this.nextNode = findNextNode();
 			if (newNodeSet != null) resetNodes(newNodeSet);
 			boolean ret = nextNode == null ? false : move((distance - d) / speed, speedMult);
 			if (!ret) dead = 2;
@@ -177,9 +177,9 @@ public class Enemy extends Entity implements Weapon {
 
 		return true;
 	}
-	
+
 	private int chance = 1;
-	
+
 	private Node findNextNode() {
 		if (GameLogic.rand.nextInt(chance) == 0) {
 			chance++;
@@ -191,9 +191,9 @@ public class Enemy extends Entity implements Weapon {
 		Node next = prevNode.getNextNode();
 		if (next == null) return null;
 		if (next.getNextNode() == null) return next;
-		
+
 		Node[] nodes = PathFinder.getNeighbors(GameLogic.getNodes(type), prevNode);
-		
+
 		double a = Math.atan2(prevNode.getAbsY() - next.getAbsY(), prevNode.getAbsX() - next.getAbsX());
 		Object[] ns = Arrays.stream(nodes).filter(n -> !n.isBlocked() && n != oldPrev && n.getNextNode() != prevNode && subAngles(a, Math.atan2(prevNode.getAbsY() - n.getAbsY(), prevNode.getAbsX() - n.getAbsX())) < (Math.PI / 2.1) && n.getCost() - next.getCost() < 0.05 * Math.pow(n.getCost() * 3, 0.25)).toArray();
 		return ns.length <= 0 ? next : (Node) ns[GameLogic.rand.nextInt(ns.length)];
@@ -246,14 +246,16 @@ public class Enemy extends Entity implements Weapon {
 		for (StatusEffect effect : statusEffects) {
 			if (effect.type == StatusEffectType.WEAKNESS) dm *= (1 + 0.25 * effect.amplifier);
 		}
+		
 		boolean kill = this.damage(dm * p.damageForEntity(this));
-		if (kill) p.shootingEntity.getGun().registerKill();
-		p.shootingEntity.getGun().registerDamage(Math.max(0, h) - Math.max(0, this.health));
+		if (p.shootingEntity != null) {
+			if (kill) p.shootingEntity.getGun().registerKill();
+			p.shootingEntity.getGun().registerDamage(Math.max(0, h) - Math.max(0, this.health));
+		}
 
 		if (p.type.effects != null) {
-			for (EffectType effect : p.type.effects) {
-				this.addStatusEffect(new StatusEffect(p.shootingEntity, effect));
-			}
+			for (EffectType effect : p.type.effects)
+				this.addStatusEffect(new StatusEffect(p.getEffectInflictor(), effect));
 		}
 
 		return kill;
@@ -279,7 +281,7 @@ public class Enemy extends Entity implements Weapon {
 	public Node getPrevNode() {
 		return this.prevNode;
 	}
-	
+
 	public Node getNextNode() {
 		return nextNode;
 	}
@@ -326,7 +328,7 @@ public class Enemy extends Entity implements Weapon {
 		}
 		return dm * this.type.damage;
 	}
-	
+
 	public static double subAngles(double ang1, double ang2) {
 		double d = Math.abs(ang1 - ang2) % (2 * Math.PI);
 		return d > Math.PI ? Math.PI * 2 - d : d;

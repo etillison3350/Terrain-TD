@@ -16,6 +16,7 @@ import terraintd.files.JSON;
 import terraintd.files.ModListReader;
 import terraintd.pathfinder.Node;
 import terraintd.pathfinder.PathFinder;
+import terraintd.types.InstantType.Target;
 import terraintd.types.Level.Unit;
 import terraintd.types.World.Tile;
 
@@ -30,6 +31,7 @@ public final class TypeGenerator {
 	private static TowerType[] towers;
 	private static EnemyType[] enemies;
 	private static ObstacleType[] obstacles;
+	private static InstantType[] instants;
 	private static World[] worlds;
 	private static LevelSet[] levelSets;
 
@@ -91,6 +93,7 @@ public final class TypeGenerator {
 
 		List<TowerType> newTowers = new ArrayList<>();
 		List<EnemyType> newEnemies = new ArrayList<>();
+		List<InstantType> newInstants = new ArrayList<>();
 		List<ObstacleType> newObstacles = new ArrayList<>();
 		List<World> newWorlds = new ArrayList<>();
 		List<LevelSet> newLevels = new ArrayList<>();
@@ -123,6 +126,8 @@ public final class TypeGenerator {
 								newTowers.add(parseTower(obj, mod));
 							} else if (obj.get("type").equals("enemy")) {
 								newEnemies.add(parseEnemy(obj, mod));
+							} else if (obj.get("type").equals("instant")) {
+								newInstants.add(parseInstant(obj, mod));
 							} else if (obj.get("type").equals("obstacle")) {
 								newObstacles.add(parseObstacle(obj, mod));
 							} else if (obj.get("type").equals("world")) {
@@ -142,6 +147,7 @@ public final class TypeGenerator {
 
 		towers = newTowers.toArray(new TowerType[newTowers.size()]);
 		enemies = newEnemies.toArray(new EnemyType[newEnemies.size()]);
+		instants = newInstants.toArray(new InstantType[newInstants.size()]);
 		obstacles = newObstacles.toArray(new ObstacleType[newObstacles.size()]);
 		worlds = newWorlds.toArray(new World[newWorlds.size()]);
 		levelSets = newLevels.toArray(new LevelSet[newLevels.size()]);
@@ -322,6 +328,44 @@ public final class TypeGenerator {
 		return new EnemyType(mod, id, speed, upSpeed, downSpeed, health, damage, reward, range, hbWidth, hbY, image, death, projectiles.toArray(new ProjectileType[projectiles.size()]));
 	}
 
+	static InstantType parseInstant(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		String tgt = map.get("target").toString();
+		if (tgt.length() <= 3) tgt += "ation";
+		Target target = Target.valueOf(tgt.toUpperCase());
+
+		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
+
+		boolean unique = map.get("unique") instanceof Boolean ? (Boolean) map.get("unique") : false;
+
+		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 1;
+
+		double spread = map.get("spread") instanceof Number ? ((Number) map.get("spread")).doubleValue() : 1;
+
+		boolean individual = map.get("individual") instanceof Boolean ? (Boolean) map.get("individual") : true;
+
+		double delay = map.get("delay") instanceof Number ? ((Number) map.get("delay")).doubleValue() : 0;
+
+		boolean sync = map.get("sync") instanceof Boolean ? (Boolean) map.get("sync") : true;
+
+		int count = map.get("count") instanceof Number ? ((Number) map.get("count")).intValue() : 1;
+
+		double repeatDelay = map.get("repeat-delay") instanceof Number ? ((Number) map.get("repeat-delay")).doubleValue() : 0;
+
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon"), mod) : ImageType.BLANK;
+
+		List<ProjectileType> projectiles = new ArrayList<>();
+		if (map.get("projectiles") instanceof List<?>) {
+			for (Object p : (List<?>) map.get("projectiles")) {
+				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+			}
+		}
+
+		return new InstantType(mod, id, cost, target, unique, range, spread, individual, delay, sync, count, repeatDelay, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
+	}
+
 	static ObstacleType parseObstacle(Map<?, ?> map, Mod mod) {
 		String id = (String) map.get("id");
 		if (id == null) throw new IllegalArgumentException();
@@ -455,11 +499,11 @@ public final class TypeGenerator {
 		boolean damageFade = map.get("damage-fade") instanceof Boolean ? (Boolean) map.get("damage-fade") : true;
 
 		int count = map.get("count") instanceof Number ? ((Number) map.get("count")).intValue() : 1;
-		
+
 		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : ImageType.BLANK;
 
 		ImageType explosion = map.containsKey("explosion") ? (map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : ImageType.BLANK) : image;
-		
+
 		List<EffectType> effects = new ArrayList<>();
 		if (map.get("effects") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("effects")) {
@@ -472,11 +516,11 @@ public final class TypeGenerator {
 		}
 
 		Collection<ProjectileType> projs = new ArrayList<>();
-		
+
 		for (int i = 0; i < count; i++) {
 			projs.add(new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, offset, angle, (rotation + (2 * Math.PI * i / count)) % (2 * Math.PI), absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()])));
 		}
-		
+
 		return projs;
 	}
 
@@ -713,6 +757,12 @@ public final class TypeGenerator {
 		if (enemies == null) generateValues();
 
 		return enemies;
+	}
+
+	static InstantType[] instants() {
+		if (instants == null) generateValues();
+
+		return instants;
 	}
 
 	static ObstacleType[] obstacles() {

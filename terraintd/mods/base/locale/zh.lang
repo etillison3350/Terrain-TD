@@ -94,13 +94,21 @@ target-na=一切
 area=區
 tiles=廣場
 dps=每秒傷害
-delivery=類型
+total-damage=總傷害
 
+delivery=類型
 delivery-singletarget=單
 delivery-area=區
 delivery-line=光束
 delivery-sector=扇形
 
+inst-target=瞄准
+inst-target-enemy=敵人
+inst-target-location=隨機位置
+inst-target-rotation=隨機輪換
+inst-target-spread=隨機輪換
+
+explode-radius=爆炸半徑
 count=數
 reward=獎勵
 active-effects=活動效果
@@ -121,10 +129,14 @@ tower-area=電磁脈衝
 tower-sector=馅饼塔
 tower-poison=毒鏢塔
 tower-electricball=電球
+tower-testsingle=眩暈炮
+tower-explode=導彈發射
 
 enemy-a=坦克
 enemy-b=車輛
 enemy-c=汽車
+
+instant-example=空襲
 
 obstacle-example=石
 

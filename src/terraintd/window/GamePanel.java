@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -14,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -36,6 +38,7 @@ import terraintd.object.Tower;
 import terraintd.pathfinder.Node;
 import terraintd.types.CollidableType;
 import terraintd.types.ImageType;
+import terraintd.types.InstantType;
 import terraintd.types.TowerType;
 import terraintd.types.World;
 import terraintd.window.ImageManager.Resource;
@@ -53,8 +56,14 @@ public class GamePanel extends JPanel {
 
 	private static double tile, dx, dy, scale, ox, oy;
 
+	private static Image target;
+
 	private GamePanel() {
 		this.setBackground(Color.BLACK);
+
+		try {
+			target = ImageIO.read(Paths.get("terraintd/mods/base/images/target.png").toFile());
+		} catch (IOException e) {}
 
 		this.addComponentListener(new ComponentAdapter() {
 
@@ -118,18 +127,27 @@ public class GamePanel extends JPanel {
 					GameLogic.overrideNextLevel();
 					return;
 				}
-				
+
 				if (GameLogic.distanceSq(startX, e.getX() / getTileSize(), startY, e.getY() / getTileSize()) < 0.25) {
 					if (GameLogic.getBuyingType() != null) {
-						int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width * 0.5);
-						int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height * 0.5);
+						if (GameLogic.getBuyingType() instanceof CollidableType) {
+							CollidableType type = (CollidableType) GameLogic.getBuyingType();
 
-						if (GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y)) {
+							int x = (int) Math.round(mouseX - type.width * 0.5);
+							int y = (int) Math.round(mouseY - type.height * 0.5);
+
+							if (GameLogic.canPlaceObject(type, x, y)) {
+								GameLogic.buyObject(x, y);
+								repaint();
+							}
+						} else {
+							int x = (int) Math.round(mouseX);
+							int y = (int) Math.round(mouseY);
+
 							GameLogic.buyObject(x, y);
-							repaint();
 						}
 					} else {
-						for (Entity entity : GameLogic.getPermanentEntities()) {
+						for (Entity entity : GameLogic.getEntities()) {
 							Point2D p = new Point2D.Double((e.getX() - getOriginX()) / getTileSize(), (e.getY() - getOriginY()) / getTileSize());
 
 							if (entity.getRectangle().contains(p)) {
@@ -240,7 +258,7 @@ public class GamePanel extends JPanel {
 
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) tile));
 		g.setStroke(new BasicStroke((float) tile / 10.0F));
-		for (Entity e : GameLogic.getPermanentEntities()) {
+		for (Entity e : GameLogic.getEntities()) {
 			if (e instanceof Enemy) {
 				Enemy en = (Enemy) e;
 
@@ -310,27 +328,40 @@ public class GamePanel extends JPanel {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
 		if (GameLogic.getBuyingType() != null && mouseX >= 0 && mouseX < GameLogic.getCurrentWorld().getWidth() && mouseY >= 0 && mouseY < GameLogic.getCurrentWorld().getHeight()) {
-			int x = (int) Math.round(mouseX - GameLogic.getBuyingType().width / 2.0);
-			int y = (int) Math.round(mouseY - GameLogic.getBuyingType().height / 2.0);
+			Dimension2D dim = GameLogic.getBuyingType() instanceof CollidableType ? new DoubleDim(((CollidableType) GameLogic.getBuyingType()).width * 0.5, ((CollidableType) GameLogic.getBuyingType()).height * 0.5) : new DoubleDim();
 
-			if (GameLogic.getBuyingType() instanceof TowerType) {
-				TowerType tower = (TowerType) GameLogic.getBuyingType();
+			int x = (int) Math.round(mouseX - dim.getWidth());
+			int y = (int) Math.round(mouseY - dim.getHeight());
 
-				double r = tower.range;
+			if (GameLogic.getBuyingType() instanceof TowerType || GameLogic.getBuyingType() instanceof InstantType) {
+				double r;
+				if (GameLogic.getBuyingType() instanceof TowerType) {
+					TowerType tower = (TowerType) GameLogic.getBuyingType();
+					r = tower.range;
+				} else {
+					InstantType instant = (InstantType) GameLogic.getBuyingType();
+					r = instant.range;
+				}
 
 				g.setColor(Color.WHITE);
 				g.setStroke(new BasicStroke(3));
-				double cx = x + tower.width / 2.0;
-				double cy = y + tower.height / 2.0;
+				double cx = x + dim.getWidth();
+				double cy = y + dim.getHeight();
 				g.drawOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25F));
 				g.fillOval((int) (dx + (cx - r) * tile), (int) (dy + (cy - r) * tile), (int) (2 * r * tile), (int) (2 * r * tile));
 			}
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-			g.setColor(GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y) ? Color.GREEN : Color.RED);
-			g.fillRect((int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * GameLogic.getBuyingType().width), (int) (tile * GameLogic.getBuyingType().height));
-			g.drawImage(GameLogic.getBuyingType().image.image, (int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * GameLogic.getBuyingType().width), (int) (tile * GameLogic.getBuyingType().height), null);
+			if (GameLogic.getBuyingType() instanceof CollidableType) {
+				CollidableType type = (CollidableType) GameLogic.getBuyingType();
+
+				g.setColor(GameLogic.canPlaceObject(GameLogic.getBuyingType(), x, y) ? Color.GREEN : Color.RED);
+				g.fillRect((int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * type.width), (int) (tile * type.height));
+				g.drawImage(type.image.image, (int) (dx + x * tile), (int) (dy + y * tile), (int) (tile * type.width), (int) (tile * type.height), null);
+			} else {
+				g.drawImage(target, (int) (dx + (x - 0.5) * tile), (int) (dy + (y - 0.5) * tile), (int) tile, (int) tile, null);
+			}
 		}
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
@@ -341,7 +372,7 @@ public class GamePanel extends JPanel {
 
 		for (Projectile p : GameLogic.getProjectiles()) {
 			ImageType img = p.getDeathTime() >= 0 ? p.type.explosion : p.type.image;
-			
+
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, p.type.dyingFade ? 1 - (float) (Math.max(0, p.getDeathTime()) / p.type.dyingFadeTime) : 1));
 			AffineTransform trans = new AffineTransform();
 
@@ -393,6 +424,37 @@ public class GamePanel extends JPanel {
 			g.setFont(fm.getFont());
 			g.drawString(str, 0.5F * (this.getWidth() - fm.stringWidth(str)), this.getHeight() - (0.5F * (this.getHeight() - fm.getAscent())));
 		}
+	}
+
+	private static final class DoubleDim extends Dimension2D {
+
+		private double width, height;
+
+		protected DoubleDim() {
+			this(0, 0);
+		}
+
+		protected DoubleDim(double width, double height) {
+			this.width = width;
+			this.height = height;
+		}
+
+		@Override
+		public double getHeight() {
+			return height;
+		}
+
+		@Override
+		public double getWidth() {
+			return width;
+		}
+
+		@Override
+		public void setSize(double width, double height) {
+			this.width = width;
+			this.height = height;
+		}
+
 	}
 
 	/**

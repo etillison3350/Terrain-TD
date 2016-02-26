@@ -1,6 +1,6 @@
 package terraintd.types;
 
-public abstract class CollidableType extends ModdedType {
+public abstract class CollidableType extends ModdedType implements Sellable {
 
 	public final int width;
 	public final int height;
@@ -18,5 +18,20 @@ public abstract class CollidableType extends ModdedType {
 		this.sellCost = sellCost;
 		this.image = image;
 		this.icon = icon;
+	}
+
+	@Override
+	public int getCost() {
+		return cost;
+	}
+
+	@Override
+	public int getSellCost() {
+		return sellCost;
+	}
+
+	@Override
+	public ImageType getIcon() {
+		return icon;
 	}
 }

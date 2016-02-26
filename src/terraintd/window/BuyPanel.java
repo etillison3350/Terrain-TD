@@ -23,8 +23,9 @@ import javax.swing.JPanel;
 
 import terraintd.GameLogic;
 import terraintd.GameLogic.State;
-import terraintd.types.CollidableType;
+import terraintd.types.InstantType;
 import terraintd.types.ObstacleType;
+import terraintd.types.Purchasable;
 import terraintd.types.TowerType;
 
 public class BuyPanel extends JPanel {
@@ -47,7 +48,7 @@ public class BuyPanel extends JPanel {
 	private void createButtons() {
 		this.removeAll();
 
-		buttons = new BuyButton[TowerType.values().length + ObstacleType.values().length];
+		buttons = new BuyButton[TowerType.values().length + ObstacleType.values().length + InstantType.values().length];
 
 		for (int t = 0; t < TowerType.values().length; t++) {
 			buttons[t] = new BuyButton(TowerType.values()[t]);
@@ -56,6 +57,11 @@ public class BuyPanel extends JPanel {
 		for (int o = 0; o < ObstacleType.values().length; o++) {
 			int n = TowerType.values().length + o;
 			buttons[n] = new BuyButton(ObstacleType.values()[o]);
+			this.add(buttons[n]);
+		}
+		for (int i = 0; i < InstantType.values().length; i++) {
+			int n = TowerType.values().length + ObstacleType.values().length + i;
+			buttons[n] = new BuyButton(InstantType.values()[i]);
 			this.add(buttons[n]);
 		}
 	}
@@ -90,7 +96,7 @@ public class BuyPanel extends JPanel {
 		updateButtons();
 	}
 
-	private static void buy(CollidableType type) {
+	private static void buy(Purchasable type) {
 		GameLogic.buyObject(type);
 
 		updateButtons();
@@ -106,7 +112,7 @@ public class BuyPanel extends JPanel {
 		private boolean pressed, hovered;
 		private Point mousePoint = new Point(0, 0);
 
-		private final CollidableType type;
+		private final Purchasable type;
 		private BufferedImage image;
 		private BufferedImage gray;
 		private BufferedImage cancelImage;
@@ -165,7 +171,7 @@ public class BuyPanel extends JPanel {
 
 		};
 
-		public BuyButton(CollidableType type) {
+		public BuyButton(Purchasable type) {
 			super();
 
 			this.type = type;
@@ -175,9 +181,9 @@ public class BuyPanel extends JPanel {
 
 			this.image = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
 
-			if (this.type.icon != null) {
+			if (this.type.getIcon() != null) {
 				Graphics2D g = this.image.createGraphics();
-				g.drawImage(type.icon.image, 0, 0, SIZE, SIZE, null);
+				g.drawImage(type.getIcon().image, 0, 0, SIZE, SIZE, null);
 				g.dispose();
 			}
 
@@ -196,7 +202,7 @@ public class BuyPanel extends JPanel {
 				this.cancelImage = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
 			}
 
-			this.cost = this.type.cost;
+			this.cost = this.type.getCost();
 		}
 
 		@Override
@@ -212,7 +218,7 @@ public class BuyPanel extends JPanel {
 
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			g.setColor(this.cancel ? new Color(1.0F, 0.5F, 0.5F) : (this.isEnabled() ? (this.type instanceof TowerType ? new Color(0.375F, 0.375F, 0.75F) : new Color(0.375F, 0.75F, 0.75F)/*new Color(0.5F, 0.5F, 1.0F)*/) : Color.GRAY));
+			g.setColor(this.cancel ? new Color(1.0F, 0.5F, 0.5F) : (this.isEnabled() ? this.type.getBackgroundColor() : Color.GRAY));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 			g.drawImage(this.cancel ? cancelImage : (this.isEnabled() ? image : gray), 0, 0, this.getWidth(), this.getHeight(), null);

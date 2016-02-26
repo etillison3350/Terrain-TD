@@ -25,6 +25,7 @@ import terraintd.object.CollidableEntity;
 import terraintd.object.Enemy;
 import terraintd.object.Entity;
 import terraintd.object.Gun;
+import terraintd.object.Instant;
 import terraintd.object.Obstacle;
 import terraintd.object.Projectile;
 import terraintd.object.StatusEffect;
@@ -35,10 +36,12 @@ import terraintd.pathfinder.PathFinder;
 import terraintd.types.CollidableType;
 import terraintd.types.DeliveryType;
 import terraintd.types.EnemyType;
+import terraintd.types.InstantType;
 import terraintd.types.Level;
 import terraintd.types.LevelSet;
 import terraintd.types.ObstacleType;
 import terraintd.types.ProjectileType;
+import terraintd.types.Purchasable;
 import terraintd.types.StatusEffectType;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
@@ -83,7 +86,7 @@ public class GameLogic implements ActionListener {
 	private static boolean saved = true;
 	private static Path lastSaveLocation = null;
 
-	private static List<Entity> permanentEntities;
+	private static List<Entity> entities;
 	private static List<Projectile> projectiles;
 
 	private static LevelSet currentLevelSet;
@@ -103,7 +106,7 @@ public class GameLogic implements ActionListener {
 
 	private static boolean wasPaused = true;
 	private static boolean pauseOnBuy = true;
-	private static CollidableType buying = null;
+	private static Purchasable buying = null;
 
 	private static Entity selected = null;
 
@@ -118,7 +121,7 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static void reset() {
-//		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
+		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
 
 		stop();
 
@@ -140,7 +143,7 @@ public class GameLogic implements ActionListener {
 		timeToNextEnemy = currentLevelSet.levels[levelIndex].units[0].delay;
 		enemyIndex = 0;
 
-		permanentEntities = new ArrayList<>();
+		entities = new ArrayList<>();
 		projectiles = new ArrayList<>();
 
 		for (EnemyType type : EnemyType.values())
@@ -194,7 +197,7 @@ public class GameLogic implements ActionListener {
 		} else {
 			saved = false;
 			t0 = System.nanoTime();
-			processPermanents();
+			processEntities();
 			t1 = System.nanoTime();
 			processProjectiles();
 			t2 = System.nanoTime();
@@ -213,7 +216,7 @@ public class GameLogic implements ActionListener {
 	 * @return an array of three <code>long</code>s, representing:
 	 *         <ul>
 	 *         <li>0: the total time</li>
-	 *         <li>1: the time to process "permanent" objects, i.e. towers, enemies, and obstacles</li>
+	 *         <li>1: the time to process entities</li>
 	 *         <li>2: the time to process projectiles</li>
 	 *         </ul>
 	 *         of the last frame/cycle of this logic, in nanoseconds.</li>
@@ -242,7 +245,7 @@ public class GameLogic implements ActionListener {
 		nextLevel();
 	}
 
-	private static void processPermanents() {
+	private static void processEntities() {
 		if (health <= 0) {
 			health = 0;
 			stop();
@@ -254,7 +257,7 @@ public class GameLogic implements ActionListener {
 			Window.setButtonsEnabled(false);
 			GamePanel.repaintPanel();
 			return;
-		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !permanentEntities.stream().anyMatch(e -> e instanceof Enemy)) {
+		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !entities.stream().anyMatch(e -> e instanceof Enemy)) {
 			stop();
 			Window.selectButton(0);
 			setSpeed(1);
@@ -284,34 +287,33 @@ public class GameLogic implements ActionListener {
 
 			if (spawnPoints.size() == 0) continue; // TODO Remove obstacles?
 
-			permanentEntities.add(new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size()))));
+			entities.add(new Enemy(et, spawnPoints.get(rand.nextInt(spawnPoints.size()))));
 
 			timeToNextEnemy += currentLevelSet.levels[levelIndex].units[enemyIndex++].delay;
 		}
 
-		if (!permanentEntities.contains(selected)) {
+		if (selected != null && !entities.contains(selected)) {
 			setSelectedEntity(null);
 			InfoPanel.refreshDisplay();
 		} else if (selected instanceof Enemy) {
 			InfoPanel.refreshDisplay();
 		}
 
-		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
-		for (Entity e : permanents) {
+		Entity[] ents = entities.toArray(new Entity[entities.size()]);
+		for (Entity e : ents) {
 			if (e instanceof Weapon) {
 				Gun g = ((Weapon) e).getGun();
 				if (g != null) {
 					double min = !g.getTargetType().max ? Float.MAX_VALUE : Integer.MIN_VALUE;
 					Enemy target = null;
 
-					for (Entity entity : permanents) {
+					for (Entity entity : ents) {
 						if (!(entity instanceof Enemy)) continue;
 
 						Enemy enemy = (Enemy) entity;
 						if (enemy.getFutureHealth() < 0) continue;
 
 						final double d = distanceSq(enemy.getX(), g.shooter.getX(), enemy.getY(), g.shooter.getY());
-
 						if (d > g.range * g.range) continue;
 
 						switch (g.getTargetType()) {
@@ -369,7 +371,7 @@ public class GameLogic implements ActionListener {
 					((Weapon) e).target(target);
 
 					for (Projectile p : ((Weapon) e).createProjectiles(g.fire())) {
-						if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow) p.getTarget().damageFuture(p);
+						if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow && p.getTarget() instanceof Enemy) ((Enemy) p.getTarget()).damageFuture(p);
 
 						projectiles.add(p);
 					}
@@ -379,7 +381,7 @@ public class GameLogic implements ActionListener {
 			if (e instanceof Enemy) {
 				Enemy enemy = (Enemy) e;
 				if (enemy.getDead() != 0) {
-					if (enemy.die()) permanentEntities.remove(enemy);
+					if (enemy.die()) entities.remove(enemy);
 					continue;
 				}
 
@@ -393,11 +395,24 @@ public class GameLogic implements ActionListener {
 					money += enemy.type.reward;
 				}
 			}
+			
+			if (e instanceof Instant) {
+				if (((Instant) e).isDone()) {
+					entities.remove(e);
+					continue;
+				}
+				
+				for (Projectile p : ((Instant) e).fire()) {
+					if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow && p.getTarget() instanceof Enemy) ((Enemy) p.getTarget()).damageFuture(p);
+
+					projectiles.add(p);
+				}
+			}
 		}
 	}
 
 	private static void processProjectiles() {
-		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
+		Entity[] ents = entities.toArray(new Entity[entities.size()]);
 		Projectile[] projectiles = GameLogic.projectiles.toArray(new Projectile[GameLogic.projectiles.size()]);
 		for (Projectile p : projectiles) {
 			if (p.getDeathTime() >= 0) {
@@ -409,12 +424,12 @@ public class GameLogic implements ActionListener {
 				p.fade();
 
 				if (p.type.delivery == DeliveryType.SINGLE_TARGET) {
-					if (p.type.follow) {
-						if (p.getTarget().damage(p)) money += p.getTarget().type.reward;
+					if (p.type.follow && p.getTarget() instanceof Enemy) {
+						if (((Enemy) p.getTarget()).damage(p)) money += ((Enemy) p.getTarget()).type.reward;
 					}
 
 					if (p.type.explodeRadius > 0.00001) {
-						for (Entity e : permanents) {
+						for (Entity e : ents) {
 							if (!(e instanceof Enemy) || (p.type.follow && p.getTarget() == e)) continue;
 
 							if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) <= p.type.explodeRadius * p.type.explodeRadius) {
@@ -426,7 +441,7 @@ public class GameLogic implements ActionListener {
 			}
 
 			if (p.type.delivery != DeliveryType.SINGLE_TARGET) {
-				for (Entity e : permanents) {
+				for (Entity e : ents) {
 					if (!(e instanceof Enemy)) continue;
 
 					if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) > p.getRadius() * p.getRadius()) continue;
@@ -455,28 +470,26 @@ public class GameLogic implements ActionListener {
 					}
 				}
 			} else if (!p.type.follow) {
-//				Optional<Entity> oe = Arrays.stream(permanents).filter(e -> e instanceof Enemy && distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) < 2).sorted(new Comparator<Entity>() {
-				Optional<Entity> oe = Arrays.stream(permanents).filter(e -> e instanceof Enemy && e.getRectangle().contains(p.getX(), p.getY())).sorted(new Comparator<Entity>() {
+				Optional<Entity> oe = Arrays.stream(ents).filter(e -> e instanceof Enemy && e.getRectangle().contains(p.getX(), p.getY())).sorted(new Comparator<Entity>() {
 
-					
 					@Override
 					public int compare(Entity o1, Entity o2) {
 						int i = Double.compare(distanceSq(o1.getX(), p.getX(), o1.getY(), p.getY()), distanceSq(o2.getX(), p.getX(), o2.getY(), p.getY()));
-						
+
 						if (i == 0) return Integer.compare(o1.hashCode(), o2.hashCode());
-						
+
 						return i;
 					}
 				}).findFirst();
-				
+
 				if (oe.isPresent() && oe.get() instanceof Enemy) {
 					Enemy en = (Enemy) oe.get();
-					
+
 					if (en.damage(p)) money += en.type.reward;
 					p.hitTarget(en);
-					
+
 					if (p.type.explodeRadius > 0.00001) {
-						for (Entity e : permanents) {
+						for (Entity e : ents) {
 							if (!(e instanceof Enemy) || (en == e)) continue;
 
 							if (distanceSq(e.getX(), p.getX(), e.getY(), p.getY()) <= p.type.explodeRadius * p.type.explodeRadius) {
@@ -538,7 +551,7 @@ public class GameLogic implements ActionListener {
 	 * @param type
 	 *        </ul>
 	 */
-	public static void buyObject(CollidableType type) {
+	public static void buyObject(Purchasable type) {
 		wasPaused = !timer.isRunning();
 		if (pauseOnBuy) {
 			stop();
@@ -562,24 +575,28 @@ public class GameLogic implements ActionListener {
 	public static void buyObject(int x, int y) {
 		saved = false;
 
-		permanentEntities.add(buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y));
+		if (buying instanceof CollidableType) {
+			entities.add(buying instanceof ObstacleType ? new Obstacle((ObstacleType) buying, x, y) : new Tower((TowerType) buying, x, y));
 
-		for (EnemyType type : EnemyType.values())
-			nodes.put(type, PathFinder.calculatePaths(type));
+			for (EnemyType type : EnemyType.values())
+				nodes.put(type, PathFinder.calculatePaths(type));
 
-		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
-		for (Entity e : permanents) {
-			if (!(e instanceof Enemy)) continue;
+			Entity[] ents = entities.toArray(new Entity[entities.size()]);
+			for (Entity e : ents) {
+				if (!(e instanceof Enemy)) continue;
 
-			((Enemy) e).resetNodes(nodes.get(((Enemy) e).type));
+				((Enemy) e).resetNodes(nodes.get(((Enemy) e).type));
+			}
+
+			setSelectedEntity(entities.get(entities.size() - 1));
+		} else if (buying instanceof InstantType) {
+			entities.add(new Instant((InstantType) buying, x, y));
 		}
 
-		money -= buying.cost;
+		money -= buying.getCost();
 
 		cancelBuy();
 		BuyPanel.updateButtons();
-
-		setSelectedEntity(permanentEntities.get(permanentEntities.size() - 1));
 	}
 
 	public static void cancelBuy() {
@@ -590,16 +607,16 @@ public class GameLogic implements ActionListener {
 	}
 
 	public static void sell(CollidableEntity entity) {
-		if (entity != null && permanentEntities.contains(entity)) {
-			permanentEntities.remove(entity);
+		if (entity != null && entities.contains(entity)) {
+			entities.remove(entity);
 			money += entity.getType().sellCost;
 			if (entity == selected) setSelectedEntity(null);
 
 			for (EnemyType type : EnemyType.values())
 				nodes.put(type, PathFinder.calculatePaths(type));
 
-			Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
-			for (Entity e : permanents) {
+			Entity[] ents = entities.toArray(new Entity[entities.size()]);
+			for (Entity e : ents) {
 				if (!(e instanceof Enemy)) continue;
 
 				((Enemy) e).resetNodes(nodes.get(((Enemy) e).type));
@@ -628,29 +645,34 @@ public class GameLogic implements ActionListener {
 		InfoPanel.setDisplayedObject(selected);
 	}
 
-	public static boolean canPlaceObject(CollidableType type, int x, int y) {
-		if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
+	public static boolean canPlaceObject(Purchasable pType, int x, int y) {
+		if (pType instanceof CollidableType) {
+			CollidableType type = (CollidableType) pType;
+			if (x < 0 || y < 0 || x > currentWorld.getWidth() - type.width || y > currentWorld.getHeight() - type.height) return false;
 
-		for (Node goal : currentWorld.goals)
-			if (goal.x >= x && goal.x - x - (goal.top ? 0 : 1) < type.width && goal.y >= y && goal.y - y - (goal.top ? 1 : 0) < type.height) return false;
+			for (Node goal : currentWorld.goals)
+				if (goal.x >= x && goal.x - x - (goal.top ? 0 : 1) < type.width && goal.y >= y && goal.y - y - (goal.top ? 1 : 0) < type.height) return false;
 
-		Entity[] permanents = permanentEntities.toArray(new Entity[permanentEntities.size()]);
-		for (Entity e : permanents) {
-			if (!(e instanceof CollidableEntity)) continue;
+			Entity[] ents = entities.toArray(new Entity[entities.size()]);
+			for (Entity e : ents) {
+				if (!(e instanceof CollidableEntity)) continue;
 
-			if (((CollidableEntity) e).getRectangle().intersects(x, y, type.width, type.height)) return false;
-		}
+				if (((CollidableEntity) e).getRectangle().intersects(x, y, type.width, type.height)) return false;
+			}
 
-		if (type instanceof TowerType) {
-			TowerType tower = (TowerType) type;
+			if (type instanceof TowerType) {
+				TowerType tower = (TowerType) type;
 
-			int e = currentWorld.tiles[y][x].elev;
-			for (int xx = 0; xx < type.width; xx++) {
-				for (int yy = 0; yy < type.height; yy++) {
-					if (!tower.terrain.get(currentWorld.tiles[yy + y][xx + x].terrain)) return false;
-					if (!tower.onHill && currentWorld.tiles[yy + y][xx + x].elev != e) return false;
+				int e = currentWorld.tiles[y][x].elev;
+				for (int xx = 0; xx < type.width; xx++) {
+					for (int yy = 0; yy < type.height; yy++) {
+						if (!tower.terrain.get(currentWorld.tiles[yy + y][xx + x].terrain)) return false;
+						if (!tower.onHill && currentWorld.tiles[yy + y][xx + x].elev != e) return false;
+					}
 				}
 			}
+		} else if (x < 0 || y < 0 || x > currentWorld.getWidth() || y > currentWorld.getHeight()) {
+			return false;
 		}
 
 		return true;
@@ -688,15 +710,15 @@ public class GameLogic implements ActionListener {
 		return maxHealth;
 	}
 
-	public static Entity[] getPermanentEntities() {
-		return permanentEntities.toArray(new Entity[permanentEntities.size()]);
+	public static Entity[] getEntities() {
+		return entities.toArray(new Entity[entities.size()]);
 	}
 
 	public static Projectile[] getProjectiles() {
 		return projectiles.toArray(new Projectile[projectiles.size()]);
 	}
 
-	public static CollidableType getBuyingType() {
+	public static Purchasable getBuyingType() {
 		return buying;
 	}
 
@@ -755,8 +777,8 @@ public class GameLogic implements ActionListener {
 		map.put("time-to-next", timeToNextEnemy);
 		map.put("state", state.name().toLowerCase());
 
-		LinkedHashMap<Entity, HashMap<String, Object>> permanentMap = new LinkedHashMap<>();
-		for (Entity e : permanentEntities) {
+		LinkedHashMap<Entity, HashMap<String, Object>> entityMap = new LinkedHashMap<>();
+		for (Entity e : entities) {
 			HashMap<String, Object> ejson = new HashMap<>();
 			ejson.put("x", e.getX());
 			ejson.put("y", e.getY());
@@ -774,7 +796,7 @@ public class GameLogic implements ActionListener {
 					ef.put("amplifier", effect.amplifier);
 					ef.put("duration", effect.getDuration());
 					ef.put("orig-duration", effect.origDuration);
-					ef.put("inflictor", permanentEntities.indexOf(effect.inflictor));
+					ef.put("inflictor", entities.indexOf(effect.inflictor));
 					effects.add(ef);
 				}
 				ejson.put("effects", effects);
@@ -794,7 +816,7 @@ public class GameLogic implements ActionListener {
 				}
 				ejson.put("projectiles", new ArrayList<HashMap<String, Object>>());
 			}
-			permanentMap.put(e, ejson);
+			entityMap.put(e, ejson);
 		}
 
 		for (Projectile p : projectiles) {
@@ -809,17 +831,17 @@ public class GameLogic implements ActionListener {
 			pmap.put("radius", p.getRadius());
 			pmap.put("death-time", p.getDeathTime());
 			pmap.put("type", Arrays.asList(p.shootingEntity.getGun().projectiles).indexOf(p.type));
-			pmap.put("target", permanentEntities.indexOf(p.getTarget()));
+			pmap.put("target", entities.indexOf(p.getTarget()));
 			List<Integer> hitTargets = new ArrayList<>();
-			p.getHitTargets().stream().mapToInt(e -> permanentEntities.indexOf(e)).sorted().forEachOrdered(hitTargets::add);
+			p.getHitTargets().stream().mapToInt(e -> entities.indexOf(e)).sorted().forEachOrdered(hitTargets::add);
 			pmap.put("hit-targets", hitTargets);
 			List<Object> projectiles = new ArrayList<>();
-			projectiles.addAll((List<?>) permanentMap.get(p.shootingEntity).get("projectiles"));
+			projectiles.addAll((List<?>) entityMap.get(p.shootingEntity).get("projectiles"));
 			projectiles.add(pmap);
-			permanentMap.get(p.shootingEntity).put("projectiles", projectiles);
+			entityMap.get(p.shootingEntity).put("projectiles", projectiles);
 		}
 
-		map.put("entities", permanentMap.values());
+		map.put("entities", entityMap.values());
 
 		String obf = obfuscate(JSON.writeJSON(map));
 		try {
@@ -856,7 +878,7 @@ public class GameLogic implements ActionListener {
 			state = State.PLAYING;
 		}
 
-		List<Entity> permanents = new ArrayList<>();
+		List<Entity> ents = new ArrayList<>();
 
 		List<SavedProjectile> savedProjectiles = new ArrayList<>();
 		List<SavedEffect> savedEffects = new ArrayList<>();
@@ -886,7 +908,7 @@ public class GameLogic implements ActionListener {
 					double damageDone = e.get("damage-done") instanceof Number ? ((Number) e.get("damage-done")).doubleValue() : 0;
 					int projectilesFired = e.get("projectiles-fired") instanceof Number ? ((Number) e.get("projectiles-fired")).intValue() : 0;
 
-					permanents.add(new Tower(type, x, y, targetType, kills, damageDone, projectilesFired));
+					ents.add(new Tower(type, x, y, targetType, kills, damageDone, projectilesFired));
 
 					if (e.get("projectiles") instanceof List<?>) {
 						for (Object obj : (List<?>) e.get("projectiles")) {
@@ -954,7 +976,7 @@ public class GameLogic implements ActionListener {
 					}
 					Node prevNode = new Node(prevX, prevY, prevTop);
 
-					permanents.add(new Enemy(type, prevNode, nextNode, x, y, deathTime, health));
+					ents.add(new Enemy(type, prevNode, nextNode, x, y, deathTime, health));
 
 					if (e.get("effects") instanceof List<?>) {
 						List<?> effects = (List<?>) e.get("effects");
@@ -987,7 +1009,7 @@ public class GameLogic implements ActionListener {
 					double x = e.get("x") instanceof Number ? ((Number) e.get("x")).doubleValue() : 0;
 					double y = e.get("y") instanceof Number ? ((Number) e.get("y")).doubleValue() : 0;
 
-					permanents.add(new Obstacle(type, x, y));
+					ents.add(new Obstacle(type, x, y));
 				}
 			}
 		}
@@ -995,20 +1017,20 @@ public class GameLogic implements ActionListener {
 		List<Projectile> projectiles = new ArrayList<>();
 
 		for (SavedProjectile p : savedProjectiles) {
-			if (permanents.get(p.shootingIndex) instanceof Weapon && permanents.get(p.target) instanceof Enemy) {
+			if (ents.get(p.shootingIndex) instanceof Weapon && ents.get(p.target) instanceof Enemy) {
 				List<Enemy> hitTargets = new ArrayList<>();
 				Arrays.stream(p.hitTargets).forEach(i -> {
-					if (permanents.get(i) instanceof Enemy) hitTargets.add((Enemy) permanents.get(i));
+					if (ents.get(i) instanceof Enemy) hitTargets.add((Enemy) ents.get(i));
 				});
-				Enemy target = (Enemy) permanents.get(p.target);
-				Projectile proj = new Projectile((Weapon) permanents.get(p.shootingIndex), p.ptype, p.x, p.y, p.startX, p.startY, p.targetX, p.targetY, p.rotation, p.deathTime, p.radius, target, hitTargets);
+				Enemy target = (Enemy) ents.get(p.target);
+				Projectile proj = new Projectile((Weapon) ents.get(p.shootingIndex), p.ptype, p.x, p.y, p.startX, p.startY, p.targetX, p.targetY, p.rotation, p.deathTime, p.radius, target, hitTargets);
 				projectiles.add(proj);
 				if (p.deathTime < 0) target.damageFuture(proj);
 			}
 		}
 
 		for (SavedEffect e : savedEffects) {
-			if (permanents.get(e.affectedIndex) instanceof Enemy && permanents.get(e.inflictorIndex) instanceof Weapon) ((Enemy) permanents.get(e.affectedIndex)).addStatusEffect(new StatusEffect((Weapon) permanents.get(e.inflictorIndex), e.type, e.amplifier, e.duration, e.origDuration));
+			if (ents.get(e.affectedIndex) instanceof Enemy && ents.get(e.inflictorIndex) instanceof Weapon) ((Enemy) ents.get(e.affectedIndex)).addStatusEffect(new StatusEffect((Weapon) ents.get(e.inflictorIndex), e.type, e.amplifier, e.duration, e.origDuration));
 		}
 
 		GameLogic.reset();
@@ -1020,14 +1042,14 @@ public class GameLogic implements ActionListener {
 		GameLogic.maxHealth = levelSet.health;
 		GameLogic.timeToNextEnemy = timeToNextEnemy;
 		GameLogic.state = state;
-		GameLogic.permanentEntities = new ArrayList<>(permanents);
+		GameLogic.entities = new ArrayList<>(ents);
 		GameLogic.projectiles = new ArrayList<>(projectiles);
 
 		for (EnemyType type : EnemyType.values())
 			nodes.put(type, PathFinder.calculatePaths(type));
 
-		Entity[] permanentArray = permanentEntities.toArray(new Entity[permanentEntities.size()]);
-		for (Entity e : permanentArray) {
+		Entity[] entityArray = entities.toArray(new Entity[entities.size()]);
+		for (Entity e : entityArray) {
 			if (!(e instanceof Enemy)) continue;
 
 			((Enemy) e).resetNodes(nodes.get(((Enemy) e).type));

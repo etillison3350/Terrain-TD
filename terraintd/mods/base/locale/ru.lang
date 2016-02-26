@@ -94,13 +94,21 @@ target-na=Все
 area=Площадка
 tiles=плитка
 dps=Урон в секунду
-delivery=Тип
+total-damage=Общий ущерб
 
+delivery=Тип
 delivery-singletarget=Один
 delivery-area=Площадка
 delivery-line=Луч
 delivery-sector=сектор
 
+inst-target=нацелен
+inst-target-enemy=враги
+inst-target-location=Случайные места
+inst-target-rotation=Случайные вращения
+inst-target-spread=Случайные вращения
+
+explode-radius=радиус взрыва
 count=подсчет
 reward=Награда
 active-effects=Активные эффекты
@@ -121,10 +129,14 @@ tower-area=ЭМИ
 tower-sector=Пирог вышка
 tower-poison=Яд дротик башня
 tower-electricball=Электрический шар
+tower-testsingle=оглушают пушки
+tower-explode=ракетная пусковая установка
 
 enemy-a=танк
 enemy-b=средство передвижения
 enemy-c=автомобиль
+
+instant-example=налет авиации
 
 obstacle-example=Камень
 
