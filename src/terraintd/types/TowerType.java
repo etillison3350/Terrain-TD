@@ -10,8 +10,9 @@ public class TowerType extends CollidableType {
 	public final double range;
 	public final boolean rotate;
 	public final ProjectileType[] projectiles;
+	public final TowerUpgrade[] upgrades;
 
-	protected TowerType(Mod mod, String id, int cost, int sellCost, int width, int height, HashMap<Terrain, Boolean> terrain, boolean onHill, double range, boolean rotate, ImageType image, ImageType icon, ProjectileType[] projectiles) {
+	protected TowerType(Mod mod, String id, int cost, int sellCost, int width, int height, HashMap<Terrain, Boolean> terrain, boolean onHill, double range, boolean rotate, ImageType image, ImageType icon, ProjectileType[] projectiles, TowerUpgrade[] upgrades) {
 		super(mod, id, width, height, cost, sellCost, image, icon);
 
 		typeIds.put(id, this);
@@ -21,6 +22,7 @@ public class TowerType extends CollidableType {
 		this.range = range;
 		this.rotate = rotate;
 		this.projectiles = projectiles;
+		this.upgrades = upgrades;
 	}
 
 	static final HashMap<String, TowerType> typeIds = new HashMap<>();

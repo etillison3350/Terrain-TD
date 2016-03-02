@@ -1,12 +1,14 @@
 package terraintd.types;
 
-public class Level {
+public class Level extends ModdedType {
 
 	public final int index;
 	public final Unit[] units;
 	public final int money;
 
-	protected Level(int index, Unit[] units, int money) {
+	protected Level(String id, Mod mod, int index, Unit[] units, int money) {
+		super(mod, id);
+		
 		this.index = index;
 		this.units = units;
 		this.money = money;

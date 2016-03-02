@@ -58,8 +58,6 @@ public class PathFinder {
 			}
 		}
 
-//		if (nodes[world.goal.y][world.goal.x][world.goal.top ? 1 : 0].isClosed()) return nodes;
-
 		for (Node goal : world.goals)
 			nodeSet.add(nodes[goal.y][goal.x][goal.top ? 1 : 0]);
 

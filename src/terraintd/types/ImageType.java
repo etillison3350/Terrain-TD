@@ -5,9 +5,9 @@ import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
-public class ImageType {
+public class ImageType extends ModdedType {
 
-	public static final ImageType BLANK = new ImageType(null, 1, 1, 0, 0);
+	public static final ImageType BLANK = new ImageType("blankimage", null, null, 1, 1, 0, 0);
 	
 	public final BufferedImage image;
 	public final Path src;
@@ -17,7 +17,9 @@ public class ImageType {
 	public final double y;
 //	public final boolean clip;
 
-	protected ImageType(Path src, double width, double height, double x, double y) {
+	protected ImageType(String id, Mod mod, Path src, double width, double height, double x, double y) {
+		super(mod, id);
+		
 		this.src = src;
 		this.width = width;
 		this.height = height;

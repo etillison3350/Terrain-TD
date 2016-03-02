@@ -366,7 +366,6 @@ public class GamePanel extends JPanel {
 
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 
-//		float gs = -.0000008888F * t * t + 0.001333F * t + 1;
 		for (Node goal : GameLogic.getCurrentWorld().goals)
 			g.drawImage(GamePanel.goal, (int) (dx + tile * (goal.getAbsX() - 0.5)), (int) (dy + (tile * (goal.getAbsY() - 0.5))), (int) tile, (int) tile, null);
 

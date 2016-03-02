@@ -16,15 +16,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/bullet.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"single_target",
                 "explosion-radius":0,
                 "speed":20,
@@ -42,6 +45,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
@@ -66,15 +70,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/beam.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"line",
                 "explosion-radius":0,
                 "speed":80,
@@ -92,6 +99,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/beam.png",
                     "height":0.5
                 }
@@ -114,15 +122,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/electricity.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"area",
                 "explosion-radius":0,
                 "speed":60,
@@ -139,6 +150,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/electricity.png",
                 }
             }
@@ -161,15 +173,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/electricity.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"sector",
                 "explosion-radius":0,
                 "speed":60,
@@ -187,6 +202,7 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/electricity.png",
                 }
             }
@@ -209,15 +225,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/bullet.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"single_target",
                 "explosion-radius":0,
                 "speed":20,
@@ -235,12 +254,14 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
                 },
                 "effects":[
                     {
+                    	"id":"poi0-0",
                         "type":"poison",
                         "amplifier":4,
                         "duration":3
@@ -266,15 +287,18 @@
         "range":6,
         "rotate":false,
         "icon":{
+        	"id":"i0-0",
             "src":"images/electricballicon.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/electricball.png",
             "width":1.75,
             "height":1.75
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"line",
                 "explosion-radius":0,
                 "speed":80,
@@ -293,6 +317,7 @@
                 "damage-fade":false,
                 "count":8,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/electricbeam.png",
                     "height":0.5
                 }
@@ -308,15 +333,18 @@
         "range":12,
         "rotate":false,
         "icon":{
+        	"id":"i0-0",
             "src":"images/electricbeam.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"single_target",
                 "explosion-radius":0.833333,
                 "speed":7.5,
@@ -334,16 +362,19 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/electricbeam.png",
                     "height":0.5
                 },
                 "explosion":{
+                	"id":"i0-0",
                     "src":"images/electricbeam.png",
                     "width":1.6666666,
                     "height":1.6666666
                 },
                 "effects":[
                     {
+                    	"id":"par0-0",
                         "type":"paralysis",
                         "duration":2.5
                     }
@@ -368,15 +399,18 @@
         "range":8,
         "rotate":true,
         "icon":{
+        	"id":"i0-0",
             "src":"images/explosion.png"
         },
         "image":{
+        	"id":"i0-0",
             "src":"images/lasercannon.png",
             "width":3,
             "height":3
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"single_target",
                 "explosion-radius":1.5,
                 "speed":12,
@@ -394,11 +428,13 @@
                 "dying-fade":true,
                 "damage-fade":false,
                 "image":{
+                	"id":"i0-0",
                     "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
                 },
                 "explosion":{
+                	"id":"i0-0",
                     "src":"images/explosion.png",
                     "width":3,
                     "height":3

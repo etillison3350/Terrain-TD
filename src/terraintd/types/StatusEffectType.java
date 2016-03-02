@@ -11,11 +11,11 @@ import terraintd.Language;
 
 public enum StatusEffectType {
 	FIRE(true, Color.ORANGE, "fireEffect.png"),
-	PARALYSIS(false, new Color(0.8F, 0.8F, 0.9F), null),
-	SLOWNESS(true, new Color(0.25F, 0.125F, 0.5F), null),
-	WEAKNESS(true, new Color(0.5F, 0.0F, 1.0F), null),
+	PARALYSIS(false, new Color(205, 205, 230), null),
+	SLOWNESS(true, new Color(64, 32, 128), null),
+	WEAKNESS(true, new Color(128, 0, 255), null),
 	BLUNTNESS(true, Color.DARK_GRAY, null),
-	FROST(true, new Color(0.0F, 1.0F, 1.0F), null),
+	FROST(true, new Color(0, 255, 255), null),
 	POISON(true, Color.GREEN, null),
 	BLEED(true, Color.RED, null);
 

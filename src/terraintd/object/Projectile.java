@@ -153,7 +153,9 @@ public class Projectile {
 	 *         </ul>
 	 */
 	public double damageForEntity(Entity e) {
-		return this.type.damage - this.type.falloff * Math.hypot(e.getX() - startX, e.getY() - startY) / this.type.maxDist;
+		double d = Math.hypot(e.getX() - startX, e.getY() - startY) / this.type.maxDist;
+
+		return this.type.maxDamage * (1 - d) + this.type.minDamage * d;
 	}
 
 	public double getX() {

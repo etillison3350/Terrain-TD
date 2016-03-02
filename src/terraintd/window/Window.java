@@ -138,12 +138,15 @@ public class Window extends JFrame {
 		game.add(newGame);
 
 		openGame.addActionListener(menuListener);
+		openGame.setEnabled(false);
 		game.add(openGame);
 
 		saveGame.addActionListener(menuListener);
+		saveGame.setEnabled(false);
 		game.add(saveGame);
 
 		saveGameAs.addActionListener(menuListener);
+		saveGameAs.setEnabled(false);
 		game.add(saveGameAs);
 
 		game.addSeparator();

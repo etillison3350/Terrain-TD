@@ -217,11 +217,151 @@ public final class TypeGenerator {
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				try {
+					if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				} catch (Exception e) {}
 			}
 		}
 
-		return new TowerType(mod, id, cost, sellCost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]));
+		List<TowerUpgrade> upgrades = new ArrayList<>();
+		if (map.get("upgrades") instanceof List<?>) {
+			for (Object u : (List<?>) map.get("upgrades")) {
+				try {
+					if (u instanceof Map<?, ?>) upgrades.add(parseTowerUpgrade((Map<?, ?>) u, mod));
+				} catch (Exception e) {}
+			}
+		}
+
+		return new TowerType(mod, id, cost, sellCost, width, height, terrain, onHill, range, rotate, image, icon, projectiles.toArray(new ProjectileType[projectiles.size()]), upgrades.toArray(new TowerUpgrade[upgrades.size()]));
+	}
+
+	static TowerUpgrade parseTowerUpgrade(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		int cost = map.get("cost") instanceof Number ? ((Number) map.get("cost")).intValue() : 1;
+
+		int sellCost = map.get("sell-cost") instanceof Number ? ((Number) map.get("sell-cost")).intValue() : (int) (cost * 0.75);
+
+		boolean rotate = map.get("rotate") instanceof Boolean ? (Boolean) map.get("rotate") : true;
+
+		double range = map.get("range") instanceof Number ? ((Number) map.get("range")).doubleValue() : 0;
+
+		ImageType icon = map.get("icon") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("icon"), mod) : ImageType.BLANK;
+
+		ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : ImageType.BLANK;
+
+		List<ProjectileUpgrade> projectiles = new ArrayList<>();
+		if (map.get("projectiles") instanceof List<?>) {
+			for (Object p : (List<?>) map.get("projectiles")) {
+				try {
+					if (p instanceof Map<?, ?>) projectiles.add(parseProjectileUpgrade((Map<?, ?>) p, mod));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return new TowerUpgrade(id, mod, cost, sellCost, icon, range, rotate, image, projectiles.toArray(new ProjectileUpgrade[projectiles.size()]));
+	}
+
+	static ProjectileUpgrade parseProjectileUpgrade(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		String pid = (String) map.get("upgrade-id");
+		if (pid == null) throw new IllegalArgumentException();
+
+		char oper = String.format("%s", map.get("operation")).charAt(0);
+
+		if (oper == '+') {
+			ProjectileType p = parseProjectiles(map, mod).iterator().next();
+			p = new ProjectileType(p.uid, null, new ArrayList<>(), pid, p.mod, p.delivery, p.explodeRadius, p.speed, p.maxDamage, p.minDamage, p.rate, p.follow, p.maxDist, p.offset, p.angle, p.rotation, p.absRotation, p.dyingFadeTime, p.dyingFade, p.damageFade, p.image, p.explosion, p.effects);
+			return new ProjectileUpgrade.Add(mod, id, pid, p);
+		} else {
+			if (oper == '-') {
+				return new ProjectileUpgrade.Remove(mod, id, pid);
+			} else {
+				double explodeRadius = map.get("explosion-radius") instanceof Number ? ((Number) map.get("explosion-radius")).doubleValue() : 0;
+
+				double speed = map.get("speed") instanceof Number ? ((Number) map.get("speed")).doubleValue() : 0;
+
+				Object dmg = map.get("damage");
+				double maxDamage = 0;
+				double minDamage = 0;
+				if (dmg instanceof List<?>) {
+					maxDamage = ((List<?>) dmg).get(0) instanceof Number ? ((Number) ((List<?>) dmg).get(0)).doubleValue() : 0;
+					minDamage = ((List<?>) dmg).get(1) instanceof Number ? ((Number) ((List<?>) dmg).get(1)).doubleValue() : 0;
+				} else if (dmg instanceof Map<?, ?>) {
+					maxDamage = ((Map<?, ?>) dmg).get("min") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("min")).intValue() : 0;
+					minDamage = ((Map<?, ?>) dmg).get("max") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("max")).intValue() : 0;
+				}
+
+				double rate = map.get("rate") instanceof Number ? ((Number) map.get("rate")).doubleValue() : 0;
+
+				int follow = map.get("follow") instanceof Boolean ? ((Boolean) map.get("follow") ? 1 : 0) : 2;
+
+				Object md = map.get("max-dist");
+				double maxDist = md instanceof Number ? ((Number) md).doubleValue() : (md instanceof String && ((String) md).matches("^inf(?:init[ey])?$") ? 1e300 : 0);
+
+				double offset = map.get("offset") instanceof Number ? ((Number) map.get("offset")).doubleValue() : 0;
+
+				double angle = map.get("angle") instanceof Number ? ((Number) map.get("angle")).doubleValue() : 0;
+
+				double rotation = map.get("rotation") instanceof Number ? ((Number) map.get("rotation")).doubleValue() : 0;
+
+				int absRotation = map.get("abs-rotation") instanceof Boolean ? ((Boolean) map.get("abs-rotation") ? 1 : 0) : 2;
+
+				double dyingFadeTime = map.get("dying-fade-time") instanceof Number ? ((Number) map.get("dying-fade-time")).doubleValue() : 0;
+
+				int dyingFade = map.get("dying-fade") instanceof Boolean ? ((Boolean) map.get("dying-fade") ? 1 : 0) : 2;
+
+				int damageFade = map.get("damage-fade") instanceof Boolean ? ((Boolean) map.get("damage-fade") ? 1 : 0) : 2;
+
+				ImageType image = map.get("image") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("image"), mod) : ImageType.BLANK;
+
+				ImageType explosion = map.containsKey("explosion") ? (map.get("explosion") instanceof Map<?, ?> ? parseImage((Map<?, ?>) map.get("explosion"), mod) : ImageType.BLANK) : ImageType.BLANK;
+
+				List<EffectUpgrade> effects = new ArrayList<>();
+				if (map.get("effects") instanceof List<?>) {
+					for (Object p : (List<?>) map.get("effects")) {
+						if (p instanceof Map<?, ?>) {
+							try {
+								effects.add(parseEffectUpgrade((Map<?, ?>) p, mod));
+							} catch (Exception e) {}
+						}
+					}
+				}
+				
+				return new ProjectileUpgrade.Change(mod, id, pid, explodeRadius, speed, maxDamage, minDamage, rate, follow, maxDist, offset, angle, rotation, absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectUpgrade[effects.size()]));
+			}
+		}
+	}
+
+	static EffectUpgrade parseEffectUpgrade(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
+		String pid = (String) map.get("upgrade-id");
+		if (pid == null) throw new IllegalArgumentException();
+
+		char oper = String.format("%s", map.get("operation")).charAt(0);
+
+		if (oper == '+') {
+			EffectType e = parseEffect(map, mod);
+			e = new EffectType(e.uid, null, pid, e.mod, e.type, e.duration, e.amplifier);
+			return new EffectUpgrade.Add(mod, id, pid, e);
+		} else {
+			if (oper == '-') {
+				return new EffectUpgrade.Remove(mod, id, pid);
+			} else {
+				double duration = map.get("duration") instanceof Number ? ((Number) map.get("duration")).doubleValue() : 0;
+
+				double amplifier = map.get("amplifier") instanceof Number ? ((Number) map.get("amplifier")).doubleValue() : 0;
+
+				return new EffectUpgrade.Change(mod, id, pid, amplifier, duration);
+			}
+		}
 	}
 
 	static EnemyType parseEnemy(Map<?, ?> map, Mod mod) {
@@ -321,7 +461,9 @@ public final class TypeGenerator {
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				try {
+					if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				} catch (Exception e) {}
 			}
 		}
 
@@ -359,7 +501,9 @@ public final class TypeGenerator {
 		List<ProjectileType> projectiles = new ArrayList<>();
 		if (map.get("projectiles") instanceof List<?>) {
 			for (Object p : (List<?>) map.get("projectiles")) {
-				if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				try {
+					if (p instanceof Map<?, ?>) projectiles.addAll(parseProjectiles((Map<?, ?>) p, mod));
+				} catch (Exception e) {}
 			}
 		}
 
@@ -455,6 +599,9 @@ public final class TypeGenerator {
 	}
 
 	static Collection<ProjectileType> parseProjectiles(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
 		DeliveryType delivery = DeliveryType.SINGLE_TARGET;
 		try {
 			delivery = DeliveryType.valueOf(((String) map.get("delivery")).toUpperCase());
@@ -465,17 +612,15 @@ public final class TypeGenerator {
 		double speed = map.get("speed") instanceof Number ? ((Number) map.get("speed")).doubleValue() : 1;
 
 		Object dmg = map.get("damage");
-		double damage = 1;
-		double far = 1;
+		double maxDamage = 1;
+		double minDamage = 1;
 		if (dmg instanceof List<?>) {
-			damage = ((List<?>) dmg).get(0) instanceof Number ? ((Number) ((List<?>) dmg).get(0)).doubleValue() : 1;
-			far = ((List<?>) dmg).get(1) instanceof Number ? ((Number) ((List<?>) dmg).get(1)).doubleValue() : 1;
+			maxDamage = ((List<?>) dmg).get(0) instanceof Number ? ((Number) ((List<?>) dmg).get(0)).doubleValue() : 1;
+			minDamage = ((List<?>) dmg).get(1) instanceof Number ? ((Number) ((List<?>) dmg).get(1)).doubleValue() : 1;
 		} else if (dmg instanceof Map<?, ?>) {
-			damage = ((Map<?, ?>) dmg).get("min") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("min")).intValue() : 1;
-			far = ((Map<?, ?>) dmg).get("max") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("max")).intValue() : 1;
+			maxDamage = ((Map<?, ?>) dmg).get("min") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("min")).intValue() : 1;
+			minDamage = ((Map<?, ?>) dmg).get("max") instanceof Number ? ((Number) ((Map<?, ?>) dmg).get("max")).intValue() : 1;
 		}
-
-		double falloff = damage - far;
 
 		double rate = map.get("rate") instanceof Number ? ((Number) map.get("rate")).doubleValue() : 1;
 
@@ -509,7 +654,7 @@ public final class TypeGenerator {
 			for (Object p : (List<?>) map.get("effects")) {
 				if (p instanceof Map<?, ?>) {
 					try {
-						effects.add(parseEffect((Map<?, ?>) p));
+						effects.add(parseEffect((Map<?, ?>) p, mod));
 					} catch (Exception e) {}
 				}
 			}
@@ -518,13 +663,16 @@ public final class TypeGenerator {
 		Collection<ProjectileType> projs = new ArrayList<>();
 
 		for (int i = 0; i < count; i++) {
-			projs.add(new ProjectileType(delivery, explodeRadius, speed, damage, falloff, rate, follow, maxDist, offset, angle, (rotation + (2 * Math.PI * i / count)) % (2 * Math.PI), absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()])));
+			projs.add(new ProjectileType(id, mod, delivery, explodeRadius, speed, maxDamage, minDamage, rate, follow, maxDist, offset, angle, (rotation + (2 * Math.PI * i / count)) % (2 * Math.PI), absRotation, dyingFadeTime, dyingFade, damageFade, image, explosion, effects.toArray(new EffectType[effects.size()])));
 		}
 
 		return projs;
 	}
 
-	static EffectType parseEffect(Map<?, ?> map) {
+	static EffectType parseEffect(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
 		StatusEffectType type = StatusEffectType.valueOf(((String) map.get("type")).toUpperCase());
 
 		double duration = map.get("duration") instanceof Number ? ((Number) map.get("duration")).doubleValue() : 1;
@@ -533,10 +681,13 @@ public final class TypeGenerator {
 
 		if (amplifier <= 0) throw new IllegalArgumentException();
 
-		return new EffectType(type, duration, amplifier);
+		return new EffectType(id, mod, type, duration, amplifier);
 	}
 
 	static ImageType parseImage(Map<?, ?> map, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) return ImageType.BLANK;
+
 		String src = (String) map.get("src");
 		if (src == null) return ImageType.BLANK;
 
@@ -546,7 +697,7 @@ public final class TypeGenerator {
 		double x = map.get("x") instanceof Number ? ((Number) map.get("x")).doubleValue() : 0;
 		double y = map.get("y") instanceof Number ? ((Number) map.get("y")).doubleValue() : 0;
 
-		return new ImageType(mod.path.resolve(src), width, height, x, y);
+		return new ImageType(id, mod, mod.path.resolve(src), width, height, x, y);
 	}
 
 	static World parseWorld(Map<?, ?> map, Mod mod) {
@@ -693,15 +844,17 @@ public final class TypeGenerator {
 			if (!(obj instanceof Map<?, ?>)) continue;
 
 			try {
-				levelList.add(parseLevel((Map<?, ?>) obj, i));
-				i++;
+				levelList.add(parseLevel((Map<?, ?>) obj, i++, mod));
 			} catch (Exception e) {}
 		}
 
 		return new LevelSet(mod, id, levelList.toArray(new Level[levelList.size()]), health);
 	}
 
-	static Level parseLevel(Map<?, ?> map, int index) {
+	static Level parseLevel(Map<?, ?> map, int index, Mod mod) {
+		String id = (String) map.get("id");
+		if (id == null) throw new IllegalArgumentException();
+
 		int money = map.get("money") instanceof Number ? ((Number) map.get("money")).intValue() : 1000;
 
 		ArrayList<Unit> units = new ArrayList<>();
@@ -738,7 +891,7 @@ public final class TypeGenerator {
 
 		if (units.size() <= 0) throw new IllegalArgumentException();
 
-		return new Level(index, units.toArray(new Unit[units.size()]), money);
+		return new Level(id, mod, index, units.toArray(new Unit[units.size()]), money);
 	}
 
 	static Mod[] mods() {

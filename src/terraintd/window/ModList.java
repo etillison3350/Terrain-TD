@@ -137,7 +137,6 @@ public class ModList extends JDialog {
 		this.add(panel);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout());
-//		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		JPanel buttons = new JPanel(new GridLayout(1, 2, 5, 5));
 

@@ -11,10 +11,12 @@
         "delay":0,
         "sync":false,
         "icon":{
+        	"id":"i0-0",
             "src":"images/electricity.png"
         },
         "projectiles":[
             {
+            	"id":"p0-0",
                 "delivery":"single_target",
                 "explosion-radius":1,
                 "speed":20,
@@ -33,11 +35,13 @@
                 "damage-fade":false,
                 "count":10,
                 "image":{
+		        	"id":"i0-0",
                     "src":"images/bullet.png",
                     "width":0.5,
                     "height":0.5
                 },
                 "explosion":{
+		        	"id":"i0-0",
                     "src":"images/explosion.png",
                     "width":2,
                     "height":2

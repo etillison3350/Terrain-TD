@@ -9,14 +9,14 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public enum Terrain {
-	GRASS(new Color(0.4F, 0.75F, 0.25F)),
+	GRASS(new Color(102, 192, 64)),
 	STONE(Color.GRAY),
-	SAND(new Color(0.9F, 0.75F, 0.5F)),
-	MARSHLANDS(new Color(0.3F, 0.5F, 0.25F)),
-	SNOW(new Color(0.9F, 0.9F, 0.9F)),
-	FROZEN_WATER(new Color(0.75F, 0.75F, 1.0F)),
-	SHALLOW_WATER(new Color(0.0F, 0.5F, 1.0F)),
-	DEEP_WATER(new Color(0.0F, 0.0F, 0.75F));
+	SAND(new Color(230, 192, 128)),
+	MARSHLANDS(new Color(77, 128, 64)),
+	SNOW(new Color(230, 230, 230)),
+	FROZEN_WATER(new Color(150, 150, 255)),
+	SHALLOW_WATER(new Color(0, 64, 255)),
+	DEEP_WATER(new Color(0, 0, 192));
 
 	private BufferedImage image;
 

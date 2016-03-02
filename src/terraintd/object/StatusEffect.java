@@ -77,7 +77,7 @@ public class StatusEffect {
 	
 	@Override
 	public String toString() {
-		return String.format("%s%s, %.3gs", type, type.amplifiable ? String.format(Language.getCurrentLocale(), " %f", amplifier) : "", duration);
+		return String.format("%s%s, %.3gs", type, type.amplifiable ? String.format(Language.getCurrentLocale(), " %.2f", amplifier) : "", duration);
 	}
 
 }

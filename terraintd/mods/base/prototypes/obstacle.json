@@ -10,11 +10,13 @@
         "sell-cost":250,
         "spawn-rate":0,
         "image":{
+        	"id":"i0-0",
             "src":"images/stone.png",
             "width":3,
             "height":2
         },
         "icon":{
+        	"id":"i0-0",
             "src":"images/stone.png"
         }
     }

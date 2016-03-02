@@ -273,7 +273,7 @@ public class Enemy extends Entity implements Weapon {
 		double ret = this.health;
 
 		for (Projectile p : futureDamage)
-			ret -= p.type.damage - (p.type.falloff < 0 ? 0 : p.type.falloff);
+			ret -= Math.min(p.type.minDamage, p.type.maxDamage);
 
 		return ret;
 	}

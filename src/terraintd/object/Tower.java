@@ -1,17 +1,24 @@
 package terraintd.object;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import terraintd.GameLogic;
 import terraintd.types.ProjectileType;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
+import terraintd.types.TowerUpgrade;
 
 public class Tower extends CollidableEntity implements Weapon {
 
+	public final TowerType baseType;
 	private TowerType type;
 	private double x, y;
 	private double rotation;
-	
-	private final Gun gun;
+
+	private final List<TowerUpgrade> appliedUpgrades;
+
+	private Gun gun;
 
 	@Override
 	public double getX() {
@@ -47,27 +54,38 @@ public class Tower extends CollidableEntity implements Weapon {
 	}
 
 	public Tower(TowerType type, double x, double y) {
-		this.type = type;
+		this.baseType = this.type = type;
 		this.x = x;
 		this.y = y;
 		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height);
+
+		this.appliedUpgrades = new ArrayList<>();
 	}
-	
+
 	/**
 	 * <b>THIS CONSTRUCTOR FOR USE IN {@link GameLogic#open(java.nio.file.Path)} ONLY</b>
 	 */
 	public Tower(TowerType type, double x, double y, TargetType targetType, int kills, double damageDone, int projectilesFired) {
-		this.type = type;
-		this.x = x;
-		this.y = y;
+		this(type, x, y);
 		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height, targetType, kills, damageDone, projectilesFired);
 	}
 
+	public void upgrade(TowerUpgrade upgrade) {
+		this.type = upgrade.upgradeTower(this);
+		this.gun = new Gun(type.projectiles, type.range, x + 0.5 * type.width, y + 0.5 * type.height, this.gun.getTargetType(), this.gun.getKills(), this.gun.getDamageDone(), this.gun.getProjectilesFired());
+		
+		this.appliedUpgrades.add(upgrade);
+	}
+
+	public TowerUpgrade[] getAppliedUpgrades() {
+		return appliedUpgrades.toArray(new TowerUpgrade[appliedUpgrades.size()]);
+	}
+	
 	@Override
 	public TowerType getType() {
 		return this.type;
 	}
-	
+
 	@Override
 	public Gun getGun() {
 		return gun;
@@ -82,7 +100,7 @@ public class Tower extends CollidableEntity implements Weapon {
 
 		return ps;
 	}
-	
+
 	@Override
 	public void target(Enemy e) {
 		Weapon.super.target(e);

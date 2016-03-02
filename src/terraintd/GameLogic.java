@@ -45,6 +45,8 @@ import terraintd.types.Purchasable;
 import terraintd.types.StatusEffectType;
 import terraintd.types.TargetType;
 import terraintd.types.TowerType;
+import terraintd.types.TowerUpgrade;
+import terraintd.types.Upgrade;
 import terraintd.types.World;
 import terraintd.window.BuyPanel;
 import terraintd.window.GamePanel;
@@ -388,20 +390,19 @@ public class GameLogic implements ActionListener {
 				if (!enemy.move()) {
 					health -= enemy.getDamage();
 					enemy.damage(Float.MAX_VALUE);
-					InfoPanel.paintHealthBar();
 				}
 
 				if (enemy.damage(0)) {
 					money += enemy.type.reward;
 				}
 			}
-			
+
 			if (e instanceof Instant) {
 				if (((Instant) e).isDone()) {
 					entities.remove(e);
 					continue;
 				}
-				
+
 				for (Projectile p : ((Instant) e).fire()) {
 					if (p.type.delivery == DeliveryType.SINGLE_TARGET && p.type.follow && p.getTarget() instanceof Enemy) ((Enemy) p.getTarget()).damageFuture(p);
 
@@ -409,6 +410,9 @@ public class GameLogic implements ActionListener {
 				}
 			}
 		}
+		
+		InfoPanel.updateMoney();
+		InfoPanel.paintHealthBar();
 	}
 
 	private static void processProjectiles() {
@@ -500,6 +504,8 @@ public class GameLogic implements ActionListener {
 				}
 			}
 		}
+		
+		InfoPanel.updateMoney();
 	}
 
 	private static boolean lineCollides(Entity e, Projectile p, double radius) {
@@ -552,13 +558,26 @@ public class GameLogic implements ActionListener {
 	 *        </ul>
 	 */
 	public static void buyObject(Purchasable type) {
-		wasPaused = !timer.isRunning();
-		if (pauseOnBuy) {
-			stop();
+		if (type instanceof Upgrade) {
+			if (selected instanceof Tower && type instanceof TowerUpgrade) ((Tower) selected).upgrade((TowerUpgrade) type);
+			
+			saved = false;
+			money -= type.getCost();
+			
+			setSelectedEntity(selected);
+			BuyPanel.setUpgrades(((Tower) selected).getType().upgrades);
+			GamePanel.repaintPanel();
+			BuyPanel.updateButtons();
+			InfoPanel.updateMoney();
+		} else {
+			wasPaused = !timer.isRunning();
+			if (pauseOnBuy) {
+				stop();
+			}
+			buying = type;
+			InfoPanel.setDisplayedObject(type);
+			selected = null;
 		}
-		buying = type;
-		InfoPanel.setDisplayedObject(type);
-		selected = null;
 	}
 
 	/**
@@ -595,8 +614,11 @@ public class GameLogic implements ActionListener {
 
 		money -= buying.getCost();
 
-		cancelBuy();
+		buying = null;
+		if (!wasPaused) start();
+		GamePanel.repaintPanel();
 		BuyPanel.updateButtons();
+		InfoPanel.updateMoney();
 	}
 
 	public static void cancelBuy() {
@@ -624,6 +646,7 @@ public class GameLogic implements ActionListener {
 
 			GamePanel.repaintPanel();
 			BuyPanel.updateButtons();
+			InfoPanel.updateMoney();
 		}
 	}
 
@@ -643,6 +666,11 @@ public class GameLogic implements ActionListener {
 		GameLogic.selected = selected;
 
 		InfoPanel.setDisplayedObject(selected);
+		if (selected instanceof Tower) {
+			BuyPanel.setUpgrades(((Tower) selected).getType().upgrades);
+		} else {
+			BuyPanel.setUpgrades();
+		}
 	}
 
 	public static boolean canPlaceObject(Purchasable pType, int x, int y) {

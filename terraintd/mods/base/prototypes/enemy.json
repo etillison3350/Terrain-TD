@@ -20,9 +20,11 @@
         "damage":10,
         "reward":20,
         "image":{
+        	"id":"i0-0",
             "src":"images/tank.png"
         },
         "death":{
+        	"id":"i0-0",
             "src":"images/explosion.png"
         },
         "projectiles":null
@@ -48,9 +50,11 @@
         "damage":20,
         "reward":30,
         "image":{
+        	"id":"i0-0",
             "src":"images/vehicle.png"
         },
         "death":{
+        	"id":"i0-0",
             "src":"images/explosion.png"
         },
         "projectiles":null
@@ -76,9 +80,11 @@
         "damage":10,
         "reward":15,
         "image":{
+        	"id":"i0-0",
             "src":"images/car.png"
         },
         "death":{
+        	"id":"i0-0",
             "src":"images/explosion.png"
         },
         "projectiles":null

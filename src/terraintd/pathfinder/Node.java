@@ -59,7 +59,7 @@ public class Node {
 	}
 	
 	public boolean isBlocked() {
-		return closed && !explored;//false;//closed || !explored;
+		return closed && !explored;
 	}
 
 	void close() {

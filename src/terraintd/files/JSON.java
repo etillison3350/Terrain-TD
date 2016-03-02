@@ -1,6 +1,7 @@
 package terraintd.files;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 public class JSON {
 
 	public static final NumberFormat numbers = new DecimalFormat("0");
-	
+
 	private JSON() {}
 
 	public static List<Object> parseJSON(String json) {
@@ -125,7 +126,7 @@ public class JSON {
 	 */
 	public static String writeJSON(Object obj) {
 		numbers.setMaximumFractionDigits(16);
-		
+
 		if (obj == null) {
 			return "null";
 		}
@@ -166,7 +167,11 @@ public class JSON {
 		String ret = "{";
 		for (Field field : obj.getClass().getFields()) {
 			try {
-				ret += String.format("\"%s\":%s,", field.getName(), field.get(obj));
+				if (Modifier.isStatic(field.getModifiers())) continue;
+
+				Object o = field.get(obj);
+				if (o == obj) continue;
+				ret += String.format("\"%s\":%s,", field.getName(), writeJSON(o));
 			} catch (IllegalArgumentException | IllegalAccessException e) {}
 		}
 		return ret.replaceAll(",$", "") + "}";
