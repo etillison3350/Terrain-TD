@@ -2,14 +2,12 @@ package terraintd.object;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import terraintd.GameLogic;
 import terraintd.pathfinder.Node;
-import terraintd.pathfinder.PathFinder;
 import terraintd.types.EffectType;
 import terraintd.types.EnemyType;
 import terraintd.types.ProjectileType;
@@ -26,7 +24,7 @@ public class Enemy extends Entity implements Weapon {
 	private int dead;
 	public List<Projectile> futureDamage;
 
-	private Node nextNode, prevNode, oldPrev;
+	private Node nextNode, prevNode;
 
 	private Node[][][] newNodeSet;
 
@@ -49,7 +47,7 @@ public class Enemy extends Entity implements Weapon {
 		this.x = location.getAbsX();
 		this.y = location.getAbsY();
 		this.prevNode = location;
-		this.nextNode = location.getNextNode();
+		this.nextNode = findNextNode(prevNode);
 		this.health = type.health;
 		this.gun = type.projectiles != null && type.projectiles.length > 0 ? new Gun(this) : null;
 
@@ -160,9 +158,8 @@ public class Enemy extends Entity implements Weapon {
 		if (distance > d) {
 			this.x = nextNode.getAbsX();
 			this.y = nextNode.getAbsY();
-			this.oldPrev = prevNode;
 			this.prevNode = nextNode;
-			this.nextNode = findNextNode();
+			this.nextNode = findNextNode(prevNode);
 			if (newNodeSet != null) resetNodes(newNodeSet);
 			boolean ret = nextNode == null ? false : move((distance - d) / speed, speedMult);
 			if (!ret) dead = 2;
@@ -178,25 +175,15 @@ public class Enemy extends Entity implements Weapon {
 		return true;
 	}
 
-	private int chance = 1;
-
-	private Node findNextNode() {
-		if (GameLogic.rand.nextInt(chance) == 0) {
-			chance++;
-			return prevNode.getNextNode();
+	private Node findNextNode(Node node) {
+		Node[] nodes = node.getNextNodes();
+		if (nodes.length == 0) {
+			return null;
+		} else if (nodes.length == 1) {
+			return nodes[0];
+		} else {
+			return nodes[GameLogic.rand.nextInt(nodes.length)];
 		}
-
-		chance = 1;
-
-		Node next = prevNode.getNextNode();
-		if (next == null) return null;
-		if (next.getNextNode() == null) return next;
-
-		Node[] nodes = PathFinder.getNeighbors(GameLogic.getNodes(type), prevNode);
-
-		double a = Math.atan2(prevNode.getAbsY() - next.getAbsY(), prevNode.getAbsX() - next.getAbsX());
-		Object[] ns = Arrays.stream(nodes).filter(n -> !n.isBlocked() && n != oldPrev && n.getNextNode() != prevNode && subAngles(a, Math.atan2(prevNode.getAbsY() - n.getAbsY(), prevNode.getAbsX() - n.getAbsX())) < (Math.PI / 2.1) && n.getCost() - next.getCost() < 0.05 * Math.pow(n.getCost() * 3, 0.25)).toArray();
-		return ns.length <= 0 ? next : (Node) ns[GameLogic.rand.nextInt(ns.length)];
 	}
 
 	public void resetNodes(Node[][][] nodes) {
@@ -208,7 +195,7 @@ public class Enemy extends Entity implements Weapon {
 				this.nextNode = newNextNode;
 				this.newNodeSet = null;
 			} else if (newPrevNode.isExplored()) {
-				this.nextNode = newPrevNode.getNextNode();
+				this.nextNode = findNextNode(newPrevNode);
 				this.x = newPrevNode.getAbsX();
 				this.y = newPrevNode.getAbsY();
 			} else {

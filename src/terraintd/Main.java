@@ -12,7 +12,7 @@ public class Main {
 
 		GameLogic.cfg.read();
 		GameLogic.cfg.apply();
-		
+
 		Window.setWindowVisible(true);
 	}
 }

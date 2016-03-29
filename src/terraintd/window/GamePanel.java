@@ -96,9 +96,11 @@ public class GamePanel extends JPanel {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (GameLogic.distanceSq(startX, e.getX() / getTileSize(), startY, e.getY() / getTileSize()) > 0.25) {
-					ox = sox - dx;
-					oy = soy - dy;
+				double mouseX = e.getX() / getTileSize();
+				double mouseY = e.getY() / getTileSize();
+				if (GameLogic.distanceSq(startX, mouseX, startY, mouseY) > 0.25) {
+					ox = sox + mouseX - startX;
+					oy = soy + mouseY - startY;
 					repaint();
 				} else if (GameLogic.getBuyingType() != null) {
 					repaint();
@@ -123,10 +125,10 @@ public class GamePanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (GameLogic.getState() == State.COMPLETE) {
-					GameLogic.overrideNextLevel();
-					return;
-				}
+//				if (GameLogic.getState() == State.COMPLETE) {
+//					GameLogic.overrideNextLevel();
+//					return;
+//				}
 
 				if (GameLogic.distanceSq(startX, e.getX() / getTileSize(), startY, e.getY() / getTileSize()) < 0.25) {
 					if (GameLogic.getBuyingType() != null) {

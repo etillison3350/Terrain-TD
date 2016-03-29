@@ -398,8 +398,8 @@ public class InfoPanel extends JPanel {
 								Set<EffectType> re = new TreeSet<>(diffComp);
 								re.addAll(Arrays.asList(orig.effects));
 								re.removeIf(e -> {
-									for (EffectType pr : chgd.effects) {
-										if (diffComp.compare(e, pr) == 0) return true;
+									for (EffectType ef : chgd.effects) {
+										if (diffComp.compare(e, ef) == 0) return true;
 									}
 
 									return false;

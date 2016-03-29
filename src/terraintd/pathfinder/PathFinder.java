@@ -80,9 +80,11 @@ public class PathFinder {
 				if (speed < Double.MIN_VALUE) continue;
 
 				double newCost = node.getCost() + (n.top == node.top ? 1 : SQRT2D2) / speed;
-				if (n.getCost() == 0 || newCost < n.getCost()) {
+				if (n.getCost() == 0 || newCost - n.getCost() < -0.0001) {
 					n.setCost(newCost);
 					n.setNext(node);
+				} else if (Math.abs(newCost - n.getCost()) < 0.0001) {
+					n.addNext(node);
 				}
 				nodeSet.add(n);
 			}

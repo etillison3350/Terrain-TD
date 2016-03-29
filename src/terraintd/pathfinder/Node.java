@@ -1,5 +1,8 @@
 package terraintd.pathfinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node {
 
 	public final int x, y;
@@ -15,7 +18,7 @@ public class Node {
 	 */
 	public final boolean top;
 
-	private Node next;
+	private final List<Node> next = new ArrayList<>();
 	private double cost;
 	private boolean closed;
 	private boolean explored;
@@ -34,12 +37,17 @@ public class Node {
 		return this.y + (this.top ? 0 : 0.5);
 	}
 
-	public Node getNextNode() {
-		return next;
+	public Node[] getNextNodes() {
+		return next.toArray(new Node[next.size()]);
 	}
 
+	void addNext(Node next) {
+		this.next.add(next);
+	}
+	
 	void setNext(Node next) {
-		this.next = next;
+		this.next.clear();
+		addNext(next);
 	}
 
 	public double getCost() {

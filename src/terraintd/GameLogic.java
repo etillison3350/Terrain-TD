@@ -164,9 +164,7 @@ public class GameLogic implements ActionListener {
 	protected static void nextLevel() {
 		levelIndex++;
 
-		if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
-
-		state = State.PLAYING;
+		state = State.COMPLETE;
 
 		money += currentLevelSet.levels[levelIndex].money;
 
@@ -176,10 +174,6 @@ public class GameLogic implements ActionListener {
 		projectiles = new ArrayList<>();
 
 		wasPaused = true;
-
-		Window.repaintWindow();
-		Window.updateLevel();
-		if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 	}
 
 	public static void setSpeed(double mult) {
@@ -205,7 +199,6 @@ public class GameLogic implements ActionListener {
 			t2 = System.nanoTime();
 			GamePanel.repaintPanel();
 			BuyPanel.updateButtons();
-			InfoPanel.refreshDisplay();
 		}
 	}
 
@@ -235,17 +228,14 @@ public class GameLogic implements ActionListener {
 			try {
 				Thread.sleep(2500);
 			} catch (InterruptedException e) {}
-			if (!overrideNext) nextLevel();
-			overrideNext = false;
+			state = State.PLAYING;
+			
+			if (InfoPanel.infoPanel != null) Window.setButtonsEnabled(true);
+			Window.repaintWindow();
+			Window.updateLevel();
+			if (BuyPanel.buyPanel != null) BuyPanel.updateButtons();
 		}
 	};
-
-	private static boolean overrideNext = false;
-
-	public static void overrideNextLevel() {
-		overrideNext = true;
-		nextLevel();
-	}
 
 	private static void processEntities() {
 		if (health <= 0) {
@@ -260,6 +250,7 @@ public class GameLogic implements ActionListener {
 			GamePanel.repaintPanel();
 			return;
 		} else if (enemyIndex == currentLevelSet.levels[levelIndex].units.length && !entities.stream().anyMatch(e -> e instanceof Enemy)) {
+			InfoPanel.updateMoney();
 			stop();
 			Window.selectButton(0);
 			setSpeed(1);
@@ -269,6 +260,7 @@ public class GameLogic implements ActionListener {
 			if (currentLevelSet.levels.length - 1 == levelIndex) {
 				state = State.WON;
 			} else {
+				nextLevel();
 				new Thread(nextLevel).start();
 				state = State.COMPLETE;
 			}
@@ -284,7 +276,7 @@ public class GameLogic implements ActionListener {
 			Node[][][] nodes = GameLogic.nodes.get(et);
 
 			for (Node n : currentWorld.spawnpoints) {
-				if (nodes[n.y][n.x][n.top ? 1 : 0].getNextNode() != null) spawnPoints.add(nodes[n.y][n.x][n.top ? 1 : 0]);
+				if (nodes[n.y][n.x][n.top ? 1 : 0].getNextNodes().length > 0) spawnPoints.add(nodes[n.y][n.x][n.top ? 1 : 0]);
 			}
 
 			if (spawnPoints.size() == 0) continue; // TODO Remove obstacles?
