@@ -1,5 +1,14 @@
 lang-name=中文
 
+en-US=英語（美國）
+es=西班牙語
+fr=法國
+pt=葡萄牙語
+de=德語
+ru=俄語
+zh=中文
+ja=日本
+
 mods=遊戲模組
 version=版
 base-description=包含所有的基本遊戲資源。

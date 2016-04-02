@@ -1,9 +1,9 @@
 package terraintd;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +18,8 @@ import terraintd.types.Mod;
 
 public class Language {
 
+	private static final Pattern PATTERN = Pattern.compile("^([a-zA-Z0-9\\-]+)\\s*\\=\\s*(.+)$", Pattern.MULTILINE);
+
 	private static Locale currentLocale = Locale.US;
 
 	private Language() {}
@@ -27,7 +29,7 @@ public class Language {
 
 	public static Vector<String> localeNameList() {
 		if (localeNames == null) getLocaleNames();
-		
+
 		return new Vector<>(new TreeSet<>(localeNames.keySet()));
 	}
 
@@ -36,23 +38,17 @@ public class Language {
 
 		HashMap<String, Locale> ret = new HashMap<>();
 
-		for (Mod mod : Mod.values()) {
-			try (Stream<Path> files = Files.walk(mod.path)) {
-				Iterator<Path> iter = files.iterator();
-				while (iter.hasNext()) {
-					Path path = iter.next();
-					if (Files.isDirectory(path)) continue;
+		List<String> lines;
+		try {
+			lines = Files.readAllLines(Paths.get("terraintd/mods/base/locale/names"));
+		} catch (IOException e) {
+			return ret;
+		}
 
-					String[] file = path.getFileName().toString().split("\\.");
-
-					if (!file[1].equals("lang")) continue;
-
-					Matcher m = Pattern.compile("^lang\\-name\\s*\\=\\s*(.+)$", Pattern.MULTILINE).matcher(new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
-					if (!m.find()) continue;
-
-					ret.put(m.group(1), Locale.forLanguageTag(file[0]));
-				}
-			} catch (IOException e) {}
+		for (String line : lines) {
+			Matcher matcher = PATTERN.matcher(line);
+			if (!matcher.find()) continue;
+			ret.put(matcher.group(2), Locale.forLanguageTag(matcher.group(1)));
 		}
 
 		localeNames = ret;
@@ -77,11 +73,11 @@ public class Language {
 
 		HashMap<String, String> lang = terms.get(currentLocale);
 
-		if (lang == null) return "missing-key: " + key.toLowerCase();
+		if (lang == null) return "missing-key-" + key.toLowerCase();
 
 		String s = lang.get(key.toLowerCase());
 
-		if (s == null || s.isEmpty()) return "missing-key: " + key.toLowerCase();
+		if (s == null || s.isEmpty()) return "missing-key-" + key.toLowerCase();
 
 		return s;
 	}
@@ -102,10 +98,8 @@ public class Language {
 
 					List<String> s = Files.readAllLines(path);
 
-					Pattern pattern = Pattern.compile("^([a-z0-9\\-]+)\\s*\\=\\s*(.+)$", Pattern.MULTILINE);
-
 					for (String str : s) {
-						Matcher matcher = pattern.matcher(str);
+						Matcher matcher = PATTERN.matcher(str);
 						if (!matcher.find()) continue;
 
 						String key = matcher.group(1).toLowerCase();

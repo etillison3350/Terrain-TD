@@ -75,7 +75,7 @@ public class GamePanel extends JPanel {
 				dx = ((double) getWidth() - (GameLogic.getCurrentWorld().getWidth() * tile)) * 0.5;
 				dy = ((double) getHeight() - (GameLogic.getCurrentWorld().getHeight() * tile)) * 0.5;
 				ImageManager.clear();
-				GameLogic.getCurrentWorld().recalculateImageForSize(tile);
+				GameLogic.getCurrentWorld().recalculateImageForSize(tile * 2);
 
 				repaint();
 			}

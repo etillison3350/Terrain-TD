@@ -1,5 +1,14 @@
 lang-name=English (United States)
 
+en-US=English (United States)
+es=Spanish
+fr=French
+pt=Portuguese
+de=German
+ru=Russian
+zh=Chinese
+ja=Japanese
+
 mods=Mods
 version=Version
 base-description=Contains all of the resources for the base game.

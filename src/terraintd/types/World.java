@@ -3,6 +3,7 @@ package terraintd.types;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -54,7 +55,8 @@ public class World extends ModdedType {
 		image = new BufferedImage(Math.max(1, (int) (size * getWidth())), Math.max(1, (int) (size * getHeight())), BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g = image.createGraphics();
-
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
 		g.setColor(Color.BLACK);
 
 		for (int y = 0; y < getHeight(); y++) {

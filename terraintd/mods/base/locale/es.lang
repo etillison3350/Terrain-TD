@@ -1,5 +1,14 @@
 lang-name=Español
 
+en-US=Inglés (Estados Unidos)
+es=Español
+fr=Francés
+pt=Portugués
+de=Alemán
+ru=Ruso
+zh=Chino
+ja=Japonés
+
 mods=Mods
 version=Versión
 base-description=Contiene todos los recursos para el juego base.

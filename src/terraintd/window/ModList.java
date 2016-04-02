@@ -158,7 +158,7 @@ public class ModList extends JDialog {
 				TypeGenerator.generateValues();
 				Language.clear();
 				GameLogic.reset();
-				GameLogic.getCurrentWorld().recalculateImageForSize(GamePanel.getTile());
+				GameLogic.getCurrentWorld().recalculateImageForSize(GamePanel.getTile() * 2);
 				Window.repaintWindow();
 				BuyPanel.recreateButtons();
 
